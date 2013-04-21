@@ -12,3 +12,5 @@ Value: 524288000
 Dann mit "Ok" bestätigen.
 
 Gruß
+
+# Denkt dran das ist ein ÖFFENTLICHES Repository d.h. keine Passwörter/etc. veröffentlichen.
