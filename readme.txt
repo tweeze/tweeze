@@ -13,6 +13,8 @@ Dann mit "Ok" bestätigen.
 
 Gruß
 
+# Test
+
 # Denkt dran das ist ein ÖFFENTLICHES Repository d.h. keine Passwörter/etc. veröffentlichen.
 
 # Anleitung_Eclipse_Git_python_SQL.pdf enthält alle wichtigen Informationen. 
