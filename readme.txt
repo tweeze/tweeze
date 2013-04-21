@@ -15,8 +15,7 @@ Gruß
 
 # Denkt dran das ist ein ÖFFENTLICHES Repository d.h. keine Passwörter/etc. veröffentlichen.
 
-# Anleitung_Eclipse_Git_python.pdf steht auch was zu Python drinne...
-
-# Eclipse SQL Explorer http://eclipsesql.sourceforge.net/
-
-# add
+# Anleitung_Eclipse_Git_python_SQL.pdf enthält alle wichtigen Informationen. 
+Den SQL-Teil habe ich reingenommen damit jeder schonmal die Möglichkeit hat evtl. mit dem 
+ER-Modell zu arbeiten. Später sollte das ein öffentlicher MySQL-Server sein auf den wir alle
+zugreifen könnnen.
