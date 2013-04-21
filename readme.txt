@@ -14,3 +14,5 @@ Dann mit "Ok" bestätigen.
 Gruß
 
 # Denkt dran das ist ein ÖFFENTLICHES Repository d.h. keine Passwörter/etc. veröffentlichen.
+
+# Anleitung_Eclipse_Git_python.pdf steht auch was zu Python drinne...
