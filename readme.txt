@@ -4,3 +4,5 @@ backend: Python-Code
 frontend: PHP-Code
 sql: SQL-Code
 docs: Dokumente
+
+docs/Informationen.txt: Neuste Infos
