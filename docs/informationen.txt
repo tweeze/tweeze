@@ -13,6 +13,8 @@ Dann mit "Ok" bestätigen.
 
 Gruß
 
+UPDATES:
+
 # Denkt dran das ist ein ÖFFENTLICHES Repository d.h. keine Passwörter/etc. veröffentlichen.
 
 # Anleitung_Eclipse_Git_python_SQL.pdf enthält alle wichtigen Informationen. 
@@ -21,3 +23,5 @@ ER-Modell zu arbeiten. Später sollte das ein öffentlicher MySQL-Server sein auf 
 zugreifen könnnen.
 
 # Unsere Webseite ist absofort passwortgeschützt (-> tweeze account)
+
+# Neue Anleitung zeigt SSH-Zugriff auf Github (sinnvoll)
