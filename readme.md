@@ -23,6 +23,7 @@ http://maku.inf-d.de/suma1/
 + robots.txt:	Disallow robots
 
 > Zugriff auf SQL erfolgt über localhost mit Benutzername/Passwort aus der E-Mail.
+
 > Zugriff auf den Webserver (Upload) erfolgt über FTP mit dem Benutzernamen/Passwort aus der E-Mail.
 
 ### SQL Datenbank
@@ -32,4 +33,5 @@ http://maku.inf-d.de/phpmyadmin
 + Hier Tabellen aufsetzen, abfragen starten (wenn DUMP drauf ist Datensatz durchforsten)
 
 > Schreibzugriff erfordert Login mit Benutzername/Passwort aus der E-Mail.
+
 > SQL-Explorer (oder ähnliches funktionieren NICHT -> haben keinen externen Zugriff)
