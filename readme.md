@@ -23,10 +23,10 @@ http://maku.inf-d.de/suma1/
 + /scripts:	Scripts (JavaScript) des Frontends
 + /sheets:	CSS des Frontends
 
-+ index.php:	Frontend
-+ robots.txt:	Disallow robots
+> index.php:	Frontend
+> robots.txt:	Disallow robots
 
-* Zugriff auf SQL erfolgt über localhost mit Benutzername/Passwort aus der E-Mail.
+(*) Zugriff auf SQL erfolgt über localhost mit Benutzername/Passwort aus der E-Mail.
 * Zugriff auf den Webserver (Upload) erfolgt über FTP mit dem Benutzernamen/Passwort aus der E-Mail.
 
 # SQL Datenbank
