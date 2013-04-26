@@ -7,7 +7,7 @@ Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/twe
 + sql: SQL-Code (für die Eingabe über phpmyadmin)
 + docs: Dokumente
 
-+ [docs/Informationen.txt] https://github.com/tweeze/tweeze/blob/master/docs/informationen.txt: Neuste Infos
++ https://github.com/tweeze/tweeze/blob/master/docs/informationen.txt : Neuste Infos
 
 ### Webseite des Projekts
 
