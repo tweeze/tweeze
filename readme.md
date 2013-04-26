@@ -1,6 +1,6 @@
 ### Repository bei GitHUB
 
-Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/tweeze/tweeze möglich.
+Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/tweeze/tweeze möglich
 
 + backend: Python-Code
 + frontend: PHP/HTML-Code
@@ -14,24 +14,23 @@ Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/twe
 http://maku.inf-d.de/suma1/
 
 + /cgi-bin:	Python Script*
-+ /icons:		Favicon (Frontend)
-+ /images:	Fotos/Grafiken des Frontends
++ /icons: Favicon (Frontend)
++ /images: Fotos/Grafiken des Frontends
 + /scripts:	Scripts (JavaScript) des Frontends
-+ /sheets:	CSS des Frontends
++ /sheets: CSS des Frontend
++ /index.php: Frontend
++ /robots.txt: Disallow robots
 
-+ index.php:	Frontend<br>
-+ robots.txt:	Disallow robots
+> Zugriff auf SQL erfolgt über localhost mit Benutzername/Passwort aus der E-Mail
 
-> Zugriff auf SQL erfolgt über localhost mit Benutzername/Passwort aus der E-Mail.
+> Zugriff auf den Webserver (Upload) erfolgt über FTP mit dem Benutzernamen/Passwort aus der E-Mail
 
-> Zugriff auf den Webserver (Upload) erfolgt über FTP mit dem Benutzernamen/Passwort aus der E-Mail.
-
-### SQL Datenbank
+### SQL-Datenbank
 
 http://maku.inf-d.de/phpmyadmin
 
 + Hier Tabellen aufsetzen, abfragen starten (wenn DUMP drauf ist Datensatz durchforsten)
 
-> Schreibzugriff erfordert Login mit Benutzername/Passwort aus der E-Mail.<br>
+> Schreibzugriff erfordert Login mit Benutzername/Passwort aus der E-Mail
 
 > SQL-Explorer (oder ähnliches funktionieren NICHT -> haben keinen externen Zugriff)
