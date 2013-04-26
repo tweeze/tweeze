@@ -17,9 +17,8 @@ docs/Informationen.txt: Neuste Infos
 
 http://maku.inf-d.de/suma1/
 
-[ ] /cgi-bin:	Python Script*
-
-[x] /icons:		Favicon (Frontend)
++ /cgi-bin:	Python Script*
++ /icons:		Favicon (Frontend)
 
 /images:	Fotos/Grafiken des Frontends
 
