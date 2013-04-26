@@ -1,9 +1,7 @@
 # Projekt "tweeze"
 # GitHUB
 
-Zugriff erfolgt über Eclipse/EGIT oder https://github.com/tweeze/tweeze
-
-Struktur:
+Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/tweeze/tweeze möglich.
 
 backend: Python-Code
 frontend: PHP/HTML-Code
@@ -35,5 +33,4 @@ http://maku.inf-d.de/phpmyadmin
 Hier Tabellen aufsetzen, abfragen starten (wenn DUMP drauf ist Datensatz durchforsten)
 
 * Schreibzugriff erfordert Login mit Benutzername/Passwort aus der E-Mail.
-
 ** SQL-Explorer (oder ähnliches funktionieren NICHT -> haben keinen externen Zugriff)
