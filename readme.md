@@ -7,11 +7,11 @@ Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/twe
 + sql: SQL-Code (für die Eingabe über phpmyadmin)
 + docs: Dokumente
 
-+ docs/Informationen.txt: Neuste Infos
++ [docs/Informationen.txt] https://github.com/tweeze/tweeze/blob/master/docs/informationen.txt: Neuste Infos
 
 ### Webseite des Projekts
 
-http://maku.inf-d.de/suma1/
+http://maku.inf-d.de/suma1/ (passwortgeschützt)
 
 + /cgi-bin:	Python Script*
 + /icons: Favicon (Frontend)
