@@ -1,5 +1,4 @@
-# Projekt "tweeze"
-# GitHUB
+# Repository bei GitHUB
 
 Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/tweeze/tweeze möglich.
 
@@ -10,15 +9,15 @@ docs: Dokumente
 
 docs/Informationen.txt: Neuste Infos
 
-# Webseite des Projekts:
+# Webseite des Projekts
 
 http://maku.inf-d.de/suma1/
 
-/cgi-bin:	Python Script*
-/icons:		Favicon (Frontend)
-/images:	Fotos/Grafiken des Frontends
-/scripts:	Scripts (JavaScript) des Frontends
-/sheets:	CSS des Frontends
+* /cgi-bin:	Python Script*
+* /icons:		Favicon (Frontend)
+* /images:	Fotos/Grafiken des Frontends
+* /scripts:	Scripts (JavaScript) des Frontends
+* /sheets:	CSS des Frontends
 
 index.php:	Frontend
 robots.txt:	Disallow robots
@@ -26,7 +25,7 @@ robots.txt:	Disallow robots
 * Zugriff auf SQL erfolgt über localhost mit Benutzername/Passwort aus der E-Mail.
 ** Zugriff auf den Webserver (Upload) erfolgt über FTP mit dem Benutzernamen/Passwort aus der E-Mail.
 
-# SQL Datenbank:
+# SQL Datenbank
 
 http://maku.inf-d.de/phpmyadmin
 
