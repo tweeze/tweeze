@@ -2,7 +2,7 @@
 
 Zugriff erfolgt über Eclipse/EGIT! kurzer check auch über https://github.com/tweeze/tweeze möglich
 
-+ backend: Python-Code
++ backend: Diverser Code
 + frontend: PHP/HTML-Code
 + sql: SQL-Code (für die Eingabe über phpmyadmin)
 + docs: Dokumente

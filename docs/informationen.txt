@@ -25,3 +25,5 @@ zugreifen könnnen.
 # Unsere Webseite ist absofort passwortgeschützt (-> tweeze account)
 
 # Neue Anleitung zeigt SSH-Zugriff auf Github (sinnvoll)
+
+# Anika hat ihren Code committed (unter backend)
