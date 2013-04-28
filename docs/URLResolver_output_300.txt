@@ -1,0 +1,191 @@
+Output der ersten 300 von 18614 URLs (willkürlich gekürzt):
+-------------------------------------------------
+
+Connecting to database (suma1) on (10.10.10.1:3306) as (suma1@suma1) -> [OK]
+Checking table (suma1.twz_urlmap) for consistency -> [OK]
+
+(Total shortened URLs: 18614)
+
+Row[1]: http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php
+Row[2]: http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw
+Row[3]: http://www.bermudafunk.org -> http://www.bermudafunk.org
+Row[4]: http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c
+Row[5]: http://adf.ly/EOnKn -> http://adf.ly/EOnKn
+Row[6]: http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/ -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/
+Row[7]: http://twitpic.com/bt0ca2 -> http://twitpic.com/bt0ca2
+Row[8]: http://netnrd.de/1z7w -> http://celleheute.de/grune-aktuelle-fracking-studie-soll-vor-den-wahlen-geheim-bleiben/
+Row[9]: http://bit.ly/VYhKY6 -> http://hamburger-anon.blogspot.de/2013/01/femtrolls-in-my-safe-space-its-more.html
+Row[10]: http://www.lefigaro.fr/international/2013/01/24/01003-20130124ARTFIG00694-merkel-soutient-cameronpour-une-europe-plus-liberale.php -> http://www.lefigaro.fr/international/2013/01/24/01003-20130124ARTFIG00694-merkel-soutient-cameronpour-une-europe-plus-liberale.php
+Row[11]: http://unterschriften.piraten-schwaben.de/ -> http://unterschriften.piraten-schwaben.de/
+Row[12]: http://www.youtube.com/watch?v=X5umvqiHVFg -> http://www.youtube.com/watch?v=X5umvqiHVFg
+Row[13]: http://www.welt.de/regionales/duesseldorf/article113391368/Gruene-suchen-Wahlkaempfer-fuer-vier-Euro-pro-Stunde.html -> http://www.welt.de/regionales/duesseldorf/article113391368/Gruene-suchen-Wahlkaempfer-fuer-vier-Euro-pro-Stunde.html
+MalformedURLException: no protocol: /115375778237392206743/posts/Tz9RxHCLHbk
+Row[15]: http://static2.businessinsider.com/image/4fe4c9f1ecad04952b000006/angela-merkel-goal-celebration-gif.gif -> http://static2.businessinsider.com/image/4fe4c9f1ecad04952b000006/angela-merkel-goal-celebration-gif.gif
+Row[16]: http://spd-link.de/sTgd -> null
+Row[17]: http://bit.ly/ZaObCP -> http://www.derwesten.de/politik/polizei-nimmt-nrw-piraten-fest-weil-er-laden-logo-fotografierte-id7741605.html
+IOException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+Row[19]: http://kidcompanions.com/students-with-sensory-processing-issues-sensory-smart-school-solutions-by-lindsey-biel-otrl/#.UUiomEDBjdB.twitter -> http://kidcompanions.com/students-with-sensory-processing-issues-sensory-smart-school-solutions-by-lindsey-biel-otrl/#.UUiomEDBjdB.twitter
+Row[20]: http://www.youtube.com/watch?v=eWm6zq4eUCQ -> http://www.youtube.com/watch?v=eWm6zq4eUCQ
+
+[...]
+
+Row[69]: http://fb.me/20c4FAm8I -> http://www.keine-gentechnik.de/news-gentechnik/news/de/27354.html
+Row[70]: http://www.handelsblatt.com/8068074.html -> http://www.handelsblatt.com/politik/deutschland/anti-euro-partei-auf-stimmenfang-das-grosse-dilemma-der-euro-retter/8068074.html
+Row[71]: http://www.geolitico.de/2013/04/12/der-staat-kassiert-spareinlagen-und-einen-teil-der-rente/ -> http://www.geolitico.de/2013/04/12/der-staat-kassiert-spareinlagen-und-einen-teil-der-rente/
+Row[72]: http://www.geolitico.de/2013/04/12/der-staat-kassiert-spareinlagen-und-einen-teil-der-rente/ -> http://www.geolitico.de/2013/04/12/der-staat-kassiert-spareinlagen-und-einen-teil-der-rente/
+MalformedURLException: no protocol: /editos-du-point/michel-colomes/le-pied-de-nez-de-merkel-et-cameron-a-francois-hollande-15-04-2013-1655259_55.php
+Row[74]: http://blog.zeit.de/zweitstimme/2013/04/15/positionieren-und-mobilisieren-was-von-der-alternative-fur-deutschland-zu-erwarten-ist/ -> http://blog.zeit.de/zweitstimme/2013/04/15/positionieren-und-mobilisieren-was-von-der-alternative-fur-deutschland-zu-erwarten-ist/
+Row[75]: http://www.blick.ch/news/schweiz/4200-personen-fordern-treffen-zwischen-bundesrat-und-dalai-lama-id2271567.html -> http://www.blick.ch/news/schweiz/4200-personen-fordern-treffen-zwischen-bundesrat-und-dalai-lama-id2271567.html
+Row[76]: http://fb.me/2P2cCsgkT -> http://www.meneame.net/story/asesores-merkel-suguieren-confiscar-ahorros-privados-propiedades/1
+Row[77]: http://www.youtube.com/watch?feature=player_detailpage&v=TJsokiuJIoc -> http://www.youtube.com/watch?feature=player_detailpage&v=TJsokiuJIoc
+Row[78]: http://goo.gl/w5tbg -> http://www.danisch.de/blog/2013/04/16/die-piraten-killer-kommen/
+Row[79]: http://dlvr.it/3F0WYC -> http://quotenqueen.wordpress.com/2013/04/16/linke-kein-einlass-fur-juden/
+Row[80]: http://ow.ly/k6vU0 -> http://www.wallstreetitalia.com/article.aspx?IdPage=1546485&utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+wallstreetitalia+%28Wall+Street+Italia%29&utm_content=Google+Reader
+Row[81]: http://www.spdfraktion.de/presse/interviews/merkel-verh%C3%B6hnt-alle-die-f%C3%BCr-wirkliche-gleichstellung-k%C3%A4mpfen -> http://www.spdfraktion.de/presse/interviews/merkel-verh%C3%B6hnt-alle-die-f%C3%BCr-wirkliche-gleichstellung-k%C3%A4mpfen
+Row[82]: http://www.taz.de/Katja-Kipping-ueber-Steinbrueck/!114573/ -> http://www.taz.de/Katja-Kipping-ueber-Steinbrueck/!114573/
+Row[83]: http://ow.ly/k6t30 -> http://www.arabianbusiness.com/merkel-urges-qatar-ensure-fair-tenders-for-world-cup-projects-498089.html?utm_medium=twitter&utm_source=twitterfeed
+Row[84]: http://bit.ly/ZyVEw7 -> http://youtu.be/0aHQdXfKf5k%0ABildquelle:
+Row[85]: http://bit.ly/ZyVEwb -> http://www.bildersuche.org/creative-commons-infografik.php
+Row[86]: http://twitpic.com/cjwjsq -> http://twitpic.com/cjwjsq
+Row[87]: http://www.jn.pt/PaginaInicial/Sociedade/Saude/Interior.aspx?content_id=3168339&page=-1 -> http://www.jn.pt/PaginaInicial/Sociedade/Saude/Interior.aspx?content_id=3168339&page=-1
+Row[88]: https://twitter.com/Dr_Konrad_Adam/status/324150875855650816 -> https://twitter.com/account/suspended
+Row[89]: http://bit.ly/YTt39X -> http://www.arabianbusiness.com/photos/angela-merkel-meets-qatari-prime-minister-498369.html?utm_medium=twitter&utm_source=twitterfeed
+Row[90]: http://www.facebook.com/AlfredoPerezRubalcaba/posts/450619221682844 -> http://www.facebook.com/AlfredoPerezRubalcaba/posts/450619221682844
+Row[91]: http://ow.ly/1VelYy -> http://www.spiegel.de/politik/deutschland/forsa-umfrage-schlechte-werte-fuer-spd-und-steinbrueck-a-894810.html
+Row[92]: http://www.bundesregierung.de/Content/DE/Artikel/2013/04/2013-04-17-kabinett-rentenwert.html -> http://www.bundesregierung.de/Content/DE/Artikel/2013/04/2013-04-17-kabinett-rentenwert.html
+Row[93]: http://intern.bestandsdatenauskunft.de/ -> http://intern.bestandsdatenauskunft.de/
+Row[94]: http://www.ansamed.info/ansamed/en/news/sections/politics/2013/04/16/Syria-Germany-not-arm-rebels-Merkel-tells-Qatar_8562259.html -> http://www.ansamed.info/ansamed/en/news/sections/politics/2013/04/16/Syria-Germany-not-arm-rebels-Merkel-tells-Qatar_8562259.html
+Row[95]: http://bit.ly/11c3Oyt -> http://taz.de/Wasserversorgung-wird-ausgeschrieben/!114645/
+Row[96]: http://bit.ly/11s2ozu -> http://meedia.de/internet/spd-nahe-agentur-pusht-steinbrueck-im-web/2013/04/16.html
+Row[97]: http://xurl.es/afl8r -> http://maxconn.xurl.es/
+Row[98]: http://sz.de/1.1651178 -> http://www.sueddeutsche.de/politik/neue-partei-afd-waehler-von-fdp-und-linken-neigen-zur-anti-euro-partei-1.1651178
+Row[99]: http://fb.me/220M5fHg3 -> http://www.presidencia.gob.ec/
+
+[...]
+
+Row[121]: http://twitpic.com/ck65q7 -> http://twitpic.com/ck65q7
+Row[122]: http://www.bundestag.de/presse/hib/2013_04/2013_216/02.html -> http://www.bundestag.de/presse/hib/2013_04/2013_216/02.html
+Row[123]: http://on.bild.de/11gnEIQ -> http://www.bild.de/politik/inland/fdp/fdp-fordert-musiker-soll-bambi-zurueck-geben-30055716.bild.html
+Row[124]: http://www.bundestag.de/dokumente/textarchiv/2013/43633829_kw16_pa_gesundheit_drogenkonsum/index.html -> http://www.bundestag.de/dokumente/textarchiv/2013/43633829_kw16_pa_gesundheit_drogenkonsum/index.html
+Row[125]: http://karstenstrasser.de/?p=1314 -> http://karstenstrasser.de/?p=1314
+Row[126]: http://www.stern.de/1998776.html -> http://www.stern.de/kultur/musik/politiker-fordern-bushido-soll-bambi-verlieren-1998776.html
+Row[127]: http://www.spiegel.de/politik/deutschland/kleine-anfragen-spd-liegt-hinter-der-opposition-zurueck-a-894333.html -> http://www.spiegel.de/politik/deutschland/kleine-anfragen-spd-liegt-hinter-der-opposition-zurueck-a-894333.html
+Row[128]: http://bit.ly/YZwL1Y -> http://www.br.de/themen/ratgeber/inhalt/computer/bestandsdatenauskunft-bestandsdaten-pin-ordnungswidrigkeit-100.html
+Row[129]: http://www.bmwi.de/DE/Presse/pressemitteilungen,did=566630.html -> http://www.bmwi.de/DE/Presse/pressemitteilungen,did=566630.html
+Row[130]: http://bit.ly/10kxrkj -> http://www.heute.de/%C3%96konom-Flassbeck-Wir-sparen-uns-zu-Tode-27570542.html
+Row[131]: http://www.linksfraktion-mg.de/ratsarbeit/rat-der-stadt/1-rat-der-stadt-moenchengladbach/350-nach-beratungsvorlage-dringend-noetiger-radweg-eingespart -> http://www.linksfraktion-mg.de/ratsarbeit/rat-der-stadt/1-rat-der-stadt-moenchengladbach/350-nach-beratungsvorlage-dringend-noetiger-radweg-eingespart
+Row[132]: http://www.spiegel.de/politik/deutschland/kleine-anfragen-spd-liegt-hinter-der-opposition-zurueck-a-894333.html -> http://www.spiegel.de/politik/deutschland/kleine-anfragen-spd-liegt-hinter-der-opposition-zurueck-a-894333.html
+Row[133]: http://bit.ly/13mtgoE -> http://www.challenges.fr/europe/20130418.CHA8545/pour-merkel-le-smic-est-la-cause-du-chomage-en-europe.html?xtor=RSS-16
+Row[134]: http://bit.ly/ZAinc8 -> http://storify.com/handelsblatt/handelsblatt-deutschland-dinner-mit-angela-merkel/
+Row[135]: http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html -> http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html
+Row[136]: http://www.wiwo.de/8085108.html -> http://www.wiwo.de/politik/europa/zypern-abstimmung-volksvertreter-mit-tunnelblick/8085108.html
+IOException: sun.security.validator.ValidatorException: PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+MalformedURLException: no protocol: /wirtschaft/soziales/zypern-braucht-laut-dem-oekonomen-lueder-gerken-ein-zweites-hilfspaket-a-895206.html
+Row[139]: http://www.berlin.de/ba-mitte/bvv-online/ka020.asp?KALFDNR=1568 -> http://www.berlin.de/ba-mitte/bvv-online/ka020.asp?KALFDNR=1568
+Row[140]: http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html -> http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html
+Row[141]: http://ht.ly/kcxcn -> null
+Row[142]: http://bit.ly/11navLk -> http://www.spiegel.de/politik/deutschland/time-liste-der-100-einflussreichsten-menschen-merkel-ist-raus-a-895264.html#ref=rss
+Row[143]: http://goo.gl/Vmvm3 -> http://www.zauberer-fidibus.de/
+Row[144]: http://goo.gl/eED2A -> http://www.n-tv.de/politik/Merkel-ist-nicht-mehr-so-wichtig-article10501676.html
+Row[145]: http://ow.ly/kcALb -> http://oncosec.com/index.php/merkel-cell-carcinoma-recap/
+
+[...]
+
+Row[149]: http://www.taz.de/!114775 -> http://www.taz.de/!114775/
+Row[150]: http://www.derwesten.de/wr/7851762 -> http://www.derwesten.de/wr/politik/merkel-macht-mindestlohn-fuer-arbeitslosigkeit-verantwortlich-id7851762.html
+Row[151]: http://paskalwen.de/2013/04/18/staat-und-freiheit/ -> http://paskalwen.de/2013/04/18/staat-und-freiheit/
+Row[152]: http://ow.ly/kaM4J -> http://oncosec.com/index.php/oms/clinical-trials/
+Row[153]: http://www.ncr-iran.org/en/ncri-statements/ashraf-liberty/13427-maliki-s-justice-minister-visits-iran-receives-orders-to-target-the-pmoi-and-iraqi-dissidents.html -> http://www.ncr-iran.org/en/ncri-statements/ashraf-liberty/13427-maliki-s-justice-minister-visits-iran-receives-orders-to-target-the-pmoi-and-iraqi-dissidents.html
+Row[154]: http://cort.as/3uAk -> http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html
+Row[155]: http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html -> http://sociedad.elpais.com/sociedad/2013/04/18/actualidad/1366295829_227053.html
+Row[156]: http://ow.ly/1Vl3ZH -> http://www.kn-online.de/Schleswig-Holstein/Landespolitik/SPD-Mitarbeiter-drohen-mit-Streiks
+Row[157]: http://www.tagesschau.de/wirtschaft/framing100.html -> http://www.tagesschau.de/wirtschaft/framing100.html
+Row[158]: http://www.piratenpartei.de/politik/wissensgesellschaft/urheberrecht/ -> http://www.piratenpartei.de/politik/wissensgesellschaft/urheberrecht/
+Row[159]: http://ow.ly/kdg0m -> http://www.kn-online.de/Schleswig-Holstein/Landespolitik/SPD-Mitarbeiter-drohen-mit-Streiks
+Row[160]: http://nos.nl/artikel/496277-merkel-geen-wapens-naar-verzet-syrie.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+nosjournaal+(NOS+Journaal+Nieuws -> http://nos.nl/artikel/496277-merkel-geen-wapens-naar-verzet-syrie.html?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+nosjournaal+(NOS+Journaal+Nieuws
+Row[161]: http://blog.br.de/quer/frauenquote-tausche-gegen-maenner-zertifikat-19042013.html -> http://blog.br.de/quer/frauenquote-tausche-gegen-maenner-zertifikat-19042013.html
+Row[162]: http://www.die-linke.de/fileadmin/download/wahlen2013/Leitantrag-Wahlprogramm.pdf -> http://www.die-linke.de/fileadmin/download/wahlen2013/Leitantrag-Wahlprogramm.pdf
+Row[163]: http://ow.ly/kdi7C -> null
+Row[164]: http://www.sz.de/1.1652670 -> http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-familienhilfe-la-csu-1.1652670
+
+[...]
+
+Row[196]: http://mallorca.attac.es/2013/04/19/mas-trampas-del-banco-central-europeo-para-cubrir-a-merkel/ -> http://mallorca.attac.es/2013/04/19/mas-trampas-del-banco-central-europeo-para-cubrir-a-merkel/
+Row[197]: http://www.mdr.de/sachsen-anhalt/wissenschaftsministerin-wolff-entlassen100.html -> http://www.mdr.de/sachsen-anhalt/wissenschaftsministerin-wolff-entlassen100.html
+Row[198]: http://www.bolsawallstreet.com -> http://www.bolsawallstreet.com
+Row[199]: http://bit.ly/103PB2t -> http://www.sueddeutsche.de/bayern/debatte-um-bezahlung-fuer-familienmitglieder-kuendigungswelle-in-der-csu-1.1653207
+Row[200]: http://bit.ly/Yzm8yc -> null
+Row[201]: http://www.tagesschau.de/inland/linke226.html -> http://www.tagesschau.de/inland/linke226.html
+Row[202]: http://www.bundesregierung.de/Webs/Breg/DE/Bundeskanzlerin/Hangout/eintraege_node.html -> http://www.bundesregierung.de/Webs/Breg/DE/Bundeskanzlerin/Hangout/eintraege_node.html
+Row[203]: http://www.queer.de/detail.php?article_id=19045 -> http://www.queer.de/detail.php?article_id=19045
+Row[204]: http://m.facebook.com/error/?err=gf&_mn_=10&_rdr#!/134565316694190/timeline/story?ut=69&hash=3067125827783298404&wstart=0&wend=1367391599&ustart&__user=1461735308 -> http://m.facebook.com/error/?err=gf&_mn_=10&_rdr#!/134565316694190/timeline/story?ut=69&hash=3067125827783298404&wstart=0&wend=1367391599&ustart&__user=1461735308
+Row[205]: http://schwarmkritik.de/2012/12/grabenkampfe-und-das-ende-des-diskurses/ -> http://schwarmkritik.de/2012/12/grabenkampfe-und-das-ende-des-diskurses/
+Row[206]: https://www.facebook.com/photo.php?v=593400114011740&set=vb.411527535532333&type=2&theater -> https://www.facebook.com/photo.php?v=593400114011740&set=vb.411527535532333&type=2&theater
+MalformedURLException: no protocol: /badge/2826565/
+Row[208]: http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-familienhilfe-la-csu-1.1652670 -> http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-familienhilfe-la-csu-1.1652670
+Row[209]: https://www.freitag.de/autoren/augstein-und-blome/haste-mal-ne-quote -> null
+Row[210]: http://www.spiegel.de/netzwelt/netzpolitik/de-mail-bundestag-erklaert-bundes-mail-per-gesetz-als-sicher-a-895361.html -> http://www.spiegel.de/netzwelt/netzpolitik/de-mail-bundestag-erklaert-bundes-mail-per-gesetz-als-sicher-a-895361.html
+Row[211]: http://bit.ly/13vLRib -> http://www.lavozdigital.es/cadiz/rc/20130419/economia/merkel-advierte-vale-asegurar-201304191112.html?utm_source=twitterfeed&utm_medium=twitter
+Row[212]: http://www.tv5.org/cms/chaine-francophone/Terriennes/Dossiers/p-25061-Quotas-de-femmes-dans-les-entreprises-la-valse-hesitation-de-Angela-Merkel.htm -> http://www.tv5.org/cms/chaine-francophone/Terriennes/Dossiers/p-25061-Quotas-de-femmes-dans-les-entreprises-la-valse-hesitation-de-Angela-Merkel.htm
+Row[213]: http://twitpic.com/ckge9g -> http://twitpic.com/ckge9g
+Row[214]: http://www.datpiff.com/mixtapes-detail.php?id=473655 -> http://www.datpiff.com/mixtapes-detail.php?id=473655
+Row[215]: http://fr.finance.yahoo.com/actualites/merkel-voit-salaire-minimum-cause-ch%C3%B4mage-europe-220427070--finance.html -> http://fr.finance.yahoo.com/actualites/merkel-voit-salaire-minimum-cause-ch%C3%B4mage-europe-220427070--finance.html
+Row[216]: http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-familienhilfe-la-csu-1.1652670 -> http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-familienhilfe-la-csu-1.1652670
+Row[217]: http://www.deutsche-mittelstands-nachrichten.de/2013/04/51632/ -> http://www.deutsche-mittelstands-nachrichten.de/2013/04/51632/
+Row[218]: http://www.gruene.de/themen/soziale-gerechtigkeit/das-mindeste.html -> http://m.gruene.de/themen/soziale-gerechtigkeit/das-mindeste.html
+Row[219]: http://l.n24.de/11rvIUs -> http://www.n24.de/n24/Nachrichten/Politik/d/2735826/merkel-rechnet-die-deutschen-reich.html
+Row[220]: http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-seehofer-laesst-kuendigen-1.1653601 -> http://www.sueddeutsche.de/bayern/politiker-beschaeftigen-ehefrauen-seehofer-laesst-kuendigen-1.1653601
+Row[221]: http://www.youtube.com/watch?v=_3KlUTsra6Q -> http://www.youtube.com/watch?v=_3KlUTsra6Q
+Row[222]: http://twitpic.com/ckgzfe -> http://twitpic.com/ckgzfe
+Row[223]: http://www.golem.de/news/bundesrat-innenausschuss-empfiehlt-zustimmung-zu-bestandsdatenauskunft-1304-98833.html -> http://www.golem.de/news/bundesrat-innenausschuss-empfiehlt-zustimmung-zu-bestandsdatenauskunft-1304-98833.html
+Row[224]: http://twitpic.com/ckh1wl -> http://twitpic.com/ckh1wl
+Row[225]: http://ow.ly/k5tWL -> http://kielspratineurope.eu/?p=1376
+
+[...]
+
+Row[247]: http://dlvr.it/3Fx17S -> http://www.mittelstandcafe.de/merkel-diskutiert-mit-buergern-bei-google-hangout-ueber-integration-857042.html/?utm_source=dlvr.it&utm_medium=twitter
+Row[248]: http://www.mmnews.de -> http://www.mmnews.de
+Row[249]: http://shout.lt/hlsr -> http://www.hispanicbusiness.com/2013/4/19/merkel_backs_call_for_eu_free.htm
+Row[250]: http://adf.ly/NHjQg -> http://adf.ly/NHjQg
+Row[251]: http://trapier.org -> http://trapier.org
+Row[252]: http://www.linksfraktion.de/reden/ghettorenten-auszahlen-kein-diebstahl-ns-opfern/ -> http://www.linksfraktion.de/reden/ghettorenten-auszahlen-kein-diebstahl-ns-opfern/
+Row[253]: http://allemagne.blog.lemonde.fr?p=805 -> http://allemagne.blog.lemonde.fr?p=805
+Row[254]: http://www.stuttgarter-zeitung.de/inhalt.eurorettung-merkel-hat-eurokritiker-in-der-wirtschaft-eingefangen.aa8cd358-e201-4d11-ab0e-d55dacf86118.html -> http://www.stuttgarter-zeitung.de/inhalt.eurorettung-merkel-hat-eurokritiker-in-der-wirtschaft-eingefangen.aa8cd358-e201-4d11-ab0e-d55dacf86118.html
+Row[255]: http://bit.ly/10nL2HD -> null
+Row[256]: http://j.mp/EUproj -> http://www.bundesregierung.de/Content/DE/Infodienst/2013/04/2013-04-08-eu-projekttag-2013/2013-04-08-eu-projekttag-2013.html
+Row[257]: http://bit.ly/ZE9JIE -> http://www.taz.de/Piraten-in-der-Krise/!114822/
+Row[258]: http://bit.ly/Z5WFRR -> http://labs.ebuzzing.fr/info?id=383706413
+Row[259]: http://bit.ly/Z5WFRR -> http://labs.ebuzzing.fr/info?id=383706413
+Row[260]: http://bit.ly/Z5WFRR -> http://labs.ebuzzing.fr/info?id=383706413
+Row[261]: http://bit.ly/Z5WJRr -> null
+Row[262]: http://bit.ly/Z5WLJ3 -> null
+Row[263]: http://bit.ly/Z5WLJ7 -> null
+Row[264]: http://www.taz.de/!114848/ -> http://www.taz.de/!114848/
+Row[265]: http://bit.ly/ZE9JIE -> http://www.taz.de/Piraten-in-der-Krise/!114822/
+Row[266]: http://www.20minutos.es/noticia/1791040/0/merkel/bienestar/deudas/ -> http://www.20minutos.es/noticia/1791040/0/merkel/bienestar/deudas/
+Row[267]: http://www.faz.net/-gqg-78ip8 -> http://www.faz.net/aktuell/wirtschaft/wirtschaftspolitik/vermoegensvergleich-merkel-deutsche-sind-reicher-als-ezb-umfrage-andeutet-12154796.html
+Row[268]: https://netzpolitik.org/2013/bestandsdatenauskunft-im-bundesrat-innenausschuss-empfiehlt-zustimmung-zu-vorratsdatenspeicherung-durch-die-hintertur/ -> https://netzpolitik.org/2013/bestandsdatenauskunft-im-bundesrat-innenausschuss-empfiehlt-zustimmung-zu-vorratsdatenspeicherung-durch-die-hintertur/
+Row[269]: http://www.sueddeutsche.de/politik/debatte-um-frauenquote-merkel-zeigt-schwaeche-1.1652610 -> http://www.sueddeutsche.de/politik/debatte-um-frauenquote-merkel-zeigt-schwaeche-1.1652610
+Row[270]: http://bit.ly/13i0VQq -> http://www.ndr.de/fernsehen/sendungen/extra_3/videos/extra5237.html
+Row[271]: http://on.ft.com/XVbqqL -> http://www.ft.com/cms/s/c73c0c60-a8d5-11e2-bcfb-00144feabdc0,Authorised=false.html?_i_location=http%3A%2F%2Fwww.ft.com%2Fcms%2Fs%2F0%2Fc73c0c60-a8d5-11e2-bcfb-00144feabdc0.html&_i_referer=
+
+[...]
+
+Row[283]: http://bit.ly/11s2zbN -> http://www.cio.de/news/wirtschaftsnachrichten/2913094/?qle=rssfeed_
+Row[284]: http://www.handelsblatt.com/8094078.html -> http://www.handelsblatt.com/politik/deutschland/krisenverschaerfende-forderungen-schwere-vorwuerfe-gegen-chef-der-anti-euro-partei/8094078.html
+Row[285]: http://instagram.com/p/YS8asfzXNH/ -> http://instagram.com/p/YS8asfzXNH/
+Row[286]: http://instagram.com/p/YS8msSO9Kt/ -> http://instagram.com/p/YS8msSO9Kt/
+IOException: Connection timed out: connect
+Row[288]: http://HispanicBusiness.com -> http://www.hispanicbusiness.com/
+Row[289]: http://dlvr.it/3Fx772 -> http://www.hispanicbusiness.com/2013/4/19/merkel_backs_call_for_eu_free.htm
+Row[290]: http://mun.do/17LMlAm -> http://www.elmundo.es/elmundo/2013/04/19/economia/1366356714.html
+Row[291]: http://www.faz.net/-gqg-78ip8 -> http://www.faz.net/aktuell/wirtschaft/wirtschaftspolitik/vermoegensvergleich-merkel-deutsche-sind-reicher-als-ezb-umfrage-andeutet-12154796.html
+Row[292]: http://instagram.com/p/YS8_bSu9LK/ -> http://instagram.com/p/YS8_bSu9LK/
+Row[293]: http://vds.blnma.de/ -> http://vds.blnma.de/
+Row[294]: http://ow.ly/keD1K -> http://ondemand-mp3.dradio.de/file/dradio/2013/04/19/drk_20130419_1734_e4fcfdb0.mp3
+Row[295]: http://www.abc.es/economia/20130419/abci-merkel-credito-bienesar-201304191206.html#.UXGK581XIb0.twitter -> http://www.abc.es/economia/20130419/abci-merkel-credito-bienesar-201304191206.html#.UXGK581XIb0.twitter
+Row[296]: http://www.br.de/nachrichten/unterfranken/neonazis-infostand-wuerzburg-100.html -> http://www.br.de/nachrichten/unterfranken/neonazis-infostand-wuerzburg-100.html
+MalformedURLException: no protocol: /politik/deutschland/wie-die-spd-unter-meinungsforscher-guellner-leidet-a-894933.html
+Row[298]: http://goo.gl/AOpAj -> http://www.adogroup.ro/merkel-germanii-sunt-mai-bogati-decat-indica-statistica/
+Row[299]: http://tinyurl.com/c22j264 -> http://www.zeit.de/digital/internet/2013-04/merkel-hangout-integration-dialog-youtube?utm_source=twitterfeed&utm_medium=twitter
+Row[300]: http://ow.ly/keD1K -> http://ondemand-mp3.dradio.de/file/dradio/2013/04/19/drk_20130419_1734_e4fcfdb0.mp3
