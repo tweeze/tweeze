@@ -1,7 +1,7 @@
 Output der ersten 300 von 18614 URLs (willkürlich gekürzt):
 -------------------------------------------------
 
-Connecting to database (suma1) on (10.10.10.1:3306) as (suma1@suma1) -> [OK]
+Connecting to database (suma1) on (localhost:3306) as (suma1@******) -> [OK]
 Checking table (suma1.twz_urlmap) for consistency -> [OK]
 
 (Total shortened URLs: 18614)
