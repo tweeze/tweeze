@@ -1,0 +1,27 @@
+# suma1.twz_urlmap description
+
+field				source			table			description
+id					Tweeze			twz_urlmap		Eigene ID für tweets (incremental)
+tweet_id 			Twitter API		wut_urls 		tweet_id der wut_*-Tabellen (MUL)
+display_url			Twitter API		wut_urls		Version of the URL to display to clients
+expanded_url		Tweeze			twz_urlmap		Wird mit dem URLResolver aufgelöst 
+truncated_url		Twitter API		twz_urlmap		Ist die "expanded_url" aus der wut_urls-Tabelle 
+url					Twitter API		wut_urls		The tc.o wrapped URL corresponding to the value embedded directly into the raw tweet text
+statuscode			Tweeze			twz_urlmap		HTTP-Status-Code des URLResolver
+resolved			Tweeze			twz_urlmap		Status aufgelöst (versucht) (True/False)
+valid				Tweeze			twz_urlmap		Valid (True/False) True -> (kein 4xx, 5xx Status Code, kein Video, kein PDF) (ergänzen**)
+resolved_date		Tweeze			twz_urlmap		Datum an dem die URL aufgelöst wurde (versucht)
+
+id bigint(20) unsigned not null auto_increment,
+tweet_id bigint(20) unsigned,
+display_url text not null,
+expanded_url text default null,
+truncated_url text not null,
+url text not null,
+statuscode tinyint(10) unsigned default null,
+resolved boolean default false,
+valid boolean default false,
+resolved_date datetime default null,
+primary key (id),
+foreign key (tweet_id) references suma1.wut_urls(tweet_id) on update cascade on delete cascade
+) engine=InnoDB default charset utf8;
