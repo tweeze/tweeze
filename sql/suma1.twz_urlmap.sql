@@ -36,6 +36,7 @@ foreign key (hub_id) references suma1.twz_hub(id) on update cascade on delete ca
 describe suma1.twz_urlmap;
 
 # Insert all tweets with link/url into suma1.twz_urlmap (18614 of 42150)
-insert into suma1.twz_urlmap (hub_id, display_url, expanded_url, url)
+# !!! suma1.twz_urlmap.truncated_url -> suma1.wut_urls.expanded_url !!!
+insert into suma1.twz_urlmap (hub_id, display_url, truncated_url, url)
 select suma1.twz_hub.id, suma1.wut_urls.display_url, suma1.wut_urls.expanded_url, suma1.wut_urls.url 
 from suma1.twz_hub, suma1.wut_urls where suma1.twz_hub.tweet_id = suma1.wut_urls.tweet_id;
