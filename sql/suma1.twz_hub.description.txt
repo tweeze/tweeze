@@ -1,0 +1,15 @@
+# suma1.twz_hub description
+
+# Description:
+
+field				source			table			description
+id					Tweeze			twz_urlmap		Eigene ID für tweets (incremental)
+tweet_id 			Twitter API		wut_tweets 		tweet_id der wut_*-Tabellen (MUL) (aus id)
+
+# SQL table:
+
+id bigint(20) unsigned not null auto_increment,
+tweet_id bigint(20) unsigned,
+index tweet_id_idx (tweet_id),
+primary key (id),
+foreign key (tweet_id) references suma1.wut_tweets(id) on update cascade on delete cascade

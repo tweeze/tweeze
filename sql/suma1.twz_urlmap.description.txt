@@ -30,7 +30,6 @@ valid boolean default false,
 resolved_date datetime default null,
 primary key (id),
 foreign key (tweet_id) references suma1.wut_urls(tweet_id) on update cascade on delete cascade
-) engine=InnoDB default charset utf8;
 
 # Validation:
 
