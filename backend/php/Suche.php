@@ -3,7 +3,7 @@
  include ("Bibliothek.php");
  if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
  else {
-  print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"$_POST[Suchfeld]\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>"; 
+  print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"".$_POST['Suchfeld']."\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>"; 
   if (isset($_POST['Suchfeld'])) {
    $inhalt = explode(" ",$_POST['Suchfeld']);      
    foreach ($inhalt AS $wort) {

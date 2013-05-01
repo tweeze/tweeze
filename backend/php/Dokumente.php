@@ -21,8 +21,8 @@
 	} else print "ung&uuml;ltiger Aufruf<br/>";
    }
   }	 
-  if ($_GET['sortierung']=="Titel") $query = "SELECT * FROM dokument ORDER BY bezeichner;";
-  else if ($_GET['sortierung']=="Quelle") $query = "SELECT * FROM dokument ORDER BY url;";
+  if (isset($_GET['sortierung']) && $_GET['sortierung']=="Titel") $query = "SELECT * FROM dokument ORDER BY bezeichner;";
+  else if (isset($_GET['sortierung']) && $_GET['sortierung']=="Quelle") $query = "SELECT * FROM dokument ORDER BY url;";
   else $query = "SELECT * FROM dokument;";	 
   $result = mysql_query($query,$connection);
   if(!$result) {
@@ -31,9 +31,9 @@
    $anzahl = mysql_num_rows($result);
    if ($anzahl==0) { print "Es wurden keine Dokumente eingelesen.";} 
    else{
-	print "<table border='1'><tr><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Titel'>Titel</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Quelle'>Quelle</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."'/>Zeitstempel</a></th><th>eingelesen</th><th>assoziiert</th><th>W&ouml;rter</th></tr>";
+	print "<table border='1'><tr><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Titel'>Titel</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Quelle'>Quelle</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."'/>Zeitstempel</a></th><th>eingelesen</th><th>W&ouml;rter</th></tr>";
 	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-	 print "<tr><td><a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[id_dokument]."'>".$row[bezeichner]."</a></td><td>".$row[url]."</td><td>".$row[zeitstempel]."</td><td>".$row[eingelesen]."</td><td><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=".$_GET['sortierung']."&asso=".$row[id_dokument]."'>".$row[assoziiert]."</td>";	 
+	 print "<tr><td><a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row['id_dokument']."'>".$row['bezeichner']."</a></td><td>".$row['url']."</td><td>".$row['zeitstempel']."</td><td>".$row['eingelesen']."</td>";	 
 	 $query2 = "SELECT max(stelle) FROM text WHERE dokument_id='$row[id_dokument]';";
 	 $result2 = mysql_query($query2,$connection);
      if(!$result2) {

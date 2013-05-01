@@ -19,14 +19,14 @@
        print "Diese Seite kenne ich schon.";
        return;
       }
-     } else {
+     } else {  
       $query = "INSERT INTO dokument (bezeichner, url, eingelesen) VALUES ('', '$url',0);";
       $result = mysql_query($query,$connection);
       if(!$result) {
        print "Fehler: " . mysql_error($connection);
       } else {	  
        //Erfolg
-      }
+      } 
      }
     }
    }
@@ -37,7 +37,7 @@
 	  print "Fehler: " . mysql_error($connection);
 	 } else {
     if ($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
-     $url=$row[url];
+     $url=$row['url'];
     } else {
      print "Alle Seiten, deren URLs in der Datenbank liegen, wurden eingelesen. Bitte einen Wert &uuml;bergeben. (textcrawler.php 'url' 'zyklus')";
      return;
@@ -52,7 +52,7 @@
     print "\n".$url;
     $remote = fopen($url, "r") or $remote=false;  //or die();
     if (!($remote)) {
-     $query = "UPDATE dokument SET bezeichner='blacklist', eingelesen=1, assoziiert=1, zeitstempel=now() WHERE url LIKE '$url';";
+     $query = "UPDATE dokument SET bezeichner='blacklist', eingelesen=1, zeitstempel=now() WHERE url LIKE '$url';";
      $result = mysql_query($query,$connection);
      if(!$result) {
 	    print "Fehler: " . mysql_error($connection);
@@ -63,7 +63,7 @@
      while (!feof($remote)) {
       $html .= fread($remote, 8192);
      }
-     fclose($remote);
+     fclose($remote); /* wir wollen nur noch Seiten aus der Liste einlesen und keine neuen automatisch hinzufügen
      $regex = "/<\s*a\s+[^>]*href\s*=\s*[\"']?(http:\/\/[^\"' >]+)[\"' >]/isU";
      if (preg_match_all($regex, $html, $links)) {
       foreach($links[1] as $value) {
@@ -80,19 +80,19 @@
          $result = mysql_query($query,$connection);
          if(!$result) {
           print "Fehler: " . mysql_error($connection);
-         } else {	  
+         } else {	  //*/
           /* $query = "SELECT * FROM dokument ORDER BY id_dokument DESC;";
           $result = mysql_query($query,$connection);
           if(!$result) {
            print "Fehler: " . mysql_error($connection);
           } else {
 	       //Erfolg
-          } */
+          } 
          }
         }
        }
       }
-     }
+     } //*/ 
      $regex1 = "§<\s*p\s*[^>]*>(.*?)</\s*p\s*>§is";
      if (preg_match_all($regex1, $html, $para)) {
       $html = implode(" ", $para[1]);
@@ -106,7 +106,7 @@
       $inhalt = explode(" ",mysql_real_escape_string($html));
       Text($inhalt, $url);
      } else {
-      $query = "UPDATE dokument SET bezeichner='empty', eingelesen=1, assoziiert=1, zeitstempel=now() WHERE url LIKE '$url';";
+      $query = "UPDATE dokument SET bezeichner='empty', eingelesen=1, zeitstempel=now() WHERE url LIKE '$url';";
       $result = mysql_query($query,$connection);
       if(!$result) {
        print "Fehler: " . mysql_error($connection);
@@ -118,14 +118,14 @@
      print " ".($timestamp1-$timestamp)." Sekunden";
      $timestamp = $timestamp1;	 
     }   
-    //$query = "SELECT * FROM dokument WHERE eingelesen=0 AND url!='';";
-    $query = "SELECT * FROM dokument WHERE eingelesen=0 AND (url LIKE 'http://de.%');"; //->Filter, um Testinhalte auf deutsche Wikipedia zu beschränken (oben kann beim ersten Aufruf was anderes gewählt werden
+    $query = "SELECT * FROM dokument WHERE eingelesen=0 AND url!='';";
+    //$query = "SELECT * FROM dokument WHERE eingelesen=0 AND (url LIKE 'http://de.%');"; //->Filter, um Testinhalte auf deutsche Wikipedia zu beschränken (oben kann beim ersten Aufruf was anderes gewählt werden
     $result = mysql_query($query,$connection);
     if(!$result) {
      print "Fehler: " . mysql_error($connection);
     } else {
      if ($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
-      $url=$row[url];
+      $url=$row['url'];
      } else {
       print "Alle Seiten, deren URLs in der Datenbank liegen, wurden eingelesen. Bitte einen Wert &uuml;bergeben. (textcrawler.php 'url' 'zyklus')";
       return;

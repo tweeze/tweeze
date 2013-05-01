@@ -84,14 +84,7 @@ Inhaltsverzeichnis:
    if(!$result) {
     print "Fehler: " . mysql_error($connection);
    } else {
-    $query = "CREATE TABLE IF NOT EXISTS `$datenbank`.`assoziation` (
-    `wort1_id` int(10) unsigned NOT NULL,
-    `wort2_id` int(10) unsigned NOT NULL,
-    `gewicht` int(10) unsigned NOT NULL DEFAULT '1',
-    PRIMARY KEY (`wort1_id`,`wort2_id`),
-    KEY `wort2_id` (`wort2_id`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-    $result = mysql_query($query,$connection);
+    
     if(!$result) {
      print "Fehler: " . mysql_error($connection);
     } else {
@@ -101,7 +94,7 @@ Inhaltsverzeichnis:
      `url` text COLLATE utf8_bin DEFAULT NULL,
      `eingelesen` tinyint(1) NOT NULL DEFAULT '0',
      `zeitstempel` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-     `assoziiert` tinyint(1) NOT NULL DEFAULT '0',
+     `anzahl` int(10) NOT NULL DEFAULT '0',
      PRIMARY KEY (`id_dokument`)
      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;";
      $result = mysql_query($query,$connection);
@@ -111,7 +104,7 @@ Inhaltsverzeichnis:
       $query = "CREATE TABLE IF NOT EXISTS `$datenbank`.`text` (
       `wort_id` int(11) unsigned NOT NULL,
       `dokument_id` int(11) unsigned NOT NULL,
-      `stelle` int(11) unsigned NOT NULL,
+      `stelle` int(11) signed NOT NULL,
       PRIMARY KEY (`wort_id`,`dokument_id`,`stelle`),
       KEY `wort_id` (`wort_id`,`dokument_id`,`stelle`),
       KEY `dokument_id` (`dokument_id`)
@@ -131,15 +124,6 @@ Inhaltsverzeichnis:
        if(!$result) {
         print "Fehler: " . mysql_error($connection);
        } else {
-        $query = "CREATE TABLE IF NOT EXISTS `$datenbank`.`assoziation2` (
-        `wort1_id` int(10) unsigned NOT NULL,
-        `wort2_id` int(10) unsigned NOT NULL,
-        `haufigkeit` int(10) unsigned NOT NULL DEFAULT '1',
-        `erfolg` int(10) unsigned NOT NULL DEFAULT '1',
-        PRIMARY KEY (`wort1_id`,`wort2_id`),
-        KEY `wort2_id` (`wort2_id`)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;"; 
-        $result = mysql_query($query,$connection);
         if(!$result) {
          print "Fehler: " . mysql_error($connection);
         } else {
@@ -150,17 +134,9 @@ Inhaltsverzeichnis:
          if(!$result) {
           print "Fehler: " . mysql_error($connection);
          } else {
-          $query = "ALTER TABLE `$datenbank`.`assoziation`
-          ADD CONSTRAINT `assoziation_ibfk_1` FOREIGN KEY (`wort1_id`) REFERENCES `wort` (`id_wort`),
-          ADD CONSTRAINT `assoziation_ibfk_2` FOREIGN KEY (`wort2_id`) REFERENCES `wort` (`id_wort`);";
-          $result = mysql_query($query,$connection);
           if(!$result) {
            print "Fehler: " . mysql_error($connection);
           } else {
-           $query = "ALTER TABLE `$datenbank`.`assoziation2`
-           ADD CONSTRAINT `assoziation2_ibfk_1` FOREIGN KEY (`wort1_id`) REFERENCES `wort` (`id_wort`),
-           ADD CONSTRAINT `assoziation2_ibfk_2` FOREIGN KEY (`wort2_id`) REFERENCES `wort` (`id_wort`);"; 
-           $result = mysql_query($query,$connection);
            if(!$result) {
             print "Fehler: " . mysql_error($connection);
            } else {
