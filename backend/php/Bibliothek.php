@@ -231,7 +231,7 @@ Inhaltsverzeichnis:
   } else {
    if($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
     $idwort = $row['id_wort'];
-    $query = "UPDATE wort SET anzahl=anzahl+1 WHERE id_wort=$row[id_wort];";
+    $query = "UPDATE wort SET anzahl=anzahl+1 WHERE id_wort=".$row['id_wort'].";";
     $result = mysql_query($query,$connection);
     if($result) {
      return $idwort;
