@@ -107,7 +107,7 @@ public class URLResolver {
 	public void showData() {
 		
 		System.out.println();
-		for(int i=0; i < limit; i++) {											// replace limit with urlMapList.size()
+		for(int i=0; i < urlMapList.size(); i++) {											// replace limit with urlMapList.size()
 			String[] s = urlMapList.get(i);
 			System.out.print("Resolved Item [" + (i+1) + "] (left " + 
 			(urlMapList.size() - i - 1) + ") (data): -> ");
@@ -186,17 +186,16 @@ public class URLResolver {
 	/** resolve Fields **/
 	public void resolveFields() {
 	
-		System.out.println("(Total shortened URLs: " + items + ") (Resolving: " + limit + ")\n");
+		System.out.println("(Total shortened URLs: " + items + ") (Resolving: " + urlMapList.size() + ")\n");
 		long startTime = System.nanoTime();
 		
-		for(int i=0; i < limit; i++) {											// replace limit with urlMapList.size()							
+		for(int i=0; i < urlMapList.size(); i++) {											// replace limit with urlMapList.size()							
 			String[] s = urlMapList.get(i);
 
 			/** revolve/save fields **/
 			s[getDataField("expanded_url")] = 									// (1) store expanded URL into expanded_url
 					getExpandedURL(s[getDataField("truncated_url")],
 							s[getDataField("truncated_url")],0);
-			
 			
 			s[getDataField("resolve_date")] = getCurrentDate();					// (2) store resolve date												
 			s[getDataField("resolved")] = "1";									// (3) set resolved to true
@@ -212,7 +211,7 @@ public class URLResolver {
 			urlMapList.set(i, s);												// store in data structure	
 		
 			// output
-			System.out.println("Resolved item [" + s[getDataField("id")] + "] (left " + 
+			System.out.println("Resolved item [" + (i + 1) + "] (left " + 
 			(urlMapList.size() - i -1) + "): -> " + s[getDataField("truncated_url")] + 
 			" -> " + s[getDataField("expanded_url")]);	// debug			
 		}
