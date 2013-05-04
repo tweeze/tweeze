@@ -13,13 +13,13 @@
  * 
  * (Total shortened URLs: 9382) (Resolving: 9382)
  * 
- * resolved item [1] (left 9382): -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php
- * resolved item [2] (left 9381): -> http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw
- * resolved item [3] (left 9380): -> http://www.bermudafunk.org -> http://www.bermudafunk.org
- * resolved item [4] (left 9379): -> http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c
- * resolved item [5] (left 9378): -> http://adf.ly/EOnKn -> http://adf.ly/EOnKn
- * resolved item [6] (left 9377): -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/ -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/
- * resolved item [7] (left 9376): -> http://twitpic.com/bt0ca2 -> http://twitpic.com/bt0ca2
+ * resolved item [1] (left 9381): -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php
+ * resolved item [2] (left 9380): -> http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw
+ * resolved item [3] (left 9379): -> http://www.bermudafunk.org -> http://www.bermudafunk.org
+ * resolved item [4] (left 9378): -> http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c
+ * resolved item [5] (left 9377): -> http://adf.ly/EOnKn -> http://adf.ly/EOnKn
+ * resolved item [6] (left 9376): -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/ -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/
+ * resolved item [7] (left 9375): -> http://twitpic.com/bt0ca2 -> http://twitpic.com/bt0ca2
  * [...]
  * 
  * -> Task completed.
@@ -27,6 +27,7 @@
  * (Execution time: **** ms)
  * -----------------------------------------------------------------------------
  * 
+ * TODO: (+) Use threads to gain performance 
  * TODO: (~) Improve URL expanding routine 
  * TODO: (+) Improve validation routine (no pdfs, videos, code, malf. url, etc.)
  * 
@@ -47,14 +48,14 @@ import java.util.List;
 public class URLResolver {
 	
 	/** SQL database settings **/
-	private final static String sqlServer = "localhost:3306",
+	private final static String sqlServer = "10.10.10.1:3306",					// SQL server/account info
 			sqlDatabase = "suma1", sqlUsername = "suma1", sqlPassword = "suma1";
 	
 	/** URLs table attributes (don't touch this) **/							// table properties
 	private final static String sqlURLMap = "twz_urls";
 	private final static String[] sqlURLMapFields = 
-		{"id","display_url","expanded_url","truncated_url","url","status_code",
-		"content_type","resolved","valid","resolve_date"};
+		{"id","idx","display_url","expanded_url","truncated_url","url",
+		"status_code","content_type","resolved","valid","resolve_date"};
 			
 	private final static String sqlQuery = 										// default query
 			"select * from " + sqlDatabase + "." + sqlURLMap + " order by " + 
@@ -107,7 +108,7 @@ public class URLResolver {
 	public void showData() {
 		
 		System.out.println();
-		for(int i=0; i < urlMapList.size(); i++) {											// replace limit with urlMapList.size()
+		for(int i=0; i < urlMapList.size(); i++) {								// replace limit with urlMapList.size()
 			String[] s = urlMapList.get(i);
 			System.out.print("Resolved Item [" + (i+1) + "] (left " + 
 			(urlMapList.size() - i - 1) + ") (data): -> ");
@@ -183,13 +184,14 @@ public class URLResolver {
 		}
 	}	
 	
+	// TODO: Use threads!
 	/** resolve Fields **/
 	public void resolveFields() {
 	
 		System.out.println("(Total shortened URLs: " + items + ") (Resolving: " + urlMapList.size() + ")\n");
 		long startTime = System.nanoTime();
 		
-		for(int i=0; i < urlMapList.size(); i++) {											// replace limit with urlMapList.size()							
+		for(int i=0; i < urlMapList.size(); i++) {								// replace limit with urlMapList.size()							
 			String[] s = urlMapList.get(i);
 
 			/** revolve/save fields **/
@@ -211,7 +213,7 @@ public class URLResolver {
 			urlMapList.set(i, s);												// store in data structure	
 		
 			// output
-			System.out.println("Resolved item [" + (i + 1) + "] (left " + 
+			System.out.println("Resolved item [" + s[getDataField("id")] + "] (left " + 
 			(urlMapList.size() - i -1) + "): -> " + s[getDataField("truncated_url")] + 
 			" -> " + s[getDataField("expanded_url")]);	// debug			
 		}
@@ -342,7 +344,7 @@ public class URLResolver {
 							"where " + "id" + " = ?;");
 			
 			System.out.println();
-			for(int i=0; i < limit; i++) {										// replace limit with urlMapList.size()
+			for(int i=0; i < urlMapList.size(); i++) {										// replace limit with urlMapList.size()
 				
 				String[] s = urlMapList.get(i);
 				System.out.print("Updating Item [" + s[getDataField("id")] + 
