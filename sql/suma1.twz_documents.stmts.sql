@@ -1,6 +1,6 @@
 # TWEEZE
 # MYSQL DATABASE “suma1”
-# > suma1.twz_document.stmts.sql
+# > suma1.twz_documents.stmts.sql
 
 # PREQUISITE:
 
@@ -22,16 +22,16 @@ use suma1;
 
 # CREATE TABLES:
 
-# 1. drop/create table suma1.twz_document:
+# 1. drop/create table suma1.twz_documents:
 
-drop table if exists suma1.twz_document;
-create table if not exists suma1.twz_document (
+drop table if exists suma1.twz_documents;
+create table if not exists suma1.twz_documents (
 id bigint(20) unsigned not null auto_increment,
-url_id bigint(20) unsigned,
-index url_id_idx (url_id),
-content text default null,
+urls_id bigint(20) unsigned,
+identifier varchar(255) default null,
 parsed boolean default false,
 parse_date datetime default null,
+index urls_id_idx (urls_id),
 primary key (id),
-foreign key (url_id) references suma1.twz_urls(id) on update cascade on delete cascade
+foreign key (urls_id) references suma1.twz_urls(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
