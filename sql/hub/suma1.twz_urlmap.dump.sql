@@ -23,9 +23,9 @@ DROP TABLE IF EXISTS `twz_urlmap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `twz_urlmap` (
-  `url_id` bigint(20) unsigned DEFAULT NULL,
+  `urls_idx` bigint(20) unsigned DEFAULT NULL,
   `hub_id` bigint(20) unsigned DEFAULT NULL,
-  KEY `url_id_idx` (`url_id`),
+  KEY `urls_idx_idx` (`urls_idx`),
   KEY `hub_id_idx` (`hub_id`),
   CONSTRAINT `twz_urlmap_ibfk_1` FOREIGN KEY (`hub_id`) REFERENCES `twz_hub` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -50,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-05-04  0:07:20
+-- Dump completed on 2013-05-04 17:49:06

@@ -27,11 +27,11 @@ use suma1;
 drop table if exists suma1.twz_document;
 create table if not exists suma1.twz_document (
 id bigint(20) unsigned not null auto_increment,
-url_id bigint(20) unsigned,
-index url_id_idx (url_id),
+urls_id bigint(20) unsigned,
+index urls_id_idx (urls_id),
 content text default null,
 parsed boolean default false,
 parse_date datetime default null,
 primary key (id),
-foreign key (url_id) references suma1.twz_urls(id) on update cascade on delete cascade
+foreign key (urls_id) references suma1.twz_urls(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;

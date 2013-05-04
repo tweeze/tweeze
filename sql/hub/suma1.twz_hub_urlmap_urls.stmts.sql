@@ -37,7 +37,8 @@ foreign key (tweet_id) references suma1.wut_tweets(id) on update cascade on dele
 
 drop table if exists suma1.twz_urls;
 create table if not exists suma1.twz_urls (
-id bigint(20) unsigned,
+id bigint(20) unsigned not null auto_increment,
+idx bigint(20) unsigned,
 display_url text default null,
 expanded_url text default null,
 truncated_url text default null,
@@ -55,13 +56,13 @@ primary key (id)
 drop table if exists suma1.twz_urlmap;
 create table if not exists suma1.twz_urlmap (
 id bigint(20) unsigned not null auto_increment,
-url_id bigint(20) unsigned,
+urls_idx bigint(20) unsigned,
 hub_id bigint(20) unsigned,
 tweet_id BIGINT(20) unsigned,
 display_url text default null,
 truncated_url text default null,
 url text default null,
-index url_id_idx (url_id),
+index urls_idx_idx (urls_idx),
 index hub_id_idx (hub_id),
 primary key (id),
 foreign key (hub_id) references suma1.twz_hub(id) on update cascade on delete cascade
@@ -79,7 +80,7 @@ insert into suma1.twz_urlmap (tweet_id, display_url, truncated_url,url)
 select suma1.wut_urls.tweet_id, suma1.wut_urls.display_url, suma1.wut_urls.expanded_url, suma1.wut_urls.url 
 from suma1.wut_urls order by suma1.wut_urls.tweet_id;
 
-# 6a. update "url_id" in suma1.twz_urlmap (11583 records):
+# 6a. update "urls_idx" in suma1.twz_urlmap (11583 records):
 
 update suma1.twz_urlmap 
 INNER JOIN (
@@ -88,7 +89,7 @@ INNER JOIN (
     GROUP BY truncated_url
     HAVING count(truncated_url) > 1
 ) dup ON twz_urlmap.truncated_url = dup.truncated_url
-set suma1.twz_urlmap.url_id=dup.firstid;
+set suma1.twz_urlmap.urls_idx=dup.firstid;
 
 # 6b. update "url_id" in suma1.twz_urlmap (7031 records):
 
@@ -99,7 +100,7 @@ JOIN (
 	group by truncated_url
 ) q
 ON 	suma1.twz_urlmap.truncated_url = q.truncated_url
-set suma1.twz_urlmap.url_id=q.firstid;
+set suma1.twz_urlmap.urls_idx=q.firstid;
 
 # 7. update "hub_id" in suma1.twz_urlmap (18614 records):
 
@@ -108,10 +109,10 @@ set suma1.twz_urlmap.hub_id=twz_hub.id;
 
 # 8. populate suma1.twz_urls from suma1.twz_urlmap (9382 records):
 
-insert into suma1.twz_urls (id, display_url, truncated_url, url)
-select suma1.twz_urlmap.url_id, suma1.twz_urlmap.display_url, suma1.twz_urlmap.truncated_url, 
-suma1.twz_urlmap.url from suma1.twz_urlmap group by suma1.twz_urlmap.url_id order by suma1.twz_urlmap.url_id;
+insert into suma1.twz_urls (idx, display_url, truncated_url, url)
+select suma1.twz_urlmap.urls_idx, suma1.twz_urlmap.display_url, suma1.twz_urlmap.truncated_url, 
+suma1.twz_urlmap.url from suma1.twz_urlmap group by suma1.twz_urlmap.urls_idx order by suma1.twz_urlmap.urls_idx;
 
-# 9. drop colums from suma1.twz_urlmap except for "url_id", "hub_id":
+# 9. drop colums from suma1.twz_urlmap except for "urls_idx", "hub_id":
 
 alter table suma1.twz_urlmap drop id, drop tweet_id, drop display_url, drop truncated_url, drop url; 
