@@ -3,23 +3,26 @@
  include ("Bibliothek.php");
  if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
  else {
-  print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"".$_POST['Suchfeld']."\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>"; 
-  if (isset($_POST['Suchfeld'])) {
+  if (!isset($_POST['Suchfeld'])) {
+   print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>";
+  }
+  else{
+   print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"".$_POST['Suchfeld']."\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>";
    $inhalt = explode(" ",$_POST['Suchfeld']);      
-   foreach ($inhalt AS $wort) {
-	$wortlist[]=Wortzuid($wort);
-	$query = "SELECT count(id_dokument) FROM dokument, wort, text WHERE id_wort=wort_id AND id_dokument=dokument_id AND wort LIKE '$wort';";
+   foreach ($inhalt AS $wort1) {
+	$wortlist[]=Wortzuid($wort1);
+	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $id_wort=$wort_id AND $id_dokument=$dokument_id AND $wort LIKE '$wort1';";
 	$result = mysql_query($query,$connection);
     if(!$result) {
      print "Fehler: " . mysql_error($connection);
     } else {
-	 $n[Wortzuid($wort)]= mysql_result($result,0);
+	 $n[Wortzuid($wort1)]= mysql_result($result,0);
     }
    }
-   $query = "SELECT DISTINCT dokument_id FROM text WHERE ";
+   $query = "SELECT DISTINCT $dokument_id FROM `$datenbank`.$text WHERE ";
    for ($i=0;$i<count($wortlist);$i++) {
 	if ($i>0) $query.=" OR ";
-	$query.="wort_id='$wortlist[$i]'";
+	$query.="$wort_id='$wortlist[$i]'";
    }
    $query.=";";
    $result = mysql_query($query,$connection);
@@ -29,10 +32,10 @@
 	$anzahl = mysql_num_rows($result);
 	if ($anzahl>0) {
 	 while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-	  if (isset($erglis[$row[dokument_id]])) $erglis[dokument_id]+=1;
-	  else $erglis[$row[dokument_id]] = 1;	  
+	  if (isset($erglis[$row[$dokument_id]])) $erglis[$dokument_id]+=1;
+	  else $erglis[$row[$dokument_id]] = 1;	  
 	 }
-	 $query = "SELECT count(id_dokument) FROM dokument;";
+	 $query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument;";
 	 $result = mysql_query($query,$connection);
      if(!$result) {
       print "Fehler: " . mysql_error($connection);
@@ -41,16 +44,16 @@
      }	 
 	 foreach($erglis as $key => $value) {
 	  foreach ($wortlist as $wortid) {
-	   if ($n[$wortid]!=0) $IDF[$key]+=(logn($N,2))/$n[$wortid]+1; //inverse Dokumenthäufigkeit
+	   if ($n[$wortid1]!=0) $IDF[$key]+=(logn($N,2))/$n[$wortid1]+1; //inverse Dokumenthäufigkeit
 	  }
-	  $query = "SELECT count(stelle) FROM text WHERE dokument_id='$key' AND wort_id='$wortid';";
+	  $query = "SELECT count($stelle) FROM `$datenbank`.$text WHERE $dokument_id='$key' AND $wort_id='$wortid1';";
 	  $result = mysql_query($query,$connection);
       if(!$result) {
        print "Fehler: " . mysql_error($connection);
       } else {
 	   $t= mysql_result($result,0);
       }
-	  $query2 = "SELECT max(stelle) FROM text WHERE dokument_id='$key';";
+	  $query2 = "SELECT max($stelle) FROM `$datenbank`.$text WHERE $dokument_id='$key';";
 	  $result2 = mysql_query($query2,$connection);
       if(!$result2) {
        print "Fehler: " . mysql_error($connection);
@@ -66,14 +69,14 @@
 	 if(count($ergis2)>1) arsort($ergis2);
 	  foreach($ergis2 as $key => $value) {
 	   if ($value>0) {   
-	    $query = "SELECT * FROM dokument WHERE id_dokument='$key';";
+	    $query = "SELECT * FROM `$datenbank`.$dokument WHERE $id_dokument='$key';";
 	    $result = mysql_query($query,$connection);
         if(!$result) {
          print "Fehler: " . mysql_error($connection);
         } else {
 		 if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-		  print "<br/>".$row[bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[id_dokument]."'>Im Cache</a>"; 
-	  	  if (!($row[url]==NULL)) print " <a href='".$row[url]."'>Internetdokument</a>";	
+		  print "<br/>".$row[$bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[$id_dokument]."'>Im Cache</a>"; 
+	  	  if (!($row[url]==NULL)) print " <a href='".$row[$url]."'>Internetdokument</a>";	
 		 }
 	    }
 	   }

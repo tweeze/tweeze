@@ -3,15 +3,15 @@
  if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
  else {	 
   if(isset($_GET['asso'])) {
-   $query = "SELECT * FROM dokument WHERE id_dokument='$_GET[asso]';";  
+   $query = "SELECT * FROM `$datenbank`.$dokument WHERE $id_dokument='$_GET[asso]';";  
    $result = mysql_query($query,$connection);
    if(!$result) {
     print "Fehler: " . mysql_error($connection);
    } else {
 	if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 	 $asso=$row[assoziiert];
-	 if ($asso==1) $query = "UPDATE dokument SET assoziiert=0 WHERE id_dokument='$_GET[asso]';";
-	 if ($asso==0) $query = "UPDATE dokument SET assoziiert=1 WHERE id_dokument='$_GET[asso]';";
+	 if ($asso==1) $query = "UPDATE `$datenbank`.$dokument SET assoziiert=0 WHERE $id_dokument='$_GET[asso]';";
+	 if ($asso==0) $query = "UPDATE `$datenbank`.$dokument SET assoziiert=1 WHERE $id_dokument='$_GET[asso]';";
 	 $result = mysql_query($query,$connection);
      if(!$result) {
       print "Fehler: " . mysql_error($connection);
@@ -21,9 +21,9 @@
 	} else print "ung&uuml;ltiger Aufruf<br/>";
    }
   }	 
-  if (isset($_GET['sortierung']) && $_GET['sortierung']=="Titel") $query = "SELECT * FROM dokument ORDER BY bezeichner;";
-  else if (isset($_GET['sortierung']) && $_GET['sortierung']=="Quelle") $query = "SELECT * FROM dokument ORDER BY url;";
-  else $query = "SELECT * FROM dokument;";	 
+  if (isset($_GET['sortierung']) && $_GET['sortierung']=="Titel") $query = "SELECT * FROM `$datenbank`.$dokument ORDER BY $bezeichner;";
+  else if (isset($_GET['sortierung']) && $_GET['sortierung']=="Quelle") $query = "SELECT * FROM `$datenbank`.$dokument ORDER BY $url;";
+  else $query = "SELECT * FROM $dokument;";	 
   $result = mysql_query($query,$connection);
   if(!$result) {
    print "Fehler: " . mysql_error($connection);
@@ -33,8 +33,8 @@
    else{
 	print "<table border='1'><tr><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Titel'>Titel</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Quelle'>Quelle</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."'/>Zeitstempel</a></th><th>eingelesen</th><th>W&ouml;rter</th></tr>";
 	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-	 print "<tr><td><a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row['id_dokument']."'>".$row['bezeichner']."</a></td><td>".$row['url']."</td><td>".$row['zeitstempel']."</td><td>".$row['eingelesen']."</td>";	 
-	 $query2 = "SELECT max(stelle) FROM text WHERE dokument_id='$row[id_dokument]';";
+	 print "<tr><td><a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[$id_dokument]."'>".$row[$bezeichner]."</a></td><td>".$row[$url]."</td><td>".$row[$zeitstempel]."</td><td>".$row[$eingelesen]."</td>";	 
+	 $query2 = "SELECT max(stelle) FROM `$datenbank`.$text WHERE $dokument_id='$row[$id_dokument]';";
 	 $result2 = mysql_query($query2,$connection);
      if(!$result2) {
       print "Fehler: " . mysql_error($connection);
