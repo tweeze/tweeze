@@ -1,6 +1,6 @@
 # TWEEZE
 # MYSQL DATABASE “suma1”
-# > suma1.twz_document.stmts.sql
+# > suma1.twz_documents.stmts.sql
 
 # PREQUISITE:
 
@@ -22,10 +22,10 @@ use suma1;
 
 # CREATE TABLES:
 
-# 1. drop/create table suma1.twz_document:
+# 1. drop/create table suma1.twz_documents:
 
-drop table if exists suma1.twz_document;
-create table if not exists suma1.twz_document (
+drop table if exists suma1.twz_documents;
+create table if not exists suma1.twz_documents (
 id bigint(20) unsigned not null auto_increment,
 urls_id bigint(20) unsigned,
 index urls_id_idx (urls_id),
