@@ -1,40 +1,42 @@
 /**
  * URLResolver.java
  * Resolves shortened URLs recursively (SQL)
- * Requires a CLASSPATH reference to mysql connector!   
+ * REQUIRES a CLASSPATH reference to MySQL connector/J!   
  * 
  * SQL-Table: suma1.twz_urls.sql
  * 
- * Debug-Output: (resolver only)
+ * Output -> resolveFields():
  * 
  * -----------------------------------------------------------------------------
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
  * Checking table (suma1.twz_urls) for consistency -> [OK]
- * 
- * (Total shortened URLs: 9382) (Resolving: 9382)
- * 
- * resolved item [1] (left 9381): -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php
- * resolved item [2] (left 9380): -> http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw
- * resolved item [3] (left 9379): -> http://www.bermudafunk.org -> http://www.bermudafunk.org
- * resolved item [4] (left 9378): -> http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c
- * resolved item [5] (left 9377): -> http://adf.ly/EOnKn -> http://adf.ly/EOnKn
- * resolved item [6] (left 9376): -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/ -> http://www.iknews.de/2012/12/28/aufarbeitung-von-stasiakten-zitterpartie-fuer-gauck-und-merkel/
- * resolved item [7] (left 9375): -> http://twitpic.com/bt0ca2 -> http://twitpic.com/bt0ca2
+ *
+ * (Total URLs: 9382) (Resolving URLs: 9382) (Start time: 2013-05-05 15:30:13)
+ *
+ * Resolving item [1] (left 9381): -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> [DONE]
+ * Resolving item [2] (left 9380): -> http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw -> [DONE]
+ * Resolving item [3] (left 9379): -> http://www.bermudafunk.org -> http://www.bermudafunk.org -> [DONE]
+ * Resolving item [4] (left 9378): -> http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c -> [DONE]
+ * Resolving item [5] (left 9377): -> http://adf.ly/EOnKn -> http://adf.ly/EOnKn -> [DONE]
  * [...]
  * 
  * -> Task completed.
  *
- * (Execution time: **** ms)
+ * (End time: 2013-05-05 23:40:13)
+ * (Execution time: 3314044 ms)
  * -----------------------------------------------------------------------------
  * 
  * TODO: (+) Use threads to gain performance 
  * TODO: (~) Improve URL expanding routine 
  * TODO: (+) Improve validation routine (no pdfs, videos, code, malf. url, etc.)
+ * TODO: (~) Read data from CSV file (-> no SQL backend needed)
+ * TODO: (+) Add text/plain to validation routine
  * 
- * Last modified: 040513
- * Runtime (500 items): ~24 mins
+ * Last modified: 050513
+ * Runtime (9382 items): est. 9 hours 12 mins
  */
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -48,7 +50,7 @@ import java.util.List;
 public class URLResolver {
 	
 	/** SQL database settings **/
-	private final static String sqlServer = "10.10.10.1:3306",					// SQL server/account info
+	private final static String sqlServer = "localhost:3306",					// SQL server/account info
 			sqlDatabase = "suma1", sqlUsername = "suma1", sqlPassword = "suma1";
 	
 	/** URLs table attributes (don't touch this) **/							// table properties
@@ -65,29 +67,40 @@ public class URLResolver {
 	private final static String mysqlURI = ("jdbc:mysql://" + sqlServer + "/" + 
 			sqlDatabase + "?user=" + sqlUsername + "&password=" + sqlPassword);
 	private int items;															// number of items in table
+	private static long startTime;
 	private Connection conn;													// SQL-Server connection
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static List<String[]> urlMapList = new ArrayList();					// data structure (holds string array)
 	private CookieManager cookieManager = new CookieManager();					// manage cookies
+	private final static String fileName = "suma1.twz_urls.dump.csv";			// CSV file name
 	
 	/** runtime limitations **/
 	private final static int maxRedirects = 30;									// limit HTTP/response code redirects
-	private final static int limit = 500;										// limit items
 	private final static int connectTimeOut = 3000; 							// connection time out (30 secs)
 	private final static int readTimeOut = 30000;								// read time out (30 secs)
-	
+	private final static int startItem = 0;										// begin resolve with item no. (limit items)
+	private final static int endItem = 10;										// end with item no. (limit items)
+
 	/** main **/
 	public static void main(String args[]) {
+		
 		URLResolver urlRes = new URLResolver();
 		urlRes.verifyTable();													// check table for consistency
 		urlRes.fetchTable();													// fetch table	
-		urlRes.resolveFields();													// resolve fields
-		urlRes.updateTable();													// update table
-		//urlRes.showData();
+		
+		/** TODO: !UNCOMMENT! **/
+		int endItem = urlMapList.size();										
+		
+		urlRes.resolveFields(startItem,endItem);								// resolve fields
+		urlRes.showData(startItem,endItem);										// show data structure
+		urlRes.saveDataToCSV(startItem,endItem);								// save to CSV
+		urlRes.updateTable(startItem,endItem);									// update table
+		urlRes.showRunTime();
 	}
 		
 	/** initiate SQL connection **/
-	public URLResolver() {	
+	public URLResolver() {
+		
 		 try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }
 		 catch(Exception e) {
 			System.err.println("[Error]: Unable to load SQL driver."); 
@@ -105,17 +118,56 @@ public class URLResolver {
 	}
 	
 	/** show data structure **/
-	public void showData() {
+	public void showData(int start, int end) {
 		
 		System.out.println();
-		for(int i=0; i < urlMapList.size(); i++) {								// replace limit with urlMapList.size()
+		for(int i=start; i < end; i++) {
 			String[] s = urlMapList.get(i);
 			System.out.print("Resolved Item [" + (i+1) + "] (left " + 
-			(urlMapList.size() - i - 1) + ") (data): -> ");
+			(end - i - 1) + ") (data): -> ");
 			for(int u=0; u < sqlURLMapFields.length; u++) {
 				System.out.print(s[u] + " -> ");
 			} System.out.println("[DONE]");
 		}
+		System.out.println("\n-> Task completed.");
+	}
+	
+	/** show runtime **/
+	public void showRunTime() {
+
+		System.out.println("\n(End time: " + getCurrentDate() + ")");
+		System.out.println("(Execution time: " + (System.nanoTime() - startTime) / 10000000 + "ms)");	
+	}
+	
+	/** save to CSV **/
+	public void saveDataToCSV(int start, int end) {
+		
+		try {		
+			String property = "java.io.tmpdir";
+	        String tempDir = System.getProperty(property);
+		    FileWriter writer = new FileWriter(tempDir+fileName);
+		    String newLine = System.getProperty("line.separator");
+		    System.out.println();
+		 
+			for(int i=start; i < end; i++) {
+				String[] s = urlMapList.get(i);
+				System.out.print("Writing Item [" + (i+1) + "] (left " + 
+				(end - i - 1) + ") (csv): -> ");
+				for(int u=0; u < sqlURLMapFields.length; u++) {
+					System.out.print(s[u] + " -> ");
+					writer.append(s[u]);
+					writer.append(',');
+				} 
+				writer.append(newLine);
+				System.out.println("[DONE]");
+			}
+		    writer.flush();
+		    writer.close();
+			System.out.println("\n-> Task completed.");
+		}
+		catch(IOException e) {
+			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
+		} 
 	}
 		
 	/** getDataField **/
@@ -163,7 +215,8 @@ public class URLResolver {
 	
 	/** fetch table **/
 	public void fetchTable() {
-					
+		
+		startTime = System.nanoTime();											// measure execution time	
 		try {
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sqlQuery);
@@ -178,6 +231,7 @@ public class URLResolver {
 			}
 			rs.close();
 			s.close();
+			conn.close();
 		}
 		catch(SQLException e) {
 	    	System.err.println("[Error] (SQLException): " + e.getMessage());
@@ -186,18 +240,22 @@ public class URLResolver {
 	
 	// TODO: Use threads!
 	/** resolve Fields **/
-	public void resolveFields() {
+	public void resolveFields(int start, int end) {
 	
-		System.out.println("(Total shortened URLs: " + items + ") (Resolving: " + urlMapList.size() + ")\n");
-		long startTime = System.nanoTime();
-		
-		for(int i=0; i < urlMapList.size(); i++) {								// replace limit with urlMapList.size()							
-			String[] s = urlMapList.get(i);
+		System.out.println("(Total URLs: " + items + ") (Resolving URLs: " + end + ") (Start time: " + getCurrentDate() + ")\n");
+	
+		for(int i=start; i < end; i++) {																
 
+			String[] s = urlMapList.get(i);
+			System.out.print("Resolving item [" + s[getDataField("id")] + "] (left " + 
+			(end - i -1) + "): -> " + s[getDataField("truncated_url")]);
+			
 			/** revolve/save fields **/
 			s[getDataField("expanded_url")] = 									// (1) store expanded URL into expanded_url
 					getExpandedURL(s[getDataField("truncated_url")],
 							s[getDataField("truncated_url")],0);
+			
+			System.out.print(" -> " + s[getDataField("expanded_url")] + " -> ");	// debug	
 			
 			s[getDataField("resolve_date")] = getCurrentDate();					// (2) store resolve date												
 			s[getDataField("resolved")] = "1";									// (3) set resolved to true
@@ -210,16 +268,11 @@ public class URLResolver {
 							s[getDataField("status_code")],
 							s[getDataField("content_type")]);
 	
-			urlMapList.set(i, s);												// store in data structure	
-		
-			// output
-			System.out.println("Resolved item [" + s[getDataField("id")] + "] (left " + 
-			(urlMapList.size() - i -1) + "): -> " + s[getDataField("truncated_url")] + 
-			" -> " + s[getDataField("expanded_url")]);	// debug			
+			urlMapList.set(i, s);												// store in data structure
+			System.out.println("[DONE]");
 		}
 		// output
 		System.out.println("\n-> Task completed.");
-		System.out.println("\n(Execution time: " + (System.nanoTime() - startTime) / 10000000 + "ms)");	
 	}
 	
 	// TODO: Improve URL checks, status code/content type checks
@@ -232,14 +285,14 @@ public class URLResolver {
 		// if status_code/content_type is null -> valid = true
 		if((status_code==null) || (content_type==null)) { return "1"; }
 		
-		// if status code doesn't contain 200, 301, 302 -> valid = false		// only valid pages (no 404, 500)
+		// if status code doesn't contain 200, 301, 302 -> valid = false		
 		if((!status_code.contains("200")) && (!status_code.contains("301")) && 
 				(!status_code.contains("302"))) { return "0"; }
 			
-		// if content type doesn't contain text/html -> valid = false			// only text/html (no pdfs, etc.)
+		// if content type doesn't contain text/html -> valid = false			
 		if(!content_type.contains("text/html")) { return "0"; }
 		
-		// if url contains twitter.com, youtube.com, etc. -> valid = false		// exclude certain URLs
+		// if url contains twitter.com, youtube.com, etc. -> valid = false		
 		if((url.contains("twitter.com") || (url.contains("youtube.com")))) { 
 			return "0"; 
 		}
@@ -275,9 +328,9 @@ public class URLResolver {
 				return new_url;
 			}
 		} catch (MalformedURLException e) {
-			System.err.println("[Error] (MalformedURLException): " + e.getMessage());
+			System.err.print("[Error] (MalformedURLException): " + e.getMessage() + " -> ");
 		} catch (IOException e) {
-			System.err.println("[Error] (IOException): " + e.getMessage());
+			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
 		}
 		return new_url;
 	}
@@ -302,9 +355,9 @@ public class URLResolver {
 			connection.setUseCaches(false);
 			return Integer.toString(connection.getResponseCode());
 		} catch (MalformedURLException e) {
-			System.err.println("[Error] (MalformedURLException): " + e.getMessage());
+			System.err.print("[Error] (MalformedURLException): " + e.getMessage() + " -> ");
 		} catch (IOException e) {
-			System.err.println("[Error] (IOException): " + e.getMessage());
+			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
 		}
 		return null;
 	}
@@ -321,17 +374,18 @@ public class URLResolver {
 			connection.setUseCaches(false);
 			return connection.getHeaderField("Content-Type");	
 		} catch (MalformedURLException e) {
-			System.err.println("[Error] (MalformedURLException): " + e.getMessage());
+			System.err.print("[Error] (MalformedURLException): " + e.getMessage() + " -> ");
 		} catch (IOException e) {
-			System.err.println("[Error] (IOException): " + e.getMessage());
+			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
 		}
 		return null;
 	}
 	
 	/** update table **/
-	public void updateTable() {
+	public void updateTable(int start, int end) {
 		
 		try {
+			conn = DriverManager.getConnection(mysqlURI);						// reinitiate db connection
 			PreparedStatement prepStatement = 
 					conn.prepareStatement("update " + sqlDatabase + "." + 
 							sqlURLMap + " set " + 
@@ -344,14 +398,14 @@ public class URLResolver {
 							"where " + "id" + " = ?;");
 			
 			System.out.println();
-			for(int i=0; i < urlMapList.size(); i++) {										// replace limit with urlMapList.size()
+			for(int i=start; i < end; i++) {
 				
 				String[] s = urlMapList.get(i);
 				System.out.print("Updating Item [" + s[getDataField("id")] + 
-						"] (left " + (urlMapList.size() - i) + ") (sql): -> ");
+						"] (left " + (end - i) + ") (sql): -> ");
 				for(int u=0; u < sqlURLMapFields.length; u++) {
 					System.out.print(s[u] + " -> ");
-				} System.out.println();
+				}
 				
 				prepStatement.setString(1, s[getDataField("expanded_url")]);
 				prepStatement.setString(3, s[getDataField("content_type")]);
@@ -368,12 +422,14 @@ public class URLResolver {
 				if (s[getDataField("resolve_date")]==null) { prepStatement.setNull(6, java.sql.Types.DATE); } else {
 					prepStatement.setTimestamp(6,Timestamp.valueOf(s[getDataField("resolve_date")]));
 				}
-				prepStatement.executeUpdate();			
+				prepStatement.executeUpdate();
+				System.out.println("[DONE]");
 			}
 			conn.close();
+			System.out.println("\n-> Task completed.");
 		} 
 		catch(SQLException e) {
-	    	System.err.println("[Error] (SQLException): " + e.getMessage());
+	    	System.err.print("[Error] (SQLException): " + e.getMessage() + " -> ");
 		}
 	}
 }
