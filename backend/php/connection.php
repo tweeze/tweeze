@@ -15,7 +15,7 @@
  //Tabelle Wort
  $wort = "wort";
  $id_wort = "id_wort";
- $wort = "wort";
+ $worti = "wort";
  $anzahl = "anzahl";
  $idf = "idf";
  //Tabelle Text

@@ -6,8 +6,11 @@ Inhaltsverzeichnis:
  Arraytoarray //Wandelt ID-Array in "normales" Array um, wobei nach minimalem Gewicht gefiltert werden kann
  Dbreset //setzt die Datenbank zurück auch die Auto-Inkrement-Werte
  *Dokument //legt neues Dokument an und vergibt die ersten drei Wörter von $inhalt als Titel (wenn es keinen findet, noch nicht umgesetzt)
+ *Dokakt
+ *Dokdel //löscht Dokument mit angegebener ID aus der Datenbank
  Dokvolltext //gibt ein eingelesenes Dokument als Volltext aus, mit Quellenangabe
  Einzelwort //trägt neues Wort in die Datenbank ein oder erhöht Zähler des vorhandenen um 1
+ Getpage //Bekommt URL übergeben und gibt deren Seiteninhalt zurück
  Idzuwort //gibt zu übergebener ID gehöriges Wort als Zeichenkette zurück
  logn //gibt den Logarithmis der $zahl zur $basis zurück
  Punkttester //testet, ob Zeichenkette mit Satzzeichen endet und gibt dann 1 zurück, sonst 0
@@ -27,7 +30,7 @@ Inhaltsverzeichnis:
      print "Fehler: " . mysql_error($connection);
     } else {
      $row = mysql_fetch_array($result,MYSQL_ASSOC);
-     print $row[$wort]." "; 
+     print $row[$worti]." "; 
     }
    }
   } else print "Dar&uuml;ber wei&szlig; ich nichts.";
@@ -44,7 +47,7 @@ Inhaltsverzeichnis:
      print "Fehler: " . mysql_error($connection);
     } else {
      $row = mysql_fetch_array($result,MYSQL_ASSOC);
-     print $row[$wort]." ".$value."<br/>"; //Gewicht nur zum Test angezeigt, später nur Werte ab einer bestimmten Größe zeigen oder die ersten 50 etc.
+     print $row[$worti]." ".$value."<br/>"; //Gewicht nur zum Test angezeigt, später nur Werte ab einer bestimmten Größe zeigen oder die ersten 50 etc.
     }
    }
   } else print "Dar&uuml;ber wei&szlig; ich nichts.";
@@ -63,7 +66,7 @@ Inhaltsverzeichnis:
       print "Fehler: " . mysql_error($connection);
      } else {
       $row = mysql_fetch_array($result,MYSQL_ASSOC);
-      $neuaushalt[$count] = $row[$wort];
+      $neuaushalt[$count] = $row[$worti];
       $count++;
      }
     }
@@ -97,7 +100,7 @@ Inhaltsverzeichnis:
       $query = "CREATE TABLE IF NOT EXISTS `$datenbank`.`$dokument` (
       `$id_dokument` int(10) unsigned NOT NULL AUTO_INCREMENT,
       `$bezeichner` varchar(255) COLLATE utf8_bin NOT NULL,
-      `$url` text COLLATE utf8_bin DEFAULT NULL,
+      `$url` int(11) unsigned NOT NULL,
       `$eingelesen` tinyint(1) NOT NULL DEFAULT '0',
       `$zeitstempel` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (`$id_dokument`)
@@ -120,7 +123,7 @@ Inhaltsverzeichnis:
        } else {
         $query = "CREATE TABLE IF NOT EXISTS `$datenbank`.`$wort` (
         `$id_wort` int(10) unsigned NOT NULL AUTO_INCREMENT,
-        `$wort` varchar(255) COLLATE utf8_bin NOT NULL,
+        `$worti` varchar(255) COLLATE utf8_bin NOT NULL,
         `$anzahl` int(10) unsigned NOT NULL DEFAULT '1',
         `$idf` float(14) unsigned NOT NULL DEFAULT '0',
         PRIMARY KEY (`$id_wort`)
@@ -158,18 +161,47 @@ Inhaltsverzeichnis:
    }
   }
  }  
+ function Dokakt($dok) {
+ 	//Zähle Wörter des Dokuments
+ 	//GetPage auf URL des Dokuments, (join mit suma1.twz_urls), Zähle deren Inhalt.
+ 	//Wenn Anzahlen gleich sind, mache nichts. Wenn sie sich unterscheiden, lösche vorhandenes Dokument und schreibe
+ }
+ //löscht Dokument mit angegebener ID aus der Datenbank
+ function Dokdel($dok) {
+   include ("connection.php");
+   $query = "SELECT * FROM `$datenbank`.$text WHERE $text.$dokument_id=$dok;";
+   $result = mysql_query($query,$connection);
+   if(!$result) {
+   	 print "Fehler: " . mysql_error($connection);
+   } else {
+   	 while ($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
+   	   $query2 = "UPDATE `$datenbank`.$text SET $anzahl=$anzahl-1 WHERE $id_wort=$row[$wort_id];";	
+       $result2 = mysql_query($query2,$connection);
+       if(!$result) {
+       	print "Fehler: " . mysql_error($connection);
+       } else {
+       	//
+       }
+   	 }
+   	 $query = "DELETE FROM `$datenbank`.$text WHERE $text.$dokument_id=$dok;";
+     $result = mysql_query($query,$connection);
+     if(!$result) {
+       print "Fehler: " . mysql_error($connection);
+     } else {
+       //
+     }
+   }
+ }
  //legt neues Dokument an und vergibt die ersten drei Wörter von $inhalt als Titel (wenn es keinen findet, noch nicht umgesetzt)
 //wenn $url übergeben wurde, dann wird geschaut, ob schon vorhanden und wenn ja, ob schon eingelesen, besser erst nach Titel schauen?
- function Dokument($inhalt,$url1 = NULL, $titel = NULL) {
+ function Dokument($inhalt, $url_id, $titel = NULL) {
   include ("connection.php");
-  if(isset($url1) AND $url1!="") {
-   $query = "SELECT * FROM `$datenbank`.$dokument WHERE $eingelesen=0 AND $url LIKE '$url1';";
+   $query = "SELECT * FROM `$datenbank`.$dokument WHERE $eingelesen=0 AND $url=$url_id;";
    $result = mysql_query($query,$connection);
    if(!$result) {
      print "Fehler: " . mysql_error($connection);
    } else {
     if ($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
-     if ($row[$eingelesen]==0) {    
       $dokid=$row[$id_dokument];
       if ($row[$bezeichner]=="") {
        if (isset($titel) AND $titel!="") $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='$titel', $eingelesen=1, $zeitstempel=now() WHERE $id_dokument LIKE '$dokid';";
@@ -189,21 +221,9 @@ Inhaltsverzeichnis:
          //
        }
       }
-       return $dokid;      
-     } else return 0;
+       return $dokid; 
     }
    }
-  } else {
-   if (isset($titel) AND $titel!="") $query = "INSERT INTO `$datenbank`.$dokument ($bezeichner, $url, $eingelesen) VALUES ('$titel', '$url1',1);";
-   else if(count($inhalt)>=3) $query = "INSERT INTO `$datenbank`.$dokument ($bezeichner, $url, $eingelesen) VALUES ('$inhalt[0] $inhalt[1] $inhalt[2]', '$url1',1);";
-   else $query = "INSERT INTO `$datenbank`.$dokument ($bezeichner, $url, $eingelesen) VALUES ('$inhalt[0]', '$url',1);";
-   $result = mysql_query($query,$connection);
-   if(!$result) {
-    print "Fehler: " . mysql_error($connection);
-   } else {
-    return mysql_insert_id($connection);
-   }            
-  }
  }
  //gibt ein eingelesenes Dokument als Volltext aus, mit Quellenangabe
  function Dokvolltext($dok, $link=false) {
@@ -214,7 +234,7 @@ Inhaltsverzeichnis:
    print "Fehler: " . mysql_error($connection);
   } else {
    while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-    print $row[$wort]." ";
+    print $row[$worti]." ";
    }
    $query = "SELECT $url FROM `$datenbank`.$dokument WHERE $id_dokument='$dok';";
    $result = mysql_query($query,$connection);
@@ -230,23 +250,23 @@ Inhaltsverzeichnis:
  //trägt neues Wort in die Datenbank ein oder erhöht Zähler des vorhandenen um 1
  function Einzelwort($wort1){
   include ("connection.php");
-  $query ="SELECT * FROM `$datenbank`.$wort WHERE $wort LIKE '$wort';";
+  $query ="SELECT * FROM `$datenbank`.$wort WHERE $worti='$wort1';";
   $result = mysql_query($query,$connection);
   if(!$result) {
    print "Fehler: " . mysql_error($connection);
   } else {
    if($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
     $idwort = $row[$id_wort];
-    $query = "UPDATE `$datenbank`.$wort SET $anzahl=$anzahl+1 WHERE $id_wort=".$row[$id_wort].";";
+    $query = "UPDATE `$datenbank`.$wort SET $anzahl=$anzahl+1 WHERE $id_wort=$idwort;";
     $result = mysql_query($query,$connection);
     if($result) {
      return $idwort;
     } else return 0;  
    } else {
-    $query = "INSERT INTO `$datenbank`.$wort ($wort) VALUES ('$wort1');"; 
+    $query = "INSERT INTO `$datenbank`.$wort ($worti) VALUES ('$wort1');"; 
     $result = mysql_query($query,$connection);
     if($result) {
-     $query ="SELECT * FROM `$datenbank`.$wort WHERE $wort LIKE '$wort1';";
+     $query ="SELECT * FROM `$datenbank`.$wort WHERE $worti='$wort1';";
      $result = mysql_query($query,$connection);
      if(!$result) {
       print "Fehler: " . mysql_error($connection);
@@ -259,16 +279,44 @@ Inhaltsverzeichnis:
    }
   }
  }
+ //Bekommt URL übergeben und gibt deren Seiteninhalt zurück
+ function Getpage($url1) {
+   $remote = fopen($url1, "r") or $remote=false;  //or die();
+   if (!($remote)) {
+   	 return -1;
+   } else {
+   	 $html = "";
+ 	 while (!feof($remote)) {
+ 	   $html .= fread($remote, 8192);
+ 	 }
+ 	 fclose($remote);
+ 	 $regex1 = "#<\s*p\s*[^>]*>(.*?)</\s*p\s*>#is";
+ 	 if (preg_match_all($regex1, $html, $para)) {
+ 	   $html = implode(" ", $para[1]);
+ 	   $html = preg_replace("#<\s*br\s*/?>#i", " ", $html);
+ 	   $html = preg_replace("#&nbsp;#i", " ", $html);
+ 	   $html = preg_replace("#</?[^>]*/?>#i", "", $html);
+ 	   $html = preg_replace("#\s{2,}#i", " ", $html);
+ 	   $html = trim(html_entity_decode($html));
+ 	   //print $html."\n\n";
+ 	   //print_r($para[1]);
+ 	   $inhalt = explode(" ",mysql_real_escape_string($html));
+ 	   return $inhalt;
+ 	 }else {
+ 	   return 0;	
+ 	 }	
+   }
+ } 
  //gibt zu übergebener ID gehöriges Wort als Zeichenkette zurück
  function Idzuwort($id) {
   include ("connection.php");
-  $query = "SELECT $wort FROM `$datenbank`.$wort WHERE $id_wort='$id';";
+  $query = "SELECT $worti FROM `$datenbank`.$wort WHERE $id_wort='$id';";
   $result = mysql_query($query,$connection);
   if(!$result) {
    print "Fehler: " . mysql_error($connection);
   } else {
    $row = mysql_fetch_array($result,MYSQL_ASSOC);
-   return $row[$wort];
+   return $row[$worti];
   }
  }
  //gibt den Logarithmis der $zahl zur $basis zurück
@@ -285,7 +333,7 @@ Inhaltsverzeichnis:
    print "Fehler: " . mysql_error($connection);
   } else {
    if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-    if (substr($row[$wort], -1, 1)=="." || substr($row[$wort], -1, 1)=="?" || substr($row[$wort], -1, 1)=="!") return 1;
+    if (substr($row[$worti], -1, 1)=="." || substr($row[$worti], -1, 1)=="?" || substr($row[$worti], -1, 1)=="!") return 1;
     else return 0;
    }
   }
@@ -316,41 +364,26 @@ Inhaltsverzeichnis:
   }
  }
  //trägt Array von Wörtern als Text ein, indem es zu jedem Wort die Dokument-ID und die Stelle im Dokument speichert.
- function Text($inhalt, $url = NULL, $titel = NULL) {
+ function Text($inhalt, $url, $titel = NULL) {
   include ("connection.php");
   $dok = Dokument($inhalt, $url, $titel);
   for($i=0;$i<count($inhalt);$i++){
-   $query = "SELECT * FROM `$datenbank`.$wort WHERE $wort LIKE '$inhalt[$i]';";
-   $result = mysql_query($query,$connection);
-   if(!$result) {
-    print "Fehler: " . mysql_error($connection);
-   } else {
-    if ($row = mysql_fetch_array($result,MYSQL_ASSOC) ) {  
-     $query = "INSERT INTO `$datenbank`.$text VALUES ('$row[id_wort]','$dok','$i');";   
-     $result = mysql_query($query,$connection);
-     if(!$result) {
-      print "Fehler: " . mysql_error($connection);
-     } else {
-        //nix
-     }
+    $idwort = Einzelwort($inhalt[$i]);
+    $query = "INSERT INTO `$datenbank`.$text VALUES ('$idwort','$dok','$i');";   
+    $result = mysql_query($query,$connection);
+    if(!$result) {
+      print "Fehler: " . mysql_error($connection) . " SQL: " . $query . " (Abbruch)";
+      return;
     } else {
-     $idwort = Einzelwort($inhalt[$i]);
-     $query = "INSERT INTO `$datenbank`.$text VALUES ('$idwort','$dok','$i');";   
-     $result = mysql_query($query,$connection);
-     if(!$result) {
-      print "Fehler: " . mysql_error($connection);
-     } else {
         //nix
-     }
-    }
-   }
+    }    
   }
   return $dok;
  }
  //findet ID zu einem Wort und gibt diese zurück. Wenn es nicht in der Datenbank ist, 0
  function Wortzuid($wort1) {
   include ("connection.php");
-  $query = "SELECT * FROM `$datenbank`.$wort WHERE $wort='$wort1';"; 
+  $query = "SELECT * FROM `$datenbank`.$wort WHERE $worti='$wort1';"; 
   $result = mysql_query($query,$connection);
   if(!$result) {
    print "Fehler: " . mysql_error($connection);

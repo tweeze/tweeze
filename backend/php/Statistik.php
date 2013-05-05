@@ -25,7 +25,7 @@
    print "Fehler: " . mysql_error($connection);
   } else {
    for ($i=0;$i<100 && ($row = mysql_fetch_array($result,MYSQL_ASSOC));$i++) {
-	print "<li/>".$row[$wort]." Anzahl: ".$row[$anzahl]." IDF: ".$row[$idf];   
+	print "<li/>".$row[$worti]." Anzahl: ".$row[$anzahl]." IDF: ".$row[$idf];   
    }
   }
  }

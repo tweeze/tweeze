@@ -11,7 +11,7 @@
    $inhalt = explode(" ",$_POST['Suchfeld']);      
    foreach ($inhalt AS $wort1) {
 	$wortlist[]=Wortzuid($wort1);
-	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $id_wort=$wort_id AND $id_dokument=$dokument_id AND $wort LIKE '$wort1';";
+	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $id_wort=$wort_id AND $id_dokument=$dokument_id AND $worti LIKE '$wort1';";
 	$result = mysql_query($query,$connection);
     if(!$result) {
      print "Fehler: " . mysql_error($connection);

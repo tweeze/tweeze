@@ -1,7 +1,7 @@
 <?php
  include ("connection.php");
  if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
- else {	 
+ else {	 /*
   if(isset($_GET['asso'])) {
    $query = "SELECT * FROM `$datenbank`.$dokument WHERE $id_dokument='$_GET[asso]';";  
    $result = mysql_query($query,$connection);
@@ -20,10 +20,10 @@
      }
 	} else print "ung&uuml;ltiger Aufruf<br/>";
    }
-  }	 
+  }	 //*/
   if (isset($_GET['sortierung']) && $_GET['sortierung']=="Titel") $query = "SELECT * FROM `$datenbank`.$dokument ORDER BY $bezeichner;";
   else if (isset($_GET['sortierung']) && $_GET['sortierung']=="Quelle") $query = "SELECT * FROM `$datenbank`.$dokument ORDER BY $url;";
-  else $query = "SELECT * FROM $dokument;";	 
+  else $query = "SELECT * FROM `$datenbank`.$dokument;";	 
   $result = mysql_query($query,$connection);
   if(!$result) {
    print "Fehler: " . mysql_error($connection);
