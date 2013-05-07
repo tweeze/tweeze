@@ -29,7 +29,7 @@
       if ((isset($argv[1])) AND $argv[1]!="" ){
   	    $zyklus=$argv[1];
       } else $zyklus=1;
-      $query = "SELECT expanded_url, $url FROM `$datenbank`.$dokument, twz_urls WHERE $eingelesen=0 AND $dokument.$url=twz_urls.id;";
+      $query = "SELECT expanded_url, $url FROM `$datenbank`.$dokument, twz_urls WHERE $eingelesen=0 AND $dokument.$url=twz_urls.id AND expanded_url LIKE 'http://%';";
       $result = mysql_query($query,$connection);
       if(!$result) {
 	    print "Fehler: " . mysql_error($connection);
@@ -43,6 +43,7 @@
             print "Alle Dokumente aus der Datenbank wurden eingelesen.";
             break;
           } else {
+          	//->Einlese-Teil in eigene Funktion in Bibliothek          	
             $inhalt = Getpage($url1);
             if ($inhalt == -1) {
               $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='blacklist', $eingelesen=1, $zeitstempel=now() WHERE $url LIKE '$url2';";
