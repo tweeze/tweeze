@@ -8,7 +8,7 @@
   }
   else{
    print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"".$_POST['Suchfeld']."\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>";
-   $inhalt = explode(" ",$_POST['Suchfeld']);      
+   $inhalt = explode(" ",$_POST['Suchfeld']);
    foreach ($inhalt AS $wort1) {
 	$wortlist[]=Wortzuid($wort1);
 	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $id_wort=$wort_id AND $id_dokument=$dokument_id AND $worti LIKE '$wort1';";
@@ -41,9 +41,9 @@
       print "Fehler: " . mysql_error($connection);
      } else {
 	   $N= mysql_result($result,0);
-     }	 
+     }	
 	 foreach($erglis as $key => $value) {
-	  foreach ($wortlist as $wortid) {
+	  foreach ($wortlist as $wortid1) {
 	   if ($n[$wortid1]!=0) $IDF[$key]+=(logn($N,2))/$n[$wortid1]+1; //inverse Dokumenthäufigkeit
 	  }
 	  $query = "SELECT count($stelle) FROM `$datenbank`.$text WHERE $dokument_id='$key' AND $wort_id='$wortid1';";
@@ -76,7 +76,7 @@
         } else {
 		 if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 		  print "<br/>".$row[$bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[$id_dokument]."'>Im Cache</a>"; 
-	  	  if (!($row[url]==NULL)) print " <a href='".$row[$url]."'>Internetdokument</a>";	
+	  	  if (!($row[$url]==NULL)) print " <a href='".$row[$url]."'>Internetdokument</a>";	
 		 }
 	    }
 	   }
