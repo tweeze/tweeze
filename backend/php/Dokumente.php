@@ -21,9 +21,9 @@
 	} else print "ung&uuml;ltiger Aufruf<br/>";
    }
   }	 //*/
-  if (isset($_GET['sortierung']) && $_GET['sortierung']=="Titel") $query = "SELECT * FROM `$datenbank`.$dokument, `$datenbank`.twz_urls WHERE twz_urls.id=$dokument.$url ORDER BY $bezeichner;";
-  else if (isset($_GET['sortierung']) && $_GET['sortierung']=="Quelle") $query = "SELECT * FROM `$datenbank`.$dokument, `$datenbank`.twz_urls WHERE twz_urls.id=$dokument.$url ORDER BY expanded_url;";
-  else $query = "SELECT * FROM `$datenbank`.$dokument, `$datenbank`.twz_urls WHERE twz_urls.id=$dokument.$url;";	 
+  if (isset($_GET['sortierung']) && $_GET['sortierung']=="Titel") $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url ORDER BY $bezeichner;";
+  else if (isset($_GET['sortierung']) && $_GET['sortierung']=="Quelle") $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url ORDER BY expanded_url;";
+  else $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url;";	 
   $result = mysql_query($query,$connection);
   if(!$result) {
    print "Fehler: " . mysql_error($connection);

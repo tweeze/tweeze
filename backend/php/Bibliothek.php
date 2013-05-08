@@ -104,6 +104,7 @@ Inhaltsverzeichnis:
   }
  }  
  function Dokakt($dok) {
+   include ("connection.php");
    $query = "SELECT COUNT(*) AS anzahl FROM `$datenbank`.$text WHERE $dokument_id=$dok;";
    $result = mysql_query($query,$connection);
    if(!$result) {
@@ -111,36 +112,37 @@ Inhaltsverzeichnis:
    } else {
    	 $row=mysql_fetch_array($result,MYSQL_ASSOC);
    	 $anzahl1=$row['anzahl'];
-   	 $query = "SELECT expanded_url, $url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $dokument.$url=twz_urls.id AND $dokument.$id_dokument=$dok;";
+   	 $query = "SELECT expanded_url, $dokument.$url AS $url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $dokument.$url=twz_urls.id AND $dokument.$id_dokument=$dok;";
      $result = mysql_query($query,$connection);
      if(!$result) {
    	   print "Fehler: " . mysql_error($connection);
      } else {
-       $row=mysql_fetch_array($result,MYSQL_ASSOC);
-       $url1=$row['expanded_url'];
-       $url_id=$row[$url];
-       $inhalt = GetPage($url1);
-       if ($inhalt == -1) {
-       	$query = "UPDATE `$datenbank`.$dokument SET $bezeichner='blacklist', $eingelesen=1, $zeitstempel=now() WHERE $url LIKE '$url2';";
-       	$result = mysql_query($query,$connection);
-       	if(!$result) {
+       if($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
+         $url1=$row['expanded_url'];
+         $url_id=$row[$url];
+         $inhalt = GetPage($url1);
+         if ($inhalt == -1) {
+       	  $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='blacklist', $eingelesen=1, $zeitstempel=now() WHERE $url=$url_id;";
+       	  $result = mysql_query($query,$connection);
+       	  if(!$result) {
        		print "Fehler: " . mysql_error($connection);
-       	} else {
+       	  } else {
        		//
-       	}
-       } else if ($inhalt == 0) {
-       	$query = "UPDATE `$datenbank`.$dokument SET $bezeichner='empty', $eingelesen=1, $zeitstempel=now() WHERE $url LIKE '$url2';";
-       	$result = mysql_query($query,$connection);
-       	if(!$result) {
+       	  }
+         } else if ($inhalt == 0) {
+       	  $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='empty', $eingelesen=1, $zeitstempel=now() WHERE $url=$url_id;";
+       	  $result = mysql_query($query,$connection);
+       	  if(!$result) {
        		print "Fehler: " . mysql_error($connection);
-       	} else {
+       	  } else {
        		//Erfolg
-       	}
-       } else {
-        if (!($anzahl1==count($inhalt))) {
-       	 Dokdel($dok);
-       	 Text($inhalt,$url_id);
-        }       
+       	  }
+         } else {
+          if (!($anzahl1==count($inhalt))) {
+           Dokdel($dok);
+           Text($inhalt,$url_id);
+          }       
+         }
        }
      }
    }
@@ -175,7 +177,7 @@ Inhaltsverzeichnis:
 //wenn $url übergeben wurde, dann wird geschaut, ob schon vorhanden und wenn ja, ob schon eingelesen, besser erst nach Titel schauen?
  function Dokument($inhalt, $url_id) {
   include ("connection.php");
-   $query = "SELECT * FROM `$datenbank`.$dokument WHERE $eingelesen=0 AND $url=$url_id;";
+   $query = "SELECT * FROM `$datenbank`.$dokument WHERE $url=$url_id;";
    $result = mysql_query($query,$connection);
    if(!$result) {
      print "Fehler: " . mysql_error($connection);
@@ -309,7 +311,7 @@ Inhaltsverzeichnis:
    $query = "SELECT expanded_url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url AND $dokument.$id_dokument=$dok AND $dokument.$eingelesen=1 AND $bezeichner!='blacklist' AND $bezeichner!='empty';";	
    $result = mysql_query($query,$connection);
    if(!$result) {
-   	print "Fehler: " . mysql_error($connection);
+   	print "Fehler: " . mysql_error($connection). " SQL: ". $query;
    } else {
    	if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
    	  $url1 = $row['expanded_url'];	
@@ -324,12 +326,12 @@ Inhaltsverzeichnis:
  	  fclose($remote);
  	  $regex1 = "#<\s*title\s*[^>]*>(.*?)</\s*title\s*>#is";
  	  preg_match_all($regex1, $html, $para);
- 	  $title = implode(" ", $para[1]);
+ 	  $title = mysql_real_escape_string(implode(" ", $para[1]));
  	  if (isset($title) AND $title!="") {
  	   $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='$title' WHERE $dokument.$id_dokument=$dok;";
  	   $result = mysql_query($query,$connection);
        if(!$result) {
-        print "Fehler: " . mysql_error($connection);
+        print "Fehler: " . mysql_error($connection). " SQL: ". $query;
        } else { 	   
  	    //
        }   	  	

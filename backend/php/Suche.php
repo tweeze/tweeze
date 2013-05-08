@@ -69,14 +69,14 @@
 	 if(count($ergis2)>1) arsort($ergis2);
 	  foreach($ergis2 as $key => $value) {
 	   if ($value>0) {   
-	    $query = "SELECT * FROM `$datenbank`.$dokument WHERE $id_dokument='$key';";
+	    $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $id_dokument='$key' AND twz_urls.id=$dokument.$id_dokument;";
 	    $result = mysql_query($query,$connection);
         if(!$result) {
          print "Fehler: " . mysql_error($connection);
         } else {
 		 if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 		  print "<br/>".$row[$bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[$id_dokument]."'>Im Cache</a>"; 
-	  	  if (!($row[$url]==NULL)) print " <a href='".$row[$url]."'>Internetdokument</a>";	
+	  	  if (!($row[$url]==NULL)) print " <a href='".$row['expanded_url']."'>Internetdokument</a>";	
 		 }
 	    }
 	   }

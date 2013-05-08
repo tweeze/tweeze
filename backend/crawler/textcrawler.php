@@ -46,7 +46,7 @@
           	//->Einlese-Teil in eigene Funktion in Bibliothek          	
             $inhalt = Getpage($url1);
             if ($inhalt == -1) {
-              $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='blacklist', $eingelesen=1, $zeitstempel=now() WHERE $url LIKE '$url2';";
+              $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='blacklist', $eingelesen=1, $zeitstempel=now() WHERE $url=$url2;";
               $result = mysql_query($query,$connection);
               if(!$result) {
                 print "Fehler: " . mysql_error($connection);
@@ -54,7 +54,7 @@
             		//
               }
             } else if ($inhalt == 0) {
-              $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='empty', $eingelesen=1, $zeitstempel=now() WHERE $url LIKE '$url2';";
+              $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='empty', $eingelesen=1, $zeitstempel=now() WHERE $url=$url2;";
               $result = mysql_query($query,$connection);
               if(!$result) {
                 print "Fehler: " . mysql_error($connection);
