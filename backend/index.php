@@ -6,7 +6,8 @@
 		<ul class="inhalt">
 			<li class="titel"><a href="index.php">Inhaltsverzeichnis</a></li>
 			<li><a href="index.php?seite=Dokumente">Dokumente</a></li>
-			<li><a href="index.php?seite=Suche">Suche</a></li>
+			<li><a href="index.php?seite=Suche">Suche (aufgedr&ouml;selte W&ouml;rter)</a></li>
+			<li><a href="index.php?seite=Suche2">Suche (Volltext)</a></li>
 			<li><a href="index.php?seite=Statistik">Statistik</a></li>
 			<li><a href="index.php?seite=Funktionen">Funktionen</a></li>
 		</ul>

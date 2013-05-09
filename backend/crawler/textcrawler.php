@@ -42,8 +42,7 @@
           if (!isset($url1)) {
             print "Alle Dokumente aus der Datenbank wurden eingelesen.";
             break;
-          } else {
-          	//->Einlese-Teil in eigene Funktion in Bibliothek          	
+          } else {         	
             $inhalt = Getpage($url1);
             if ($inhalt == -1) {
               $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='blacklist', $eingelesen=1, $zeitstempel=now() WHERE $url=$url2;";
@@ -51,7 +50,7 @@
               if(!$result) {
                 print "Fehler: " . mysql_error($connection);
               } else {
-            		//
+            		//Erfolg
               }
             } else if ($inhalt == 0) {
               $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='empty', $eingelesen=1, $zeitstempel=now() WHERE $url=$url2;";

@@ -11,7 +11,7 @@
    $inhalt = explode(" ",$_POST['Suchfeld']);
    foreach ($inhalt AS $wort1) {
 	$wortlist[]=Wortzuid($wort1);
-	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $id_wort=$wort_id AND $id_dokument=$dokument_id AND $worti LIKE '$wort1';";
+	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $wort.$id_wort=$text.$wort_id AND $dokument.$id_dokument=$text.$dokument_id AND $worti LIKE '$wort1';";
 	$result = mysql_query($query,$connection);
     if(!$result) {
      print "Fehler: " . mysql_error($connection);
@@ -32,7 +32,7 @@
 	$anzahl = mysql_num_rows($result);
 	if ($anzahl>0) {
 	 while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-	  if (isset($erglis[$row[$dokument_id]])) $erglis[$dokument_id]+=1;
+	  if (isset($erglis[$row[$dokument_id]])) $erglis[$row[$dokument_id]]+=1;
 	  else $erglis[$row[$dokument_id]] = 1;	  
 	 }
 	 $query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument;";
@@ -44,7 +44,7 @@
      }	
 	 foreach($erglis as $key => $value) {
 	  foreach ($wortlist as $wortid1) {
-	   if ($n[$wortid1]!=0) $IDF[$key]+=(logn($N,2))/$n[$wortid1]+1; //inverse Dokumenthäufigkeit
+	   if ($n[$wortid1]!=0) if (isset($IDF[$key])) $IDF[$key]+=(logn($N,2))/$n[$wortid1]+1; else $IDF[$key]=(logn($N,2))/$n[$wortid1]+1; //inverse Dokumenthäufigkeit
 	  }
 	  $query = "SELECT count($stelle) FROM `$datenbank`.$text WHERE $dokument_id='$key' AND $wort_id='$wortid1';";
 	  $result = mysql_query($query,$connection);
@@ -63,13 +63,13 @@
       }
 	  if ($wortanzahl==1) {}
 	  else $TF=logn($t+1,2)/logn($wortanzahl,2); //Termfrequenz
-	  $ergis2[$key]+=$TF*$IDF[$key];
+	  if (isset($ergis2[$key])) $ergis2[$key]+=$TF*$IDF[$key]; else $ergis2[$key]=$TF*$IDF[$key];
 	 }
 	 print "<br/><br/>";
 	 if(count($ergis2)>1) arsort($ergis2);
 	  foreach($ergis2 as $key => $value) {
 	   if ($value>0) {   
-	    $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $id_dokument='$key' AND twz_urls.id=$dokument.$id_dokument;";
+	    $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $dokument.$id_dokument='$key' AND twz_urls.id=$dokument.$id_dokument;";
 	    $result = mysql_query($query,$connection);
         if(!$result) {
          print "Fehler: " . mysql_error($connection);

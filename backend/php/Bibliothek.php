@@ -45,6 +45,8 @@ Inhaltsverzeichnis:
       `$url` int(11) unsigned NOT NULL,
       `$eingelesen` tinyint(1) NOT NULL DEFAULT '0',
       `$zeitstempel` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      `fulltext` mediumtext NOT NULL,
+      `parsed2` tinyint(1) NOT NULL DEFAULT '0',
       PRIMARY KEY (`$id_dokument`)
       ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;";
       $result = mysql_query($query,$connection);
@@ -260,7 +262,7 @@ Inhaltsverzeichnis:
   }
  }
  //Bekommt URL übergeben und gibt deren Seiteninhalt zurück
- function Getpage($url1) {
+ function Getpage($url1, $explode=true) {
    $remote = fopen($url1, "r") or $remote=false;  //or die();
    if (!($remote)) {
    	 return -1;
@@ -281,7 +283,11 @@ Inhaltsverzeichnis:
  	   $html = trim(html_entity_decode($html));
  	   //print $html."\n\n";
  	   //print_r($para[1]);
- 	   $inhalt = explode(" ",mysql_real_escape_string($html));
+ 	   if ($explode) {
+ 	     $inhalt = explode(" ",mysql_real_escape_string($html)); 	   	
+ 	   } else {
+ 	   	 $inhalt = mysql_real_escape_string($html);
+ 	   }
  	   return $inhalt;
  	 }else {
  	   return 0;	
@@ -308,7 +314,7 @@ Inhaltsverzeichnis:
  //Setzt den Bezeichner eines Dokuments gleich dem Titel der Quelle
  function SetTitle($dok) {
   include ("connection.php");
-   $query = "SELECT expanded_url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url AND $dokument.$id_dokument=$dok AND $dokument.$eingelesen=1 AND $bezeichner!='blacklist' AND $bezeichner!='empty';";	
+   $query = "SELECT expanded_url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url AND $dokument.$id_dokument=$dok AND $dokument.$eingelesen=1;";	
    $result = mysql_query($query,$connection);
    if(!$result) {
    	print "Fehler: " . mysql_error($connection). " SQL: ". $query;
@@ -333,7 +339,7 @@ Inhaltsverzeichnis:
        if(!$result) {
         print "Fehler: " . mysql_error($connection). " SQL: ". $query;
        } else { 	   
- 	    //
+ 	     //
        }   	  	
  	  } 	  
    	 }
