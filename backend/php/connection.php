@@ -8,19 +8,8 @@
  //Tabelle Dokument
  $dokument = "twz_documents";
  $id_dokument = "id";
- $bezeichner = "identifer";
+ $bezeichner = "identifier";
  $url = "url_id";
  $eingelesen = "parsed";
  $zeitstempel = "parse_date";
- //Tabelle Wort
- $wort = "wort";
- $id_wort = "id_wort";
- $worti = "wort";
- $anzahl = "anzahl";
- $idf = "idf";
- //Tabelle Text
- $text = "text";
- $wort_id = "wort_id";
- $dokument_id = "dokument_id";
- $stelle = "stelle";
 ?>

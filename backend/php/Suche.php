@@ -8,74 +8,87 @@
   }
   else{
    print "<form action=\"".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."\" method=\"post\" ><input name=\"Suchfeld\" type=\"text\" value=\"".$_POST['Suchfeld']."\"/><input type=\"submit\" name=\"\" value=\"Suche\"/></form>";
-   $inhalt = explode(" ",$_POST['Suchfeld']);
-   foreach ($inhalt AS $wort1) {
-	$wortlist[]=Wortzuid($wort1);
-	$query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument, $wort, $text WHERE $wort.$id_wort=$text.$wort_id AND $dokument.$id_dokument=$text.$dokument_id AND $worti LIKE '$wort1';";
-	$result = mysql_query($query,$connection);
+   $inhalt = explode(" ",$_POST['Suchfeld']);   
+   //N= wie viele Dokumente gibt es insgesamt
+   $query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument;";
+   $result = mysql_query($query,$connection);
+   if(!$result) {
+   	print "Fehler: " . mysql_error($connection);
+   } else {
+   	$N= mysql_result($result,0);
+   }
+   //n=In wie vielen Dokumenten taucht das Wort überhaupt auf
+   foreach ($inhalt AS $idw => $wort1) {
+   	$query = "SELECT COUNT(*) FROM `$datenbank`.$dokument` WHERE full_text LIKE '%$wort1%';";
+    $result = mysql_query($query,$connection);
     if(!$result) {
-     print "Fehler: " . mysql_error($connection);
+   	 print "Fehler: " . mysql_error($connection);
     } else {
-	 $n[Wortzuid($wort1)]= mysql_result($result,0);
+   	 $n[$idw]= mysql_result($result,0);
     }
    }
-   $query = "SELECT DISTINCT $dokument_id FROM `$datenbank`.$text WHERE ";
-   for ($i=0;$i<count($wortlist);$i++) {
+   //anzahl = wie oft taucht das Wort insgesamt auf, inklusive mehrmals in einem Dokument
+   $anzahl;	
+   foreach ($inhalt AS $idw => $wort1) {
+   	$query = "SELECT * FROM `$datenbank`.$dokument` WHERE full_text LIKE '%$wort1%';";
+    $result = mysql_query($query,$connection);
+    if(!$result) {
+   	 print "Fehler: " . mysql_error($connection);
+    } else {
+   	 while ($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
+   	   $inhalt2 = $row['full_text'];	
+   	   $regex1 = "#$wort1#s"; //achtet auf Groß-Kleinschreibung! mit i case-insensitive
+   	   if (isset($anzahl[$idw])) $anzahl[$idw] = $anzahl[$idw] + preg_match_all($regex1, $inhalt2, $para);
+   	   else $anzahl[$idw] = preg_match_all($regex1, $inhalt2, $para);
+   	   //Anzahl des Auftretends dieses Worts im Dokument auch gleich mitnehmen
+   	   $t[$row[$id_dokument]][$idw] = preg_match_all($regex1, $inhalt2, $para);
+   	   //Und Anzahl der Wörter dieses Dokuments
+   	   $wortges[$row[$id_dokument]] = count(explode(" ",$inhalt2));
+   	 }
+    }
+   }
+   //$IDF=(logn($N,2))/($n+1);
+   foreach ($inhalt AS $idw => $wort1) {
+   	$IDF[$idw]=(logn($N,2))/($n[$idw]+1);
+   }  
+   //Liste aller Dokumente, in denen eins der Suchworte vorkommt und die im Ergebnis erscheinen
+   $query = "SELECT DISTINCT $id_dokument FROM `$datenbank`.$dokument WHERE ";   
+   for ($i=0;$i<count($inhalt);$i++) {
 	if ($i>0) $query.=" OR ";
-	$query.="$wort_id='$wortlist[$i]'";
+	$query.="`full_text` LIKE '%$inhalt[$i]%'";
    }
    $query.=";";
    $result = mysql_query($query,$connection);
    if(!$result) {
     print "Fehler: " . mysql_error($connection);
    } else {
-	$anzahl = mysql_num_rows($result);
-	if ($anzahl>0) {
+	$anzahl2 = mysql_num_rows($result);
+	if ($anzahl2>0) {
 	 while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-	  if (isset($erglis[$row[$dokument_id]])) $erglis[$row[$dokument_id]]+=1;
-	  else $erglis[$row[$dokument_id]] = 1;	  
+	  if (isset($erglis[$row[$id_dokument]])) $erglis[$row[$id_dokument]]+=1;
+	  else $erglis[$row[$id_dokument]] = 1;	  
 	 }
-	 $query = "SELECT count($id_dokument) FROM `$datenbank`.$dokument;";
-	 $result = mysql_query($query,$connection);
-     if(!$result) {
-      print "Fehler: " . mysql_error($connection);
-     } else {
-	   $N= mysql_result($result,0);
-     }	
+	 //zu jedem Ergebnisdokument: 
 	 foreach($erglis as $key => $value) {
-	  foreach ($wortlist as $wortid1) {
-	   if ($n[$wortid1]!=0) if (isset($IDF[$key])) $IDF[$key]+=(logn($N,2))/$n[$wortid1]+1; else $IDF[$key]=(logn($N,2))/$n[$wortid1]+1; //inverse Dokumenthäufigkeit
-	  }
-	  $query = "SELECT count($stelle) FROM `$datenbank`.$text WHERE $dokument_id='$key' AND $wort_id='$wortid1';";
-	  $result = mysql_query($query,$connection);
-      if(!$result) {
-       print "Fehler: " . mysql_error($connection);
-      } else {
-	   $t= mysql_result($result,0);
-      }
-	  $query2 = "SELECT max($stelle) FROM `$datenbank`.$text WHERE $dokument_id='$key';";
-	  $result2 = mysql_query($query2,$connection);
-      if(!$result2) {
-       print "Fehler: " . mysql_error($connection);
-      } else {
-	   $wortanzahl= mysql_result($result2,0);
-	   $wortanzahl++;
-      }
-	  if ($wortanzahl==1) {}
-	  else $TF=logn($t+1,2)/logn($wortanzahl,2); //Termfrequenz
-	  if (isset($ergis2[$key])) $ergis2[$key]+=$TF*$IDF[$key]; else $ergis2[$key]=$TF*$IDF[$key];
+	  foreach ($inhalt as $idw => $wortid1) {
+	   if ($n[$idw]!=0) if (isset($IDF2[$key]))$IDF2[$key]+=$IDF[$idw]; else $IDF2[$key]=$IDF[$idw]; //inverse Dokumenthäufigkeit
+
+	   if ($wortges[$key]==1) {/*Logarithmus von 1 ist nicht definiert */}
+	   else $TF=logn($t[$key][$idw]+1,2)/logn($wortges[$key],2); //Termfrequenz
+	   if (isset($ergis2[$key])) $ergis2[$key]+=$TF*$IDF2[$key]; else $ergis2[$key]=$TF*$IDF2[$key];
+	  }  
 	 }
 	 print "<br/><br/>";
 	 if(count($ergis2)>1) arsort($ergis2);
 	  foreach($ergis2 as $key => $value) {
 	   if ($value>0) {   
-	    $query = "SELECT * FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $dokument.$id_dokument='$key' AND twz_urls.id=$dokument.$id_dokument;";
+	    $query = "SELECT $dokument.$id_dokument  AS idd, $bezeichner, $url, expanded_url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $dokument.$id_dokument='$key' AND twz_urls.id=$dokument.$id_dokument;";
 	    $result = mysql_query($query,$connection);
         if(!$result) {
          print "Fehler: " . mysql_error($connection);
         } else {
 		 if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-		  print "<br/>".$row[$bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[$id_dokument]."'>Im Cache</a>"; 
+		  print "<br/>".$row[$bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row['idd']."'>Im Cache</a>"; 
 	  	  if (!($row[$url]==NULL)) print " <a href='".$row['expanded_url']."'>Internetdokument</a>";	
 		 }
 	    }
