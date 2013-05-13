@@ -28,6 +28,7 @@ drop table if exists suma1.twz_documents;
 create table if not exists suma1.twz_documents (
 id bigint(20) unsigned not null auto_increment,
 urls_id bigint(20) unsigned,
+content text default null,
 identifier varchar(255) default null,
 parsed boolean default false,
 parse_date datetime default null,
