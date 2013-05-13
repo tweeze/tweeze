@@ -5,7 +5,7 @@
  * 
  * SQL-Table: suma1.twz_urls.sql
  * 
- * Output -> resolveFields():
+ * Output: ->
  * 
  * -----------------------------------------------------------------------------
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
@@ -26,16 +26,15 @@
  * (Execution time: 3314044 ms)
  * -----------------------------------------------------------------------------
  * 
- * TODO: (+) Use threads to gain performance 
- * TODO: (~) Improve URL expanding routine 
- * TODO: (+) Improve validation routine (no pdfs, videos, code, malf. url, etc.)
- * TODO: (~) Read data from CSV file (-> no SQL backend needed)
- * TODO: (+) Add text/plain to validation routine
+ * TODO: (+) Use threads to gain performance!
+ * TODO: (+) Improve validation routine!
  * 
- * Last modified: 050513
+ * Last modified: 130513
  * Runtime (9382 items): est. 9 hours 12 mins
  */
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.CookieHandler;
@@ -73,50 +72,68 @@ public class URLResolver {
 	private static List<String[]> urlMapList = new ArrayList();					// data structure (holds string array)
 	private CookieManager cookieManager = new CookieManager();					// manage cookies
 	private final static String fileName = "suma1.twz_urls.dump.csv";			// CSV file name
+	private final static boolean useSQL = true;									// set to false for CSV-input
 	
 	/** runtime limitations **/
-	private final static int maxRedirects = 30;									// limit HTTP/response code redirects
-	private final static int connectTimeOut = 3000; 							// connection time out (30 secs)
-	private final static int readTimeOut = 30000;								// read time out (30 secs)
+	private final static int maxRSRedirects = 60;								// limit response code redirects
+	private final static int maxHTTPRedirects = 60;								// limit HTTP code redirects
+	private final static int connectTimeOut = 6000; 							// connection time out (60 secs)
+	private final static int readTimeOut = 60000;								// read time out (60 secs)
 	private final static int startItem = 0;										// begin resolve with item no. (limit items)
 	private final static int endItem = 10;										// end with item no. (limit items)
+	
+	/** validation filter **/
+	@SuppressWarnings("unused")
+	private final static String[] responseCodes = {"200","301","302","403"};	// valid response codes
+	@SuppressWarnings("unused")
+	private final static String[] contentTypes = {"text/html","text/plain"};	// valid content types
+	@SuppressWarnings("unused")
+	private final static String[] filteredURLs = {"youtube.com","vimeo.com"};	// invalid URLs
 
 	/** main **/
 	public static void main(String args[]) {
 		
-		URLResolver urlRes = new URLResolver();
-		urlRes.verifyTable();													// check table for consistency
-		urlRes.fetchTable();													// fetch table	
-		
+		URLResolver urlRes = new URLResolver();									
+		if(useSQL) {															
+			urlRes.initiateSQL();												// initiate SQL connection
+			urlRes.verifyTable();												// check table for consistency
+			urlRes.fetchTable();												// fetch table			
+		} else { urlRes.readDataFromCSV(); }									// otherwise read from CSV file
+
 		/** TODO: !UNCOMMENT! **/
-		int endItem = urlMapList.size();										
+		//int endItem = urlMapList.size();										
 		
 		urlRes.resolveFields(startItem,endItem);								// resolve fields
-		urlRes.showData(startItem,endItem);										// show data structure
-		urlRes.saveDataToCSV(startItem,endItem);								// save to CSV
-		urlRes.updateTable(startItem,endItem);									// update table
+		if(useSQL) { urlRes.updateTable(startItem,endItem);	}					// update table	
+		urlRes.saveDataToCSV(startItem,endItem);								// save to CSV file
+		urlRes.showData(startItem,endItem);										// show data structure (debug)
 		urlRes.showRunTime();
 	}
 		
 	/** initiate SQL connection **/
 	public URLResolver() {
-		
-		 try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }
-		 catch(Exception e) {
-			System.err.println("[Error]: Unable to load SQL driver."); 
-		 } 
-		 try { 
-			 System.out.print("Connecting to database (" + sqlDatabase + 
-					 ") on (" + sqlServer + ") as (" + sqlUsername + "@" + 
-					 sqlPassword + ") -> ");
-			 conn = DriverManager.getConnection(mysqlURI); 
-			 System.out.print("[OK]\n");} 
-		 catch (SQLException e) {
-			 System.out.println("[ERROR]\n");
-	    	 System.err.println("[Error] (SQLException): " + e.getMessage());
-	     }
 	}
 	
+	/** initiate SQL conenction **/
+	public void initiateSQL() {
+
+		try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }
+		
+		catch(Exception e) {
+			System.err.println("[Error]: Unable to load SQL driver."); 
+		} 
+		try { 
+			System.out.print("Connecting to database (" + sqlDatabase +
+					") on (" + sqlServer + ") as (" + sqlUsername + "@" + 
+					sqlPassword + ") -> ");
+			conn = DriverManager.getConnection(mysqlURI); 
+			System.out.print("[OK]\n");} 
+		catch (SQLException e) {
+			System.out.println("[ERROR]\n");
+	    	System.err.println("[Error] (SQLException): " + e.getMessage());
+	    }
+	}
+			
 	/** show data structure **/
 	public void showData(int start, int end) {
 		
@@ -143,9 +160,9 @@ public class URLResolver {
 	public void saveDataToCSV(int start, int end) {
 		
 		try {		
-			String property = "java.io.tmpdir";
-	        String tempDir = System.getProperty(property);
-		    FileWriter writer = new FileWriter(tempDir+fileName);
+	        String currentWorkingDirectory = System.getProperty("user.dir");
+			String fileSeparator = System.getProperty("file.separator");
+		    FileWriter writer = new FileWriter(currentWorkingDirectory+fileSeparator+fileName);
 		    String newLine = System.getProperty("line.separator");
 		    System.out.println();
 		 
@@ -155,8 +172,8 @@ public class URLResolver {
 				(end - i - 1) + ") (csv): -> ");
 				for(int u=0; u < sqlURLMapFields.length; u++) {
 					System.out.print(s[u] + " -> ");
-					writer.append(s[u]);
-					writer.append(',');
+					writer.append("'" + s[u] + "'");							// values enclosed by ''
+					writer.append(';');											// values seperated by semicolon
 				} 
 				writer.append(newLine);
 				System.out.println("[DONE]");
@@ -164,6 +181,40 @@ public class URLResolver {
 		    writer.flush();
 		    writer.close();
 			System.out.println("\n-> Task completed.");
+		}
+		catch(IOException e) {
+			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
+		} 
+	}
+	
+	/** read from CSV **/
+	public void readDataFromCSV() {
+		
+		try {
+	        String currentWorkingDirectory = System.getProperty("user.dir");
+			String fileSeparator = System.getProperty("file.separator");	    
+		    BufferedReader csvFile = new BufferedReader(new FileReader(currentWorkingDirectory+fileSeparator+fileName));
+			System.out.println("Reading data from CSV file (" + currentWorkingDirectory+fileSeparator+fileName + "):\n");		   
+		    String dataRow = csvFile.readLine();    
+		    int i=0;
+		    
+		    while (dataRow != null) {	    	
+		    	System.out.print("Reading Item [" + (i+1) + "] (left UNKNOWN) (csv): -> ");	    	
+		    	String[] dataArray = dataRow.split(";");						// semicolon
+		    	String[] k = new String[sqlURLMapFields.length];
+
+		    	for(int z = 0; z < sqlURLMapFields.length; z++) {
+		    		k[z] = dataArray[z].substring(1, dataArray[z].length()-1);
+		    		System.out.print(k[z] + " -> ");
+		    	}		    	
+		    	urlMapList.add(k);
+		    	items++;
+		    	i++;
+		    	System.out.println("[DONE]");
+		    	dataRow = csvFile.readLine();
+		    }
+		    csvFile.close();
+			System.out.println("\n-> Task completed.\n");
 		}
 		catch(IOException e) {
 			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
@@ -255,7 +306,7 @@ public class URLResolver {
 					getExpandedURL(s[getDataField("truncated_url")],
 							s[getDataField("truncated_url")],0);
 			
-			System.out.print(" -> " + s[getDataField("expanded_url")] + " -> ");	// debug	
+			System.out.print(" -> " + s[getDataField("expanded_url")] + " -> ");// debug	
 			
 			s[getDataField("resolve_date")] = getCurrentDate();					// (2) store resolve date												
 			s[getDataField("resolved")] = "1";									// (3) set resolved to true
@@ -275,7 +326,7 @@ public class URLResolver {
 		System.out.println("\n-> Task completed.");
 	}
 	
-	// TODO: Improve URL checks, status code/content type checks
+	// TODO: Improve validation routine!
 	/** validate fields **/
 	public String validateFields(String url, String status_code, String content_type) {
 		
@@ -285,12 +336,14 @@ public class URLResolver {
 		// if status_code/content_type is null -> valid = true
 		if((status_code==null) || (content_type==null)) { return "1"; }
 		
-		// if status code doesn't contain 200, 301, 302 -> valid = false		
+		// if status code doesn't contain 200, 301, 302, 403 -> valid = false		
 		if((!status_code.contains("200")) && (!status_code.contains("301")) && 
-				(!status_code.contains("302"))) { return "0"; }
+				(!status_code.contains("302")) && (!status_code.contains("403"))) 
+		{ return "0"; }
 			
-		// if content type doesn't contain text/html -> valid = false			
-		if(!content_type.contains("text/html")) { return "0"; }
+		// if content type doesn't contain text/html or text/plain -> valid = false			
+		if((!content_type.contains("text/html")) && 
+				(!content_type.contains("text/plain"))) { return "0"; }
 		
 		// if url contains twitter.com, youtube.com, etc. -> valid = false		
 		if((url.contains("twitter.com") || (url.contains("youtube.com")))) { 
@@ -318,11 +371,11 @@ public class URLResolver {
 				responseCodeRedirects++;
 				new_url = connection.getHeaderField("location");
 				connection = (HttpURLConnection) new URL(truncated_url).openConnection();
-				if(responseCodeRedirects > maxRedirects) { return new_url; }	// max response codes redirects
+				if(responseCodeRedirects > maxRSRedirects) { return new_url; }	// max response codes redirects
 			}
-			if (counter > maxRedirects) { return new_url; }						// max HTTP-redirects
+			if (counter > maxHTTPRedirects) { return new_url; }					// max HTTP-redirects
 			else if (!new_url.equals(truncated_url)) {
-				String t = getExpandedURL(new_url, new_url,counter);		
+				getExpandedURL(new_url, new_url,counter);		
 				return new_url;
 			}	else {
 				return new_url;
@@ -385,7 +438,7 @@ public class URLResolver {
 	public void updateTable(int start, int end) {
 		
 		try {
-			conn = DriverManager.getConnection(mysqlURI);						// reinitiate db connection
+			conn = DriverManager.getConnection(mysqlURI);						// re-initiate DB connection
 			PreparedStatement prepStatement = 
 					conn.prepareStatement("update " + sqlDatabase + "." + 
 							sqlURLMap + " set " + 
