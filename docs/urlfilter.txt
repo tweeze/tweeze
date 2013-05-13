@@ -1,0 +1,34 @@
+### URL FILTER ###
+
+# Bitte ergänzen/korrigieren + TLD prüfen
+
+Videoplattformen:
+
+youtube.com
+vimeo.com
+dailymotion.com
+myvideo.de
+sevenload.de
+videos.de.msn.com
+stream-tv.de
+veoh.com
+clipfish.de
+megavideo.de
+rtlnow.de
+mediathek.at
+zattoo.de
+maxdome.de
+itunes.de
+
+Soziale Netzwerke:
+
+myspace.com
+facebook.com
+
+URL services:
+
+adfly.com
+
+Andere:
+
+twitpic.com

@@ -27,3 +27,5 @@ zugreifen könnnen.
 # Neue Anleitung zeigt SSH-Zugriff auf Github (sinnvoll)
 
 # Anika hat ihren Code committed (unter backend)
+
+# Bitte ALLE -> docs/urlfilter.txt ergänzen... 
