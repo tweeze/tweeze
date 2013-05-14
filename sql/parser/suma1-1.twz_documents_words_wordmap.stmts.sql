@@ -46,8 +46,7 @@ id bigint(20) unsigned not null auto_increment,
 word varchar(255) default null,
 idf int(11) default null,
 count int(11) default null,
-primary key (id),
-foreign key (urls_id) references suma1.twz_urls(id) on update cascade on delete cascade
+primary key (id)
 ) engine=InnoDB default charset utf8;
 
 # 3. drop/create table suma1.twz_wordmap:
