@@ -27,9 +27,11 @@
  * -----------------------------------------------------------------------------
  * 
  * TODO: (+) Use threads to gain performance!
- * TODO: (+) Improve validation routine!
+ * TODO: (+) Clean up code!
+ * TODO: (-) Improve consistency check
+ * TODO: (-) Improve CSV write/read routine
  * 
- * Last modified: 130513
+ * Last modified: 140513
  * Runtime (9382 items): est. 9 hours 12 mins
  */
 
@@ -49,7 +51,7 @@ import java.util.List;
 public class URLResolver {
 	
 	/** SQL database settings **/
-	private final static String sqlServer = "localhost:3306",					// SQL server/account info
+	private final static String sqlServer = "localhost:3306",					
 			sqlDatabase = "suma1", sqlUsername = "suma1", sqlPassword = "suma1";
 	
 	/** URLs table attributes (don't touch this) **/							// table properties
@@ -71,24 +73,33 @@ public class URLResolver {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static List<String[]> urlMapList = new ArrayList();					// data structure (holds string array)
 	private CookieManager cookieManager = new CookieManager();					// manage cookies
+	
+	/** CSV/SQL usage **/
 	private final static String fileName = "suma1.twz_urls.dump.csv";			// CSV file name
-	private final static boolean useSQL = true;									// set to false for CSV-input
+	private final static boolean useSQL = true;
 	
 	/** runtime limitations **/
-	private final static int maxRSRedirects = 60;								// limit response code redirects
-	private final static int maxHTTPRedirects = 60;								// limit HTTP code redirects
-	private final static int connectTimeOut = 6000; 							// connection time out (60 secs)
-	private final static int readTimeOut = 60000;								// read time out (60 secs)
+	private final static int maxRSRedirects = 15;								// limit response code redirects
+	private final static int maxHTTPRedirects = 15;								// limit HTTP code redirects
+	private final static int maxAttempts = 2;									// max resolving attempts
+	private final static int connectTimeOut = 15000; 							// connection time out (15 secs)
+	private final static int readTimeOut = 15000;								// read time out (15 secs)
 	private final static int startItem = 0;										// begin resolve with item no. (limit items)
-	private final static int endItem = 10;										// end with item no. (limit items)
+	private final static int endItem = 500;										// end with item no. (limit items)
 	
 	/** validation filter **/
-	@SuppressWarnings("unused")
 	private final static String[] responseCodes = {"200","301","302","403"};	// valid response codes
-	@SuppressWarnings("unused")
+	private final static String[] transportProtocols = {"http://","https://"};	// valid transport protocols
 	private final static String[] contentTypes = {"text/html","text/plain"};	// valid content types
-	@SuppressWarnings("unused")
-	private final static String[] filteredURLs = {"youtube.com","vimeo.com"};	// invalid URLs
+	private final static String[] filteredURLs =								// invalid URLs 
+		{"youtube.com","vimeo.com","dailymotion.com","myvideo.de",
+		"sevenload.de","videos.de.msn.com","stream-tv.de","veoh.com",
+		"clipfish.de","megavideo.de","megavideo.com","rtlnow.de",
+		"mediathek.at","zattoo.de","maxdome.de","itunes.de","youtu.be",
+		"vine.co","myspace.com","facebook.com","lockerz.com","posterous.com",
+		"tumblr.com","adf.ly","cur.lv","eCa.sh","j.gs","q.gs","twitpic.com",
+		"instagram.com","yfrog.com","img.ly","imgur.com","pinterest.com",
+		"flip.it","linkaloo.blogspot.com","m.tmi.me","trap.it"};
 
 	/** main **/
 	public static void main(String args[]) {
@@ -110,11 +121,11 @@ public class URLResolver {
 		urlRes.showRunTime();
 	}
 		
-	/** initiate SQL connection **/
+	/** constructor **/
 	public URLResolver() {
 	}
 	
-	/** initiate SQL conenction **/
+	/** initiate SQL connection **/
 	public void initiateSQL() {
 
 		try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }
@@ -156,7 +167,7 @@ public class URLResolver {
 		System.out.println("(Execution time: " + (System.nanoTime() - startTime) / 10000000 + "ms)");	
 	}
 	
-	/** save to CSV **/
+	/** save data to CSV **/
 	public void saveDataToCSV(int start, int end) {
 		
 		try {		
@@ -173,7 +184,7 @@ public class URLResolver {
 				for(int u=0; u < sqlURLMapFields.length; u++) {
 					System.out.print(s[u] + " -> ");
 					writer.append("'" + s[u] + "'");							// values enclosed by ''
-					writer.append(';');											// values seperated by semicolon
+					writer.append(';');											// values separated by semicolon
 				} 
 				writer.append(newLine);
 				System.out.println("[DONE]");
@@ -187,7 +198,7 @@ public class URLResolver {
 		} 
 	}
 	
-	/** read from CSV **/
+	/** read data from CSV **/
 	public void readDataFromCSV() {
 		
 		try {
@@ -289,7 +300,7 @@ public class URLResolver {
 		}
 	}	
 	
-	// TODO: Use threads!
+	// TODO: Use threads!!!
 	/** resolve Fields **/
 	public void resolveFields(int start, int end) {
 	
@@ -304,7 +315,7 @@ public class URLResolver {
 			/** revolve/save fields **/
 			s[getDataField("expanded_url")] = 									// (1) store expanded URL into expanded_url
 					getExpandedURL(s[getDataField("truncated_url")],
-							s[getDataField("truncated_url")],0);
+							s[getDataField("truncated_url")],0,0);
 			
 			System.out.print(" -> " + s[getDataField("expanded_url")] + " -> ");// debug	
 			
@@ -326,37 +337,47 @@ public class URLResolver {
 		System.out.println("\n-> Task completed.");
 	}
 	
-	// TODO: Improve validation routine!
 	/** validate fields **/
 	public String validateFields(String url, String status_code, String content_type) {
 		
-		// if url is null -> valid = false
-		if(url==null) { return "0"; }
+		boolean validURL = false;
+		boolean validResponseCode = false;
+		boolean validContentType = false;
 		
-		// if status_code/content_type is null -> valid = true
-		if((status_code==null) || (content_type==null)) { return "1"; }
+		if(url==null) { return "0"; }											// (1) if URL is NULL -> valid = false
 		
-		// if status code doesn't contain 200, 301, 302, 403 -> valid = false		
-		if((!status_code.contains("200")) && (!status_code.contains("301")) && 
-				(!status_code.contains("302")) && (!status_code.contains("403"))) 
-		{ return "0"; }
-			
-		// if content type doesn't contain text/html or text/plain -> valid = false			
-		if((!content_type.contains("text/html")) && 
-				(!content_type.contains("text/plain"))) { return "0"; }
-		
-		// if url contains twitter.com, youtube.com, etc. -> valid = false		
-		if((url.contains("twitter.com") || (url.contains("youtube.com")))) { 
-			return "0"; 
+		for(int i=0; i < transportProtocols.length;i++) {						// (2) if URL doesn't start with http:// or https:// -> valid = false
+			if(url.startsWith(transportProtocols[i])) { 
+				validURL = true;
+				}	
 		}
-		// return true if nothing matches
-		return "1";
+		if(!validURL) { return "0";}
+		
+		for(int i=0; i < filteredURLs.length;i++) {								// (3) if URL contains filtered URL -> valid = false
+			if(url.contains(filteredURLs[i])) { return "0"; }
+		}
+		
+		if((status_code==null) || (content_type==null)) { return "1"; }			// (4) if status_code AND/OR content_type is NULL -> valid = true (debug)**
+		
+		for(int i=0; i < contentTypes.length;i++) {								// (5) if content type is valid -> check response code
+			if(content_type.contains(contentTypes[i])) {
+				validContentType = true;
+				for(int u=0; u < responseCodes.length;u++) {					// (5A) if response code is good -> valid = true
+					if(status_code.contains(responseCodes[u])) { 
+						validResponseCode = true; 
+						}
+				} 
+			}
+		}
+		
+		if((!validContentType) || (!validResponseCode)) { return "0";}
+		
+		return "1";																// (6) return true if nothing matches (debug)**
 	}
 				
-	// TODO: (~) Improve URL expanding routine
 	/** resolve URLs recursively **/											
-	public String getExpandedURL(String truncated_url, String new_url, int counter) {
-			
+	public String getExpandedURL(String truncated_url, String new_url, int counter,int attempts) {
+		
 		int responseCodeRedirects = 0;
 		CookieHandler.setDefault(cookieManager);
 		counter++;
@@ -375,9 +396,13 @@ public class URLResolver {
 			}
 			if (counter > maxHTTPRedirects) { return new_url; }					// max HTTP-redirects
 			else if (!new_url.equals(truncated_url)) {
-				getExpandedURL(new_url, new_url,counter);		
+				getExpandedURL(new_url, new_url,counter,attempts);		
 				return new_url;
-			}	else {
+			} else if(new_url.equals(truncated_url) && (attempts < maxAttempts)) {
+				attempts++;
+				getExpandedURL(new_url, new_url,counter,attempts);
+				return new_url;
+			} else {
 				return new_url;
 			}
 		} catch (MalformedURLException e) {
