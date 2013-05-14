@@ -1,11 +1,12 @@
 /**
  * URLResolver.java
- * Resolves shortened URLs recursively (SQL)
- * REQUIRES a CLASSPATH reference to MySQL connector/J!   
+ * Resolves shortened URLs recursively (SQL) + validates/checks attributes
+ * REQUIRES a CLASSPATH reference to "MySQL connector/J"!   
  * 
+ * SQL-Database: suma1 
  * SQL-Table: suma1.twz_urls.sql
  * 
- * Output: ->
+ * Output:
  * 
  * -----------------------------------------------------------------------------
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
@@ -27,9 +28,9 @@
  * -----------------------------------------------------------------------------
  * 
  * TODO: (+) Use threads to gain performance!
- * TODO: (+) Clean up code!
+ * TODO: (+) Cleanup code!!! (-> OO)
  * TODO: (-) Improve consistency check
- * TODO: (-) Improve CSV write/read routine
+ * TODO: (-) Improve/Fix CSV write/read routine
  * 
  * Last modified: 140513
  * Runtime (9382 items): est. 9 hours 12 mins
@@ -59,8 +60,9 @@ public class URLResolver {
 	private final static String[] sqlURLMapFields = 
 		{"id","idx","display_url","expanded_url","truncated_url","url",
 		"status_code","content_type","resolved","valid","resolve_date"};
-			
-	private final static String sqlQuery = 										// default query
+	
+	/** default query **/
+	private final static String sqlQuery = 										
 			"select * from " + sqlDatabase + "." + sqlURLMap + " order by " + 
 			sqlURLMapFields[0] + ";";
 	
@@ -68,7 +70,7 @@ public class URLResolver {
 	private final static String mysqlURI = ("jdbc:mysql://" + sqlServer + "/" + 
 			sqlDatabase + "?user=" + sqlUsername + "&password=" + sqlPassword);
 	private int items;															// number of items in table
-	private static long startTime;
+	private long startTime;
 	private Connection conn;													// SQL-Server connection
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static List<String[]> urlMapList = new ArrayList();					// data structure (holds string array)
@@ -122,14 +124,12 @@ public class URLResolver {
 	}
 		
 	/** constructor **/
-	public URLResolver() {
-	}
+	public URLResolver() { }
 	
 	/** initiate SQL connection **/
 	public void initiateSQL() {
 
-		try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }
-		
+		try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }	
 		catch(Exception e) {
 			System.err.println("[Error]: Unable to load SQL driver."); 
 		} 
@@ -243,7 +243,6 @@ public class URLResolver {
 		return -1;
 	}
 	
-	// TODO: (-) Improve consistency check
 	/** verify table  **/
 	public void verifyTable() {
 
@@ -258,6 +257,7 @@ public class URLResolver {
 				System.out.println("[Error]: Inconsistency in number of columns.\n");
 				System.exit(-1);
 			}
+			
 			for(int i=1; i <= rm.getColumnCount(); i++) {			
 				if(!rm.getColumnName(i).equals(sqlURLMapFields[i-1])) {
 					System.out.println("Checking table (" + sqlDatabase + "." + sqlURLMap + ") for consistency -> [ERROR]\n");
@@ -283,6 +283,7 @@ public class URLResolver {
 			Statement s = conn.createStatement();
 			ResultSet rs = s.executeQuery(sqlQuery);
 			ResultSetMetaData rm = rs.getMetaData();
+			
 			while (rs.next()) {
 				String[] k = new String[sqlURLMapFields.length];
 				for(int i=1; i <= rm.getColumnCount(); i++) {
@@ -301,13 +302,12 @@ public class URLResolver {
 	}	
 	
 	// TODO: Use threads!!!
-	/** resolve Fields **/
+	/** resolve fields **/
 	public void resolveFields(int start, int end) {
 	
 		System.out.println("(Total URLs: " + items + ") (Resolving URLs: " + end + ") (Start time: " + getCurrentDate() + ")\n");
 	
 		for(int i=start; i < end; i++) {																
-
 			String[] s = urlMapList.get(i);
 			System.out.print("Resolving item [" + s[getDataField("id")] + "] (left " + 
 			(end - i -1) + "): -> " + s[getDataField("truncated_url")]);
@@ -333,7 +333,6 @@ public class URLResolver {
 			urlMapList.set(i, s);												// store in data structure
 			System.out.println("[DONE]");
 		}
-		// output
 		System.out.println("\n-> Task completed.");
 	}
 	
@@ -356,7 +355,6 @@ public class URLResolver {
 		for(int i=0; i < filteredURLs.length;i++) {								// (3) if URL contains filtered URL -> valid = false
 			if(url.contains(filteredURLs[i])) { return "0"; }
 		}
-		
 		if((status_code==null) || (content_type==null)) { return "1"; }			// (4) if status_code AND/OR content_type is NULL -> valid = true (debug)**
 		
 		for(int i=0; i < contentTypes.length;i++) {								// (5) if content type is valid -> check response code
@@ -365,13 +363,11 @@ public class URLResolver {
 				for(int u=0; u < responseCodes.length;u++) {					// (5A) if response code is good -> valid = true
 					if(status_code.contains(responseCodes[u])) { 
 						validResponseCode = true; 
-						}
+					}
 				} 
 			}
 		}
-		
-		if((!validContentType) || (!validResponseCode)) { return "0";}
-		
+		if((!validContentType) || (!validResponseCode)) { return "0";}	
 		return "1";																// (6) return true if nothing matches (debug)**
 	}
 				
@@ -463,6 +459,7 @@ public class URLResolver {
 	public void updateTable(int start, int end) {
 		
 		try {
+			System.out.println();
 			conn = DriverManager.getConnection(mysqlURI);						// re-initiate DB connection
 			PreparedStatement prepStatement = 
 					conn.prepareStatement("update " + sqlDatabase + "." + 
@@ -474,17 +471,15 @@ public class URLResolver {
 							"valid" + " = ?, " + 
 							"resolve_date" + " = ? " + 
 							"where " + "id" + " = ?;");
-			
-			System.out.println();
-			for(int i=start; i < end; i++) {
 				
+			for(int i=start; i < end; i++) {	
 				String[] s = urlMapList.get(i);
 				System.out.print("Updating Item [" + s[getDataField("id")] + 
 						"] (left " + (end - i) + ") (sql): -> ");
+				
 				for(int u=0; u < sqlURLMapFields.length; u++) {
 					System.out.print(s[u] + " -> ");
 				}
-				
 				prepStatement.setString(1, s[getDataField("expanded_url")]);
 				prepStatement.setString(3, s[getDataField("content_type")]);
 				prepStatement.setInt(5, Integer.parseInt(s[getDataField("valid")]));
@@ -495,8 +490,7 @@ public class URLResolver {
 				}
 				if (s[getDataField("resolved")]==null) { prepStatement.setNull(4, java.sql.Types.TINYINT); } else {
 					prepStatement.setInt(4, Integer.parseInt(s[getDataField("resolved")]));
-				}
-					
+				}	
 				if (s[getDataField("resolve_date")]==null) { prepStatement.setNull(6, java.sql.Types.DATE); } else {
 					prepStatement.setTimestamp(6,Timestamp.valueOf(s[getDataField("resolve_date")]));
 				}
