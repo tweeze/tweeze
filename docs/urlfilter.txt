@@ -14,21 +14,44 @@ stream-tv.de
 veoh.com
 clipfish.de
 megavideo.de
+megavideo.com
 rtlnow.de
 mediathek.at
 zattoo.de
 maxdome.de
 itunes.de
+youtu.be
+vine.co
 
 Soziale Netzwerke:
 
 myspace.com
 facebook.com
+lockerz.com
+posterous.com
+tumblr.com
 
-URL services:
+URL services: (advertising)
 
 adfly.com
+cur.lv
+eCa.sh
+j.gs
+q.gs
+
+
+Bilddienste:
+
+twitpic.com
+instagram.com
+yfrog.com
+img.ly
+imgur.com
+pinterest.com
 
 Andere:
 
-twitpic.com
+flip.it
+linkaloo.blogspot.com
+m.tmi.me
+trap.it
