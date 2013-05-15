@@ -12,9 +12,9 @@
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
  * Checking table (suma1.twz_urls) for consistency -> [OK]
  *
- * (Total URLs: 9382) (Resolving URLs: 9382) (Start time: 2013-05-05 15:30:13)
+ * (Total URLs: 9382) (Resolving URLs: 9382) (Start time: 2013-05-14 18:21:30)
  *
- * Resolving item [1] (left 9381): -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> http://www.lefigaro.fr/international/2012/05/08/01003-20120508ARTFIG00506-merkel-travaille-sa-contre-offensive-contre-hollande.php -> [DONE]
+ * [...]
  * Resolving item [2] (left 9380): -> http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw -> [DONE]
  * Resolving item [3] (left 9379): -> http://www.bermudafunk.org -> http://www.bermudafunk.org -> [DONE]
  * Resolving item [4] (left 9378): -> http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c -> [DONE]
@@ -23,8 +23,8 @@
  * 
  * -> Task completed.
  *
- * (End time: 2013-05-05 23:40:13)
- * (Execution time: 3314044 ms)
+ * (End time: 2013-05-15 04:24:43)
+ * (Execution time: 3619157ms)
  * -----------------------------------------------------------------------------
  * 
  * TODO: (+) Use threads to gain performance!
@@ -32,8 +32,8 @@
  * TODO: (-) Improve consistency check
  * TODO: (-) Improve/Fix CSV write/read routine
  * 
- * Last modified: 140513
- * Runtime (9382 items): est. 9 hours 12 mins
+ * Last modified: 150513
+ * Runtime (9382 items): 10 hrs 3 mins 
  */
 
 import java.io.BufferedReader;
