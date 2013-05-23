@@ -1,6 +1,6 @@
 # TWEEZE
 # MYSQL DATABASE “suma1”
-# > suma1.twz_documents_words_wordmap.stmts.sql
+# > suma1.twz_documents.stmts.sql
 
 # PREQUISITE:
 
@@ -36,26 +36,4 @@ meta_keyword text default null,
 index urls_id_idx (urls_id),
 primary key (id),
 foreign key (urls_id) references suma1.twz_urls(id) on update cascade on delete cascade
-) engine=InnoDB default charset utf8;
-
-# 2. drop/create table suma1.twz_words:
-
-drop table if exists suma1.twz_words;
-create table if not exists suma1.twz_words (
-id bigint(20) unsigned not null auto_increment,
-word varchar(255) default null,
-idf int(11) default null,
-count int(11) default null,
-primary key (id)
-) engine=InnoDB default charset utf8;
-
-# 3. drop/create table suma1.twz_wordmap:
-
-drop table if exists suma1.twz_wordmap;
-create table if not exists suma1.twz_wordmap (
-documents_id bigint(20) unsigned,
-words_id bigint(20) unsigned,
-hashtag boolean default false,
-foreign key (documents_id) references suma1.twz_documents(id) on update cascade on delete cascade,
-foreign key (words_id) references suma1.twz_words(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
