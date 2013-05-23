@@ -25,9 +25,10 @@ Inhaltsverzeichnis:
       `$url` int(11) unsigned NOT NULL,
       `$eingelesen` tinyint(1) NOT NULL DEFAULT '0',
       `$zeitstempel` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-      `full_text` mediumtext NOT NULL,
-      `meta_desc` text NOT NULL,
-      `meta_keyw` text NOT NULL,
+      `$full_text` mediumtext NOT NULL,
+      `$meta_desc` text NOT NULL,
+      `$meta_keyw` text NOT NULL,
+      `$language` varchar(3) COLLATE utf8_bin NOT NULL,      
       PRIMARY KEY (`$id_dokument`)
       ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1 ;";
       $result = mysql_query($query,$connection);
@@ -43,7 +44,7 @@ Inhaltsverzeichnis:
  //gibt ein eingelesenes Dokument als Volltext aus, mit Quellenangabe
  function Dokvolltext($dok, $link=false) {
   include ("connection.php");   
-   $query = "SELECT expanded_url, full_text, meta_desc, meta_keyw, $bezeichner FROM `$datenbank`.$dokument, `$datenbank`.twz_urls WHERE $dokument.$id_dokument=$dok AND $dokument.$url=twz_urls.id;";
+   $query = "SELECT expanded_url, $full_text, $meta_desc, $meta_keyw, $bezeichner FROM `$datenbank`.$dokument, `$datenbank`.twz_urls WHERE $dokument.$id_dokument=$dok AND $dokument.$url=twz_urls.id;";
    $result = mysql_query($query,$connection);
    if(!$result) {
     print "Fehler: " . mysql_error($connection);
@@ -51,11 +52,11 @@ Inhaltsverzeichnis:
     if($link==true)
      if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
       print "<h1>$row[$bezeichner]</h1>";
-      print $row['full_text'];
+      print $row[$full_text];
       print "<h2>Description</h2>";
-      print $row['meta_desc'];
+      print $row[$meta_desc];
       print "<h2>Keywords</h2>";
-      print $row['meta_keyw'];
+      print $row[$meta_keyw];
       print "<br/><br/><a href='".$row['expanded_url']."'>Link zum Original</a>"; 
     }   
   }

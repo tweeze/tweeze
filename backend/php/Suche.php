@@ -19,7 +19,7 @@
    }
    //n=In wie vielen Dokumenten taucht das Wort ¸berhaupt auf
    foreach ($inhalt AS $idw => $wort1) {
-   	$query = "SELECT COUNT(*) FROM `$datenbank`.$dokument` WHERE full_text LIKE '%$wort1%';";
+   	$query = "SELECT COUNT(*) FROM `$datenbank`.$dokument` WHERE $full_text LIKE '%$wort1%';";
     $result = mysql_query($query,$connection);
     if(!$result) {
    	 print "Fehler: " . mysql_error($connection);
@@ -30,13 +30,13 @@
    //anzahl = wie oft taucht das Wort insgesamt auf, inklusive mehrmals in einem Dokument
    $anzahl;	
    foreach ($inhalt AS $idw => $wort1) {
-   	$query = "SELECT * FROM `$datenbank`.$dokument` WHERE full_text LIKE '%$wort1%';";
+   	$query = "SELECT * FROM `$datenbank`.$dokument` WHERE $full_text LIKE '%$wort1%';";
     $result = mysql_query($query,$connection);
     if(!$result) {
    	 print "Fehler: " . mysql_error($connection);
     } else {
    	 while ($row=mysql_fetch_array($result,MYSQL_ASSOC)) {
-   	   $inhalt2 = $row['full_text'];	
+   	   $inhalt2 = $row[$full_text];	
    	   $regex1 = "#$wort1#s"; //achtet auf Groﬂ-Kleinschreibung! mit i case-insensitive
    	   if (isset($anzahl[$idw])) $anzahl[$idw] = $anzahl[$idw] + preg_match_all($regex1, $inhalt2, $para);
    	   else $anzahl[$idw] = preg_match_all($regex1, $inhalt2, $para);
@@ -55,7 +55,7 @@
    $query = "SELECT DISTINCT $id_dokument FROM `$datenbank`.$dokument WHERE ";   
    for ($i=0;$i<count($inhalt);$i++) {
 	if ($i>0) $query.=" OR ";
-	$query.="`full_text` LIKE '%$inhalt[$i]%'";
+	$query.="`$full_text` LIKE '%$inhalt[$i]%'";
    }
    $query.=";";
    $result = mysql_query($query,$connection);

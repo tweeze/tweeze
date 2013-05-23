@@ -15,7 +15,7 @@
 	print "<table border='1'><tr><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Titel'>Titel</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."&sortierung=Quelle'>Quelle</a></th><th><a href='".$_SERVER["PHP_SELF"]."?seite=".$_GET['seite']."'/>Zeitstempel</a></th><th>eingelesen</th><th>W&ouml;rter</th></tr>";
 	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 	 print "<tr><td><a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row[$id_dokument]."'>".$row[$bezeichner]."</a></td><td>".$row['expanded_url']."</td><td>".$row[$zeitstempel]."</td><td>".$row[$eingelesen]."</td>";	 
-	 $max = count(explode(" ",$row['full_text']));
+	 $max = count(explode(" ",$row[$full_text]));
       print "<td>".$max."</td>";
       
 	 "</tr>"; 

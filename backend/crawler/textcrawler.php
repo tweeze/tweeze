@@ -47,7 +47,7 @@
   					$inhalt2 = Getfullpage($url1);
   					$inhalt = Getcontent($inhalt2, false);
   					if (strlen($inhalt)>1) {
-  						$query2 = "UPDATE `$datenbank`.$dokument SET $eingelesen=1, full_text='$inhalt', $zeitstempel=now() WHERE $url=$url2;";
+  						$query2 = "UPDATE `$datenbank`.$dokument SET $eingelesen=1, $full_text='$inhalt', $zeitstempel=now() WHERE $url=$url2;";
   						$result2 = mysql_query($query2,$connection);
   						if(!$result2) {
   							print "Fehler: " . mysql_error($connection). " SQL: ". $query2;
@@ -65,7 +65,7 @@
   							}
   							$desc = GetMetaDesc($inhalt2);
   							if (isset($desc) AND $desc!="") {
-  								$query2 = "UPDATE `$datenbank`.$dokument SET meta_desc='$desc' WHERE $dokument.$id_dokument=$dok;";
+  								$query2 = "UPDATE `$datenbank`.$dokument SET $meta_desc='$desc' WHERE $dokument.$id_dokument=$dok;";
   								$result2 = mysql_query($query2,$connection);
   								if(!$result2) {
   									print "Fehler: " . mysql_error($connection). " SQL: ". $query;
@@ -76,7 +76,7 @@
   							
   							$keyw = GetMetaKeyw($inhalt2);
   							if (isset($keyw) AND $keyw!="") {
-  								$query2 = "UPDATE `$datenbank`.$dokument SET meta_keyw='$keyw' WHERE $dokument.$id_dokument=$dok;";
+  								$query2 = "UPDATE `$datenbank`.$dokument SET $meta_keyw='$keyw' WHERE $dokument.$id_dokument=$dok;";
   								$result2 = mysql_query($query2,$connection);
   								if(!$result2) {
   									print "Fehler: " . mysql_error($connection). " SQL: ". $query;

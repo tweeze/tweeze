@@ -12,4 +12,8 @@
  $url = "url_id";
  $eingelesen = "parsed";
  $zeitstempel = "parse_date";
+ $full_text = "full_text";
+ $meta_desc = "meta_description";
+ $meta_keyw = "meta_keywords";
+ $language= "language";
 ?>
