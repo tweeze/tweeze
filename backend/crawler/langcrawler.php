@@ -18,7 +18,7 @@
   		print "Fehler: " . mysql_error($connection);
   	} else {
   	  for ($i=0; $i<$zyklus; $i++) {
-  	  	$texts = null;
+  	  	$texts = array($steps);
   	  	for ($j=0; $j<$steps ; $j++) {
   	  		if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
   	  		  $fulltext = $row[$full_text];
