@@ -1,4 +1,4 @@
-<?php
+<?php 
   include ("../php/connection.php");
   include ("../php/Bibliothek.php");
 
@@ -12,26 +12,33 @@
   	if ((isset($argv[2])) AND $argv[2]!="" ){
   		$steps=$argv[2];
   	} else $steps = 1;  
-  	$query = "SELECT * FROM `$database`.$dokument WHERE $full_text !='' AND $full_text is not null AND $language !='' AND $language is not null;";
+  	$query = "SELECT * FROM `$datenbank`.$dokument WHERE $full_text !='' AND $full_text is not null AND ($language ='' OR $language is null);";
   	$result = mysql_query($query,$connection);
   	if(!$result) {
   		print "Fehler: " . mysql_error($connection);
   	} else {
   	  for ($i=0; $i<$zyklus; $i++) {
   	  	$texts = null;
-  	  	for ($j=0; $j<$steps && $row = mysql_fetch_array($result,MYSQL_ASSOC); $j++) {
-  	  		$fulltext = $row[$full_text];
-  	  		$dids[$j] = $row[$id_dokument];
-  	  		$fulltext1 = explode(" ",$fulltext); 
-  	  		$fulltext = "";
-  	  		for ($k=0; $k<10; $k++) {
-  	  			$fulltext += $fulltext1[$k];
-  	  		}
-            $texts[$j] = $fulltext;  	  		
+  	  	for ($j=0; $j<$steps ; $j++) {
+  	  		if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
+  	  		  $fulltext = $row[$full_text];
+  	  		  $dids[$j] = $row[$id_dokument];
+  	  		  $fulltext1 = explode(" ",$fulltext); 
+  	  		  $fulltext = "";
+  	  		  for ($k=0; $k<10; $k++) {
+                if ($k>0) $fulltext .= " ";
+  	  			$fulltext .= $fulltext1[$k];
+  	  		  }
+              $texts[$j] = $fulltext;  	  			
+  	  		}  else {
+  	  			print "Zu allen eingelesenen Dokumenten wurde die Sprache erfasst.";
+  	  			break;
+  	  		}	  		
   	  	}
   	  	$results = $detectlanguage->detect($texts);
   	    for ($j=0; $j<$steps; $j++) {
-  	    	$query2 = "UPDATE `$database`.$dokument SET $language='$results[$j][0]' WHERE $id_dokument=$dids[$j];";
+            $lang = $results[$j][0]->language;
+  	    	$query2 = "UPDATE `$datenbank`.$dokument SET $language='$lang' WHERE $id_dokument=$dids[$j];";
   	    	$result2 = mysql_query($query2,$connection);
   	    	if(!$result2) {
   	    		print "Fehler: " . mysql_error($connection);
