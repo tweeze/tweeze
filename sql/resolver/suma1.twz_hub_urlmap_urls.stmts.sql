@@ -14,11 +14,11 @@ grant all on suma1.* to 'suma1'@'localhost' identified by 'suma1' with grant opt
 # C. set database to suma1:
 use suma1;
 
-# D. import tables/data:
-# mysqladmin -u root -p suma1 < /SQL_DUMP.SQL
+# D. disable constraint checks
+set FOREIGN_KEY_CHECKS=0;
 
-# E. disable constraint checks
-# set FOREIGN_KEY_CHECKS=0;
+# E. import tables/data:
+# mysqladmin -u root -p suma1 < /SQL_DUMP.SQL
 
 # CREATE TABLES:
 
@@ -48,7 +48,8 @@ content_type varchar(255) default null,
 resolved boolean default false,
 valid boolean default false,
 resolve_date datetime default null,
-primary key (id)
+primary key (id),
+foreign key (idx) references suma1.twz_urlmap (urls_idx) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
 
 # 3. drop/create table suma1.twz_urlmap:
@@ -68,19 +69,30 @@ primary key (id),
 foreign key (hub_id) references suma1.twz_hub(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
 
+# 4. drop/create table suma1.twz_urls_final:
+
+drop table if exists suma1.twz_urls_final;
+create table if not exists suma1.twz_urls_final (
+id bigint(20) unsigned not null auto_increment,
+idx bigint(20) unsigned,
+expanded_url text default null,
+primary key (id),
+foreign key (idx) references suma1.twz_urls (idx) on update cascade on delete cascade
+) engine=InnoDB default charset utf8;
+
 # POPULATE TABLES
 
-# 4. populate table suma1.twz_hub (42150 records):
+# 5. populate table suma1.twz_hub (99617 records):
 
 insert into suma1.twz_hub (tweet_id) select id from suma1.wut_tweets order by suma1.wut_tweets.id;
 
-# 5. populate table suma1.twz_urlmap (18614 records):
+# 6. populate table suma1.twz_urlmap (37460 records):
 
 insert into suma1.twz_urlmap (tweet_id, display_url, truncated_url,url)
 select suma1.wut_urls.tweet_id, suma1.wut_urls.display_url, suma1.wut_urls.expanded_url, suma1.wut_urls.url 
 from suma1.wut_urls order by suma1.wut_urls.tweet_id;
 
-# 6a. update "urls_idx" in suma1.twz_urlmap (11583 records):
+# 7a. update "urls_idx" in suma1.twz_urlmap (11583 records):
 
 update suma1.twz_urlmap 
 INNER JOIN (
@@ -91,7 +103,7 @@ INNER JOIN (
 ) dup ON twz_urlmap.truncated_url = dup.truncated_url
 set suma1.twz_urlmap.urls_idx=dup.firstid;
 
-# 6b. update "url_id" in suma1.twz_urlmap (7031 records):
+# 7b. update "url_id" in suma1.twz_urlmap (7031 records):
 
 update suma1.twz_urlmap 
 JOIN (
@@ -102,17 +114,22 @@ JOIN (
 ON 	suma1.twz_urlmap.truncated_url = q.truncated_url
 set suma1.twz_urlmap.urls_idx=q.firstid;
 
-# 7. update "hub_id" in suma1.twz_urlmap (18614 records):
+# 8. update "hub_id" in suma1.twz_urlmap (18614 records):
 
 update suma1.twz_urlmap JOIN twz_hub ON twz_hub.tweet_id=twz_urlmap.tweet_id
 set suma1.twz_urlmap.hub_id=twz_hub.id;
 
-# 8. populate suma1.twz_urls from suma1.twz_urlmap (9382 records):
+# 9. populate suma1.twz_urls from suma1.twz_urlmap (9382 records):
 
 insert into suma1.twz_urls (idx, display_url, truncated_url, url)
 select suma1.twz_urlmap.urls_idx, suma1.twz_urlmap.display_url, suma1.twz_urlmap.truncated_url, 
 suma1.twz_urlmap.url from suma1.twz_urlmap group by suma1.twz_urlmap.urls_idx order by suma1.twz_urlmap.urls_idx;
 
-# 9. drop colums from suma1.twz_urlmap except for "urls_idx", "hub_id":
+# RUN RESOLVER! REDO UPDATE-PROCEDURE
 
-alter table suma1.twz_urlmap drop id, drop tweet_id, drop display_url, drop truncated_url, drop url; 
+# 10. drop colums from suma1.twz_urlmap except for "urls_idx", "hub_id":
+
+alter table suma1.twz_urlmap drop id, drop tweet_id, drop display_url, drop truncated_url, drop url;
+
+# F. enable constraint checks
+set FOREIGN_KEY_CHECKS=1;
