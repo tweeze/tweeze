@@ -92,7 +92,7 @@ insert into suma1.twz_urlmap (tweet_id, display_url, truncated_url,url)
 select suma1.wut_urls.tweet_id, suma1.wut_urls.display_url, suma1.wut_urls.expanded_url, suma1.wut_urls.url 
 from suma1.wut_urls order by suma1.wut_urls.tweet_id;
 
-# 7a. update "urls_idx" in suma1.twz_urlmap (11583 records):
+# 7a. update "urls_idx" in suma1.twz_urlmap (24457 records):
 
 update suma1.twz_urlmap 
 INNER JOIN (
@@ -103,7 +103,7 @@ INNER JOIN (
 ) dup ON twz_urlmap.truncated_url = dup.truncated_url
 set suma1.twz_urlmap.urls_idx=dup.firstid;
 
-# 7b. update "url_id" in suma1.twz_urlmap (7031 records):
+# 7b. update "url_id" in suma1.twz_urlmap (13003 records):
 
 update suma1.twz_urlmap 
 JOIN (
@@ -114,18 +114,18 @@ JOIN (
 ON 	suma1.twz_urlmap.truncated_url = q.truncated_url
 set suma1.twz_urlmap.urls_idx=q.firstid;
 
-# 8. update "hub_id" in suma1.twz_urlmap (18614 records):
+# 8. update "hub_id" in suma1.twz_urlmap (37460 records):
 
 update suma1.twz_urlmap JOIN twz_hub ON twz_hub.tweet_id=twz_urlmap.tweet_id
 set suma1.twz_urlmap.hub_id=twz_hub.id;
 
-# 9. populate suma1.twz_urls from suma1.twz_urlmap (9382 records):
+# 9. populate suma1.twz_urls from suma1.twz_urlmap (17791 records):
 
 insert into suma1.twz_urls (idx, display_url, truncated_url, url)
 select suma1.twz_urlmap.urls_idx, suma1.twz_urlmap.display_url, suma1.twz_urlmap.truncated_url, 
 suma1.twz_urlmap.url from suma1.twz_urlmap group by suma1.twz_urlmap.urls_idx order by suma1.twz_urlmap.urls_idx;
 
-# RUN RESOLVER! REDO UPDATE-PROCEDURE
+# RUN RESOLVER! REDO UPDATE-PROCEDURE FOR FINAL URLS
 
 # 10. drop colums from suma1.twz_urlmap except for "urls_idx", "hub_id":
 
