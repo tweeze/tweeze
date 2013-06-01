@@ -1,14 +1,16 @@
 /**
  * URLResolver.java
  * Resolves shortened URLs recursively (SQL) + validates/checks attributes
- * REQUIRES a CLASSPATH reference to "MySQL connector/J"!   
  * 
- * SQL-Database: suma1 
- * SQL-Table: suma1.twz_urls.sql
+ * Library/Classpath: MySQL   -> [http://dev.mysql.com/downloads/connector/j/]
+ * Library/Classpath: OpenCSV -> [http://opencsv.sourceforge.net/]
+ * 
+ * -> SQL-Database/Table: suma1.twz_urls
  * 
  * Output:
  * 
  * -----------------------------------------------------------------------------
+ * [Console output redirected to file:D:\Projects\eclipse\URLResolver\log\URLResolver.log]
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
  * Checking table (suma1.twz_urls) for consistency -> [OK]
  *
@@ -29,25 +31,26 @@
  * 
  * TODO: (+) Use threads to gain performance!
  * TODO: (+) Cleanup code!!! (-> OO)
- * TODO: (-) Improve consistency check
- * TODO: (-) Improve/Fix CSV write/read routine
  * 
- * Last modified: 150513
+ * Last modified: 010613
  * Runtime (9382 items): 10 hrs 3 mins 
  */
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.*;
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class URLResolver {
 	
@@ -77,8 +80,13 @@ public class URLResolver {
 	private CookieManager cookieManager = new CookieManager();					// manage cookies
 	
 	/** CSV/SQL usage **/
-	private final static String fileName = "suma1.twz_urls.dump.csv";			// CSV file name
+	private final static String csvFileName = "suma1.twz_urls.dump.csv";		// CSV file name
+	private final static String csvFolderName = "csv";							// CSV folder name
 	private final static boolean useSQL = true;
+	
+	/** log **/
+	private final static String logFileName = "URLResolver.log";				// log file name
+	private final static String logFolderName = "log";							// log folder name
 	
 	/** runtime limitations **/
 	private final static int maxRSRedirects = 15;								// limit response code redirects
@@ -87,7 +95,9 @@ public class URLResolver {
 	private final static int connectTimeOut = 15000; 							// connection time out (15 secs)
 	private final static int readTimeOut = 15000;								// read time out (15 secs)
 	private final static int startItem = 0;										// begin resolve with item no. (limit items)
-	private final static int endItem = 500;										// end with item no. (limit items)
+	private final static int endItem = 1500;									// end with item no. (limit items)
+	private final static int backupCSVItems = 500;								// backup at item
+	private final static boolean backupCSV = true;								// backup resolved items
 	
 	/** validation filter **/
 	private final static String[] responseCodes = {"200","301","302","403"};	// valid response codes
@@ -106,19 +116,23 @@ public class URLResolver {
 	/** main **/
 	public static void main(String args[]) {
 		
-		URLResolver urlRes = new URLResolver();									
+		URLResolver urlRes = new URLResolver();	
+		urlRes.enableLogging(false);											// logging
+		
 		if(useSQL) {															
 			urlRes.initiateSQL();												// initiate SQL connection
 			urlRes.verifyTable();												// check table for consistency
 			urlRes.fetchTable();												// fetch table			
 		} else { urlRes.readDataFromCSV(); }									// otherwise read from CSV file
-
+		
 		/** TODO: !UNCOMMENT! **/
 		//int endItem = urlMapList.size();										
 		
 		urlRes.resolveFields(startItem,endItem);								// resolve fields
-		if(useSQL) { urlRes.updateTable(startItem,endItem);	}					// update table	
-		urlRes.saveDataToCSV(startItem,endItem);								// save to CSV file
+		if(useSQL) { //urlRes.updateTable(startItem,endItem);	}				// update table	
+		}
+			
+		urlRes.saveDataToCSV(startItem,endItem,false);							// save to CSV file
 		urlRes.showData(startItem,endItem);										// show data structure (debug)
 		urlRes.showRunTime();
 	}
@@ -126,9 +140,24 @@ public class URLResolver {
 	/** constructor **/
 	public URLResolver() { }
 	
+	public void enableLogging(boolean set) {
+		
+		if(set) {
+			try {
+		        String currentWorkingDirectory = System.getProperty("user.dir");
+				String fileSeparator = System.getProperty("file.separator");
+				String logDataFile = currentWorkingDirectory+fileSeparator+logFolderName+fileSeparator+logFileName;	
+			    System.setOut(new PrintStream(new File(logDataFile)));
+			    System.setErr(new PrintStream(new File(logDataFile)));
+			} catch (Exception e) {
+			    e.printStackTrace();
+			}			
+		}	
+	}
+	
 	/** initiate SQL connection **/
 	public void initiateSQL() {
-
+		
 		try { Class.forName("com.mysql.jdbc.Driver").newInstance(); }	
 		catch(Exception e) {
 			System.err.println("[Error]: Unable to load SQL driver."); 
@@ -168,30 +197,38 @@ public class URLResolver {
 	}
 	
 	/** save data to CSV **/
-	public void saveDataToCSV(int start, int end) {
+	public void saveDataToCSV(int start, int end, boolean backup) {
 		
-		try {		
+		try {
 	        String currentWorkingDirectory = System.getProperty("user.dir");
 			String fileSeparator = System.getProperty("file.separator");
-		    FileWriter writer = new FileWriter(currentWorkingDirectory+fileSeparator+fileName);
-		    String newLine = System.getProperty("line.separator");
-		    System.out.println();
-		 
+			String csvDataFile = currentWorkingDirectory+fileSeparator+csvFolderName+fileSeparator+csvFileName;
+
+			if(backup) {
+				String csvBackupFile = csvDataFile.substring(0, csvDataFile.lastIndexOf('.'));
+				csvDataFile = csvBackupFile+"."+String.valueOf(end)+".csv";
+				System.out.println("\nBacking up ... (hold on)\n");
+			} else {
+			    System.out.println();		
+			}
+			CSVWriter writer = new CSVWriter(new FileWriter(csvDataFile));
+		    		 
 			for(int i=start; i < end; i++) {
 				String[] s = urlMapList.get(i);
 				System.out.print("Writing Item [" + (i+1) + "] (left " + 
 				(end - i - 1) + ") (csv): -> ");
 				for(int u=0; u < sqlURLMapFields.length; u++) {
 					System.out.print(s[u] + " -> ");
-					writer.append("'" + s[u] + "'");							// values enclosed by ''
-					writer.append(';');											// values separated by semicolon
-				} 
-				writer.append(newLine);
+				}
+				writer.writeNext(s);
 				System.out.println("[DONE]");
 			}
-		    writer.flush();
 		    writer.close();
-			System.out.println("\n-> Task completed.");
+			if(backup) {
+				System.out.println("\n-> Everything has been backed up.\n");
+			} else {
+				System.out.println("\n-> Task completed.");
+			}
 		}
 		catch(IOException e) {
 			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
@@ -203,29 +240,29 @@ public class URLResolver {
 		
 		try {
 	        String currentWorkingDirectory = System.getProperty("user.dir");
-			String fileSeparator = System.getProperty("file.separator");	    
-		    BufferedReader csvFile = new BufferedReader(new FileReader(currentWorkingDirectory+fileSeparator+fileName));
-			System.out.println("Reading data from CSV file (" + currentWorkingDirectory+fileSeparator+fileName + "):\n");		   
-		    String dataRow = csvFile.readLine();    
+			String fileSeparator = System.getProperty("file.separator");
+			String csvDataFile = currentWorkingDirectory+fileSeparator+csvFolderName+fileSeparator+csvFileName;	
+			//CSVReader reader = new CSVReader(new FileReader(csvDataFile),',','\'');
+			CSVReader reader = new CSVReader(new FileReader(csvDataFile));
+			System.out.println("Reading data from CSV file (" + csvDataFile + "):\n");
+		    String[] nextLine;
 		    int i=0;
 		    
-		    while (dataRow != null) {	    	
-		    	System.out.print("Reading Item [" + (i+1) + "] (left UNKNOWN) (csv): -> ");	    	
-		    	String[] dataArray = dataRow.split(";");						// semicolon
-		    	String[] k = new String[sqlURLMapFields.length];
+		    while ((nextLine = reader.readNext()) != null) {
+		    	System.out.print("Reading Item [" + (i+1) + "] (left UNKNOWN) (csv): -> ");	         
+		        String[] k = new String[sqlURLMapFields.length];
 
 		    	for(int z = 0; z < sqlURLMapFields.length; z++) {
-		    		k[z] = dataArray[z].substring(1, dataArray[z].length()-1);
+		    		k[z] = nextLine[z];
 		    		System.out.print(k[z] + " -> ");
-		    	}		    	
+		    	}
 		    	urlMapList.add(k);
 		    	items++;
 		    	i++;
-		    	System.out.println("[DONE]");
-		    	dataRow = csvFile.readLine();
+		    	System.out.println("[DONE]");     
 		    }
-		    csvFile.close();
-			System.out.println("\n-> Task completed.\n");
+		    reader.close();
+		    System.out.println("\n-> Task completed.\n");		
 		}
 		catch(IOException e) {
 			System.err.print("[Error] (IOException): " + e.getMessage() + " -> ");
@@ -332,6 +369,10 @@ public class URLResolver {
 	
 			urlMapList.set(i, s);												// store in data structure
 			System.out.println("[DONE]");
+			
+			if((backupCSV) && (i!=0)) {											// we might backup resolved items
+				if (i % backupCSVItems == 0) {saveDataToCSV(start,i,true); }
+			}		
 		}
 		System.out.println("\n-> Task completed.");
 	}
