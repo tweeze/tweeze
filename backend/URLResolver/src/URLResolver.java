@@ -7,40 +7,39 @@
  * 
  * -> SQL-Database/Table: suma1.twz_urls
  * 
- * Output:
+ * Output: (selected probes)
  * 
  * -----------------------------------------------------------------------------
  * [Console output redirected to file:D:\Projects\eclipse\URLResolver\log\URLResolver.log]
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
  * Checking table (suma1.twz_urls) for consistency -> [OK]
  *
- * (Total URLs: 9382) (Resolving URLs: 9382) (Start time: 2013-05-14 18:21:30)
+ * (Total URLs: 17791) (Resolving URLs: 17791) (Start time: 2013-06-01 20:21:30)
  *
  * [...]
- * Resolving item [2] (left 9380): -> http://twitpic.com/9nm4aw -> http://twitpic.com/9nm4aw -> [DONE]
- * Resolving item [3] (left 9379): -> http://www.bermudafunk.org -> http://www.bermudafunk.org -> [DONE]
- * Resolving item [4] (left 9378): -> http://twitpic.com/b3fo5c -> http://twitpic.com/b3fo5c -> [DONE]
- * Resolving item [5] (left 9377): -> http://adf.ly/EOnKn -> http://adf.ly/EOnKn -> [DONE]
+ * Resolving item [11] (left 1489): -> http://tinyurl.com/chx27bx -> http://umfairteilen.de/start/home/ -> [DONE]
+ * Resolving item [43] (left 1457): -> http://bit.ly/ZF41Ny -> http://peer-steinbrueck.de/ -> [DONE]
+ * Resolving item [51] (left 1449): -> http://bit.ly/Y4N7QC -> http://wiki.piratenpartei.de/03-CIBFFM -> [DONE]
+ * Resolving item [108] (left 1392): -> http://dlvr.it/3KXRjh -> http://www.zukunftskinder.org/?p=40683 -> [DONE]
+ * Resolving item [165] (left 1335): -> http://rainbowflash.org -> http://rainbowflash.org/home/ -> [DONE]
  * [...]
  * 
  * -> Task completed.
  *
- * (End time: 2013-05-15 04:24:43)
+ * (End time: 2013-06-02 12:24:43)
  * (Execution time: 3619157ms)
  * -----------------------------------------------------------------------------
  * 
  * TODO: (+) Use threads to gain performance!
- * TODO: (+) Cleanup code!!! (-> OO)
+ * TODO: (+) Cleanup code!!! (-> Write OO)
  * 
  * Last modified: 010613
- * Runtime (9382 items): 10 hrs 3 mins 
+ * Runtime (17791 items): 20 hrs 3 mins 
  */
 
-import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.HttpURLConnection;
@@ -84,10 +83,6 @@ public class URLResolver {
 	private final static String csvFolderName = "csv";							// CSV folder name
 	private final static boolean useSQL = true;
 	
-	/** log **/
-	private final static String logFileName = "URLResolver.log";				// log file name
-	private final static String logFolderName = "log";							// log folder name
-	
 	/** runtime limitations **/
 	private final static int maxRSRedirects = 15;								// limit response code redirects
 	private final static int maxHTTPRedirects = 15;								// limit HTTP code redirects
@@ -117,8 +112,6 @@ public class URLResolver {
 	public static void main(String args[]) {
 		
 		URLResolver urlRes = new URLResolver();	
-		urlRes.enableLogging(false);											// logging
-		
 		if(useSQL) {															
 			urlRes.initiateSQL();												// initiate SQL connection
 			urlRes.verifyTable();												// check table for consistency
@@ -139,22 +132,7 @@ public class URLResolver {
 		
 	/** constructor **/
 	public URLResolver() { }
-	
-	public void enableLogging(boolean set) {
 		
-		if(set) {
-			try {
-		        String currentWorkingDirectory = System.getProperty("user.dir");
-				String fileSeparator = System.getProperty("file.separator");
-				String logDataFile = currentWorkingDirectory+fileSeparator+logFolderName+fileSeparator+logFileName;	
-			    System.setOut(new PrintStream(new File(logDataFile)));
-			    System.setErr(new PrintStream(new File(logDataFile)));
-			} catch (Exception e) {
-			    e.printStackTrace();
-			}			
-		}	
-	}
-	
 	/** initiate SQL connection **/
 	public void initiateSQL() {
 		
