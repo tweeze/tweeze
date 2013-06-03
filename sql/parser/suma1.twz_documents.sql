@@ -33,7 +33,7 @@ parse_date datetime default null,
 content mediumtext default null,
 meta_description text default null,
 meta_keyword text default null,
-language varchar(255) default null,
+language_description varchar(255) default null,
 index urls_final_id_idx (urls_final_id),
 primary key (id),
 foreign key (urls_final_id) references suma1.twz_urls_final(id) on update cascade on delete cascade
