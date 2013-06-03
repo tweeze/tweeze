@@ -5,37 +5,40 @@
  * Library/Classpath: MySQL   -> [http://dev.mysql.com/downloads/connector/j/]
  * Library/Classpath: OpenCSV -> [http://opencsv.sourceforge.net/]
  * 
- * -> SQL-Database/Table: suma1.twz_urls
+ * -> SQL-Database/Table: suma1.twz_urls 
+ * -> CSV-File: suma1.twz_urls.dump.csv
  * 
- * Output: (selected probes)
+ * Output: (limited to 5 probes)
  * 
  * -----------------------------------------------------------------------------
  * [Console output redirected to file:D:\Projects\eclipse\URLResolver\log\URLResolver.log]
  * Connecting to database (suma1) on (localhost:3306) as (suma1@suma1) -> [OK]
  * Checking table (suma1.twz_urls) for consistency -> [OK]
  *
- * (Total URLs: 17791) (Resolving URLs: 17791) (Start time: 2013-06-01 20:21:30)
- *
+ * (Total URLs: 17791) (Resolving URLs: 17791) (Start time: 2013-06-01 20:37:45)
+ * 
  * [...]
- * Resolving item [11] (left 1489): -> http://tinyurl.com/chx27bx -> http://umfairteilen.de/start/home/ -> [DONE]
- * Resolving item [43] (left 1457): -> http://bit.ly/ZF41Ny -> http://peer-steinbrueck.de/ -> [DONE]
- * Resolving item [51] (left 1449): -> http://bit.ly/Y4N7QC -> http://wiki.piratenpartei.de/03-CIBFFM -> [DONE]
- * Resolving item [108] (left 1392): -> http://dlvr.it/3KXRjh -> http://www.zukunftskinder.org/?p=40683 -> [DONE]
- * Resolving item [165] (left 1335): -> http://rainbowflash.org -> http://rainbowflash.org/home/ -> [DONE]
+ * Resolving item [11] (left 17780): -> http://tinyurl.com/chx27bx -> http://umfairteilen.de/start/home/ -> [DONE]
+ * Resolving item [32] (left 17759): -> http://yfrog.com/h8ri3jwej -> http://twitter.yfrog.com/h8ri3jwej -> [DONE]
+ * Resolving item [43] (left 17748): -> http://bit.ly/ZF41Ny -> http://peer-steinbrueck.de/ -> [DONE]
+ * Resolving item [51] (left 17740): -> http://bit.ly/Y4N7QC -> http://wiki.piratenpartei.de/03-CIBFFM -> [DONE]
+ * Resolving item [68] (left 17723): -> http://dasND.de/819739 -> http://www.neues-deutschland.de/artikel/819739.html -> [DONE]
  * [...]
  * 
  * -> Task completed.
  *
- * (End time: 2013-06-02 12:24:43)
- * (Execution time: 3619157ms)
+ * (End time: 2013-06-03 15:03:43)
+ * (Execution time: 6619157ms)
  * -----------------------------------------------------------------------------
  * 
- * TODO: (+) Use threads to gain performance!
- * TODO: (+) Cleanup code!!! (-> Write OO)
+ * TODO: (+) Implement multi-threading (-> performance gain)
+ * TODO: (+) Use OO/Clean up code
  * 
- * Last modified: 010613
- * Runtime (17791 items): 20 hrs 3 mins 
+ * Last modified: 030613
+ * Runtime (17791 items): ~ 20 hrs 3 mins 
  */
+
+package code.utils.urlresolver;
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -90,9 +93,9 @@ public class URLResolver {
 	private final static int connectTimeOut = 15000; 							// connection time out (15 secs)
 	private final static int readTimeOut = 15000;								// read time out (15 secs)
 	private final static int startItem = 0;										// begin resolve with item no. (limit items)
-	private final static int endItem = 1500;									// end with item no. (limit items)
+	private final static int endItem = 10000;									// end with item no. (limit items)
 	private final static int backupCSVItems = 500;								// backup at item
-	private final static boolean backupCSV = true;								// backup resolved items
+	private final static boolean backupCSV = false;								// backup resolved items
 	
 	/** validation filter **/
 	private final static String[] responseCodes = {"200","301","302","403"};	// valid response codes
@@ -115,16 +118,15 @@ public class URLResolver {
 		if(useSQL) {															
 			urlRes.initiateSQL();												// initiate SQL connection
 			urlRes.verifyTable();												// check table for consistency
-			urlRes.fetchTable();												// fetch table			
+			urlRes.fetchTable();												// fetch table
 		} else { urlRes.readDataFromCSV(); }									// otherwise read from CSV file
 		
 		/** TODO: !UNCOMMENT! **/
-		//int endItem = urlMapList.size();										
+		// int endItem = urlMapList.size();										
 		
 		urlRes.resolveFields(startItem,endItem);								// resolve fields
-		if(useSQL) { //urlRes.updateTable(startItem,endItem);	}				// update table	
-		}
-			
+		if(useSQL) { urlRes.updateTable(startItem,endItem);	}					// update table	
+				
 		urlRes.saveDataToCSV(startItem,endItem,false);							// save to CSV file
 		urlRes.showData(startItem,endItem);										// show data structure (debug)
 		urlRes.showRunTime();
@@ -247,7 +249,7 @@ public class URLResolver {
 		} 
 	}
 		
-	/** getDataField **/
+	/** get field **/
 	public int getDataField(String fieldName) {
 		
 		for(int fieldNumber=0; fieldNumber < sqlURLMapFields.length; fieldNumber++) {
@@ -258,7 +260,7 @@ public class URLResolver {
 		return -1;
 	}
 	
-	/** verify table  **/
+	/** verify table **/
 	public void verifyTable() {
 
 		try {
@@ -316,8 +318,8 @@ public class URLResolver {
 		}
 	}	
 	
-	// TODO: Use threads!!!
 	/** resolve fields **/
+	@SuppressWarnings("unused")
 	public void resolveFields(int start, int end) {
 	
 		System.out.println("(Total URLs: " + items + ") (Resolving URLs: " + end + ") (Start time: " + getCurrentDate() + ")\n");
@@ -326,7 +328,7 @@ public class URLResolver {
 			String[] s = urlMapList.get(i);
 			System.out.print("Resolving item [" + s[getDataField("id")] + "] (left " + 
 			(end - i -1) + "): -> " + s[getDataField("truncated_url")]);
-			
+				
 			/** revolve/save fields **/
 			s[getDataField("expanded_url")] = 									// (1) store expanded URL into expanded_url
 					getExpandedURL(s[getDataField("truncated_url")],
@@ -436,7 +438,7 @@ public class URLResolver {
 		return sdf.format(dt);	
 	}
 	
-	/** get status code**/
+	/** get status code **/
 	public String getStatusCode(String url) {	
 		
 		CookieHandler.setDefault(cookieManager);
@@ -504,7 +506,7 @@ public class URLResolver {
 				prepStatement.setInt(5, Integer.parseInt(s[getDataField("valid")]));
 				prepStatement.setInt(7, Integer.parseInt(s[getDataField("id")]));
 				
-				if (s[getDataField("status_code")]==null) { prepStatement.setNull(2, java.sql.Types.TINYINT); } else {
+				if ((s[getDataField("status_code")]==null) || (s[getDataField("status_code")].isEmpty())) { prepStatement.setNull(2, java.sql.Types.TINYINT); } else {
 					prepStatement.setInt(2, Integer.parseInt(s[getDataField("status_code")]));
 				}
 				if (s[getDataField("resolved")]==null) { prepStatement.setNull(4, java.sql.Types.TINYINT); } else {
