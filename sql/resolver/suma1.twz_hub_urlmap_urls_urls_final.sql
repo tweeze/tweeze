@@ -106,51 +106,70 @@ having count(truncated_url) > 1 )
 dup on twz_urlmap.truncated_url = dup.truncated_url
 set suma1.twz_urlmap.urls_idx=dup.firstid;
 
-# 7b. update "urls_idx" in suma1.twz_urlmap (13003 records):
+# 7b. Update field 'urls_idx' from table 'suma1.twz_urlmap' (13003 records):
 
 update suma1.twz_urlmap 
-JOIN (
-	select truncated_url, MIN(id) as firstid
-	from suma1.twz_urlmap
-	group by truncated_url
-) q
-ON 	suma1.twz_urlmap.truncated_url = q.truncated_url
-set suma1.twz_urlmap.urls_idx=q.firstid;
+inner join (
+select truncated_url, MIN(id) as firstid
+from suma1.twz_urlmap
+group by truncated_url)
+dup on suma1.twz_urlmap.truncated_url = dup.truncated_url
+set suma1.twz_urlmap.urls_idx=dup.firstid;
 
-# 8. update "hub_id" in suma1.twz_urlmap (37460 records):
+# 8. Update field 'hub_id' from table 'suma1.twz_urlmap' (37460 records):
 
-update suma1.twz_urlmap JOIN twz_hub ON twz_hub.tweet_id=twz_urlmap.tweet_id
-set suma1.twz_urlmap.hub_id=twz_hub.id;
+update suma1.twz_urlmap join suma1.twz_hub on suma1.twz_hub.tweet_id=suma1.twz_urlmap.tweet_id
+set suma1.twz_urlmap.hub_id=suma1.twz_hub.id;
 
-# 9. populate suma1.twz_urls from suma1.twz_urlmap (17791 records):
+# 9. Populate table 'suma1.twz_urls' with data from 'suma1.twz_urlmap' (17791 records):
 
 insert into suma1.twz_urls (idx, display_url, truncated_url, url)
 select suma1.twz_urlmap.urls_idx, suma1.twz_urlmap.display_url, suma1.twz_urlmap.truncated_url, 
 suma1.twz_urlmap.url from suma1.twz_urlmap group by suma1.twz_urlmap.urls_idx order by suma1.twz_urlmap.urls_idx;
 
-# NOTE: run URLresolver!
+# Note: Run URLResolver or import sql dump!
 
-# 10. Insert expanded URLs into suma1.twz_urlmap (????? records):
+# 10. Update field 'expanded_url' from table 'suma1.twz_urlmap' (37460 records):
 
-insert into suma1.twz_urlmap (expanded_url)
-select suma1.twz_urls.idx, suma1.twz_urls.expanded_url
-from suma1.twz_urls where suma1.twz_urlmap.urls_idx=suma1.twz_urls.idx;
+update suma1.twz_urlmap, suma1.twz_urls
+set suma1.twz_urlmap.expanded_url=suma1.twz_urls.expanded_url
+where suma1.twz_urlmap.urls_idx=suma1.twz_urls.idx;
 
-# 10a. update "urls_final_idx" in suma1.twz_urlmap (???? records):
-# copy from above and modfiy!
+# 11a. Update field 'urls_final_idx' from table 'suma1.twz_urlmap' (27412 records):
 
-# 10b. update "urls_final_idx" in suma1.twz_urlmap (???? records):
-# copy from above and modfiy!
+update suma1.twz_urlmap 
+inner join (
+select expanded_url, MIN(id) as firstid
+from suma1.twz_urlmap
+group by expanded_url
+having count(expanded_url) > 1 ) 
+dup on twz_urlmap.expanded_url = dup.expanded_url
+set suma1.twz_urlmap.urls_final_idx=dup.firstid;
 
-# 11. populate suma1.twz_urls_final from suma1.twz_urlmap (???? records):
+# 11b. Update field 'urls_final_idx' from table 'suma1.twz_urlmap' (10048 records):
+
+update suma1.twz_urlmap 
+inner join (
+select expanded_url, MIN(id) as firstid
+from suma1.twz_urlmap
+group by expanded_url)
+dup on suma1.twz_urlmap.expanded_url = dup.expanded_url
+set suma1.twz_urlmap.urls_final_idx=dup.firstid;
+
+# 12. Populate table 'suma1.twz_urls_final' with data from 'suma1.twz_urlmap' (14918 records):
 
 insert into suma1.twz_urls_final (idx, url)
 select suma1.twz_urlmap.urls_final_idx, suma1.twz_urlmap.expanded_url
 from suma1.twz_urlmap group by suma1.twz_urlmap.urls_final_idx order by suma1.twz_urlmap.urls_final_idx;
 
-# 13. drop colums from suma1.twz_urlmap except for "urls_idx", "urls_final_idx" and "hub_id":
+# 13. Remove entries from 'suma1.twz_urls_final' which are invalid:
 
-alter table suma1.twz_urlmap drop id, drop tweet_id, drop display_url, drop truncated_url, drop url;
+delete from suma1.twz_urls_final using suma1.twz_urls_final
+join suma1.twz_urls on suma1.twz_urls.expanded_url=suma1.twz_urls_final.url where suma1.twz_urls.valid=0;
 
-# F. enable constraint checks
-set FOREIGN_KEY_CHECKS=1;
+# 14. Drop all fields from table 'suma1.twz_urlmap' except for 'urls_idx', 'urls_final_idx' and 'hub_id':
+
+alter table suma1.twz_urlmap drop id, drop tweet_id, drop display_url, drop truncated_url, drop url, drop expanded_url;
+
+# F. Enable constraint checks
+set foreign_key_checks=1;
