@@ -4,6 +4,18 @@
 # Database: suma1
 # File: suma1.twz_hub_urlmap_urls_urls_final.sql
 
+# DATABASE SETTINGS:
+
+# 0. Adjust the following to match underlying hardware:
+# Note: Use "show variables like '';"! 
+set global have_query_cache=1;
+set global query_cache_size=41984;
+set global query_cache_type=1;
+set global log_slow_queries=1;
+set global long_query_time=5;
+set global max_heap_table_size=67108864;
+set global tmp_table_size=67108864;
+
 # PREREQUISITES:  
 
 # A. Create database suma1:
@@ -30,6 +42,7 @@ create table if not exists suma1.twz_hub (
 id bigint(20) unsigned not null auto_increment,
 tweet_id bigint(20) unsigned,
 index tweet_id_idx (tweet_id),
+index id_idx (id),
 primary key (id),
 foreign key (tweet_id) references suma1.wut_tweets(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
@@ -49,6 +62,10 @@ content_type varchar(255) default null,
 resolved boolean default false,
 valid boolean default false,
 resolve_date datetime default null,
+index valid_idx (valid),
+index id_idx (id),
+index idx_idx (idx),
+index expanded_url_idx (expanded_url(255)),
 primary key (id),
 foreign key (idx) references suma1.twz_urlmap (urls_idx) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
@@ -69,6 +86,9 @@ url text default null,
 index urls_idx_idx (urls_idx),
 index urls_final_idx_idx (urls_final_idx),
 index hub_id_idx (hub_id),
+index truncated_url_idx (truncated_url(255)),
+index expanded_url_idx (expanded_url(255)),
+index id_idx (id),
 primary key (id),
 foreign key (hub_id) references suma1.twz_hub(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
@@ -80,6 +100,9 @@ create table if not exists suma1.twz_urls_final (
 id bigint(20) unsigned not null auto_increment,
 idx bigint(20) unsigned,
 url text default null,
+index id_idx (id),
+index idx_idx (idx),
+index url_idx (url(255)),
 primary key (id),
 foreign key (idx) references suma1.twz_urlmap (urls_final_idx) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
@@ -103,7 +126,7 @@ select truncated_url, MIN(id) as firstid
 from suma1.twz_urlmap
 group by truncated_url
 having count(truncated_url) > 1 ) 
-dup on twz_urlmap.truncated_url = dup.truncated_url
+dup on suma1.twz_urlmap.truncated_url = dup.truncated_url
 set suma1.twz_urlmap.urls_idx=dup.firstid;
 
 # 7b. Update field 'urls_idx' from table 'suma1.twz_urlmap' (13003 records):
@@ -118,8 +141,10 @@ set suma1.twz_urlmap.urls_idx=dup.firstid;
 
 # 8. Update field 'hub_id' from table 'suma1.twz_urlmap' (37460 records):
 
+lock tables suma1.twz_urlmap write;
 update suma1.twz_urlmap join suma1.twz_hub on suma1.twz_hub.tweet_id=suma1.twz_urlmap.tweet_id
 set suma1.twz_urlmap.hub_id=suma1.twz_hub.id;
+unlock tables;
 
 # 9. Populate table 'suma1.twz_urls' with data from 'suma1.twz_urlmap' (17791 records):
 
@@ -131,9 +156,11 @@ suma1.twz_urlmap.url from suma1.twz_urlmap group by suma1.twz_urlmap.urls_idx or
 
 # 10. Update field 'expanded_url' from table 'suma1.twz_urlmap' (37460 records):
 
+lock tables suma1.twz_urlmap write, suma1.twz_urls write;
 update suma1.twz_urlmap, suma1.twz_urls
 set suma1.twz_urlmap.expanded_url=suma1.twz_urls.expanded_url
 where suma1.twz_urlmap.urls_idx=suma1.twz_urls.idx;
+unlock tables;
 
 # 11a. Update field 'urls_final_idx' from table 'suma1.twz_urlmap' (27412 records):
 
@@ -156,18 +183,21 @@ group by expanded_url)
 dup on suma1.twz_urlmap.expanded_url = dup.expanded_url
 set suma1.twz_urlmap.urls_final_idx=dup.firstid;
 
-# 12. Populate table 'suma1.twz_urls_final' with data from 'suma1.twz_urlmap' (14918 records):
+# 12. Populate table 'suma1.twz_urls_final' with data from 'suma1.twz_urlmap' (12371 records):
 
-insert into suma1.twz_urls_final (idx, url)
-select suma1.twz_urlmap.urls_final_idx, suma1.twz_urlmap.expanded_url
-from suma1.twz_urlmap group by suma1.twz_urlmap.urls_final_idx order by suma1.twz_urlmap.urls_final_idx;
+insert into suma1.twz_urls_final (url)
+select suma1.twz_urls.expanded_url
+from suma1.twz_urls where valid=1 group by suma1.twz_urls.expanded_url order by suma1.twz_urls.id;
 
-# 13. Remove entries from 'suma1.twz_urls_final' which are invalid:
+# 13. Update field 'idx' from table 'suma1.twz_urls_final' (12371 records):
 
-delete from suma1.twz_urls_final using suma1.twz_urls_final
-join suma1.twz_urls on suma1.twz_urls.expanded_url=suma1.twz_urls_final.url where suma1.twz_urls.valid=0;
+lock tables suma1.twz_urlmap write, suma1.twz_urls_final write;
+update suma1.twz_urlmap, suma1.twz_urls_final
+set suma1.twz_urls_final.idx=suma1.twz_urlmap.urls_final_idx
+where suma1.twz_urls_final.url=suma1.twz_urlmap.expanded_url;
+unlock tables;
 
-# 14. Drop all fields from table 'suma1.twz_urlmap' except for 'urls_idx', 'urls_final_idx' and 'hub_id':
+# 14. Drop all fields from table 'suma1.twz_urlmap' except for 'urls_idx', 'urls_final_idx' and 'hub_id' (37460 records):
 
 alter table suma1.twz_urlmap drop id, drop tweet_id, drop display_url, drop truncated_url, drop url, drop expanded_url;
 
