@@ -5,7 +5,7 @@
   if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
   else {
   	if (!(Tabzeilen($dokument)>0)) {
-  		$query = "SELECT id from `$datenbank`.twz_urls where valid = true;";
+  		$query = "SELECT id from `$datenbank`.$twz_urls;";
   		$result = mysql_query($query,$connection);
   		if(!$result) {
   			print "Fehler: " . mysql_error($connection);
@@ -24,19 +24,19 @@
   		//-> prüfen, ob Anzahl übereinstimmt, sonst neue Ids suchen und übertragen
   	}
   	if (!(Tabzeilen($dokument)>0)) {
-  		print "Es konnten keine g&uuml;ltigen URLs aus twz_urls geladen werden.";
+  		print "Es konnten keine g&uuml;ltigen URLs aus $twz_urls geladen werden.";
   	} else {
   		if ((isset($argv[1])) AND $argv[1]!="" ){
   			$zyklus=$argv[1];
   		} else $zyklus=1;
-  		$query = "SELECT expanded_url, $dokument.$url, $dokument.$id_dokument FROM `$datenbank`.$dokument, twz_urls WHERE $eingelesen=0 AND $dokument.$url=twz_urls.id AND expanded_url LIKE 'http://%';";
+  		$query = "SELECT $expanded_url, $dokument.$url, $dokument.$id_dokument FROM `$datenbank`.$dokument, $twz_urls WHERE $eingelesen=0 AND $dokument.$url=$twz_urls.id;";
   		$result = mysql_query($query,$connection);
   		if(!$result) {
   			print "Fehler: " . mysql_error($connection);
   		} else {
   			$timestamp = time();
   			for ($i=0; $i<$zyklus && $row=mysql_fetch_array($result,MYSQL_ASSOC) ;$i++) {
-  				$url1=$row['expanded_url'];
+  				$url1=$row[$expanded_url];
   				$url2=$row[$url];
   				$dok=$row[$id_dokument];
   				print "\n".$url1. " " .$url2;

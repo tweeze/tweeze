@@ -44,7 +44,7 @@ Inhaltsverzeichnis:
  //gibt ein eingelesenes Dokument als Volltext aus, mit Quellenangabe
  function Dokvolltext($dok, $link=false) {
   include ("connection.php");   
-   $query = "SELECT expanded_url, $full_text, $meta_desc, $meta_keyw, $bezeichner FROM `$datenbank`.$dokument, `$datenbank`.twz_urls WHERE $dokument.$id_dokument=$dok AND $dokument.$url=twz_urls.id;";
+   $query = "SELECT $expanded_url, $full_text, $meta_desc, $meta_keyw, $bezeichner FROM `$datenbank`.$dokument, `$datenbank`.$twz_urls WHERE $dokument.$id_dokument=$dok AND $dokument.$url=$twz_urls.id;";
    $result = mysql_query($query,$connection);
    if(!$result) {
     print "Fehler: " . mysql_error($connection);
@@ -57,7 +57,7 @@ Inhaltsverzeichnis:
       print $row[$meta_desc];
       print "<h2>Keywords</h2>";
       print $row[$meta_keyw];
-      print "<br/><br/><a href='".$row['expanded_url']."'>Link zum Original</a>"; 
+      print "<br/><br/><a href='".$row[$expanded_url]."'>Link zum Original</a>"; 
     }   
   }
  }
@@ -158,13 +158,13 @@ Inhaltsverzeichnis:
  //Setzt den Bezeichner eines Dokuments gleich dem Titel der Quelle
  function SetTitle($dok) {
   include ("connection.php");
-   $query = "SELECT expanded_url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE twz_urls.id=$dokument.$url AND $dokument.$id_dokument=$dok AND $dokument.$eingelesen=1;";	
+   $query = "SELECT $expanded_url FROM `$datenbank`.$twz_urls, `$datenbank`.$dokument WHERE $twz_urls.id=$dokument.$url AND $dokument.$id_dokument=$dok AND $dokument.$eingelesen=1;";	
    $result = mysql_query($query,$connection);
    if(!$result) {
    	print "Fehler: " . mysql_error($connection). " SQL: ". $query;
    } else {
    	if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-   	  $url1 = $row['expanded_url'];	
+   	  $url1 = $row[$expanded_url];	
       $remote = fopen($url1, "r") or $remote=false;  //or die();
       if (!($remote)) {
    	   return -1;

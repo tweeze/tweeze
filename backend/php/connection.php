@@ -9,11 +9,15 @@
  $dokument = "twz_documents";
  $id_dokument = "id";
  $bezeichner = "identifier";
- $url = "url_id";
+ $url = "urls_final_id";
  $eingelesen = "parsed";
  $zeitstempel = "parse_date";
- $full_text = "full_text";
+ $full_text = "content";
  $meta_desc = "meta_description";
  $meta_keyw = "meta_keywords";
- $language= "language";
+ $language= "language_description";
+ //Tabelle Urls
+ $twz_urls = "twz_urls_final";
+ $expanded_url = "url";
+ //id ist hard-coded
 ?>

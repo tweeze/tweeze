@@ -82,14 +82,14 @@
 	 if(count($ergis2)>1) arsort($ergis2);
 	  foreach($ergis2 as $key => $value) {
 	   if ($value>0) {   
-	    $query = "SELECT $dokument.$id_dokument  AS idd, $bezeichner, $url, expanded_url FROM `$datenbank`.twz_urls, `$datenbank`.$dokument WHERE $dokument.$id_dokument='$key' AND twz_urls.id=$dokument.$id_dokument;";
+	    $query = "SELECT $dokument.$id_dokument  AS idd, $bezeichner, $url, $expanded_url FROM `$datenbank`.$twz_urls, `$datenbank`.$dokument WHERE $dokument.$id_dokument='$key' AND $twz_urls.id=$dokument.$id_dokument;";
 	    $result = mysql_query($query,$connection);
         if(!$result) {
          print "Fehler: " . mysql_error($connection);
         } else {
 		 if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
 		  print "<br/>".$row[$bezeichner]." <a href='".$_SERVER["PHP_SELF"]."?seite=Dokumentansicht&dok=".$row['idd']."'>Im Cache</a>"; 
-	  	  if (!($row[$url]==NULL)) print " <a href='".$row['expanded_url']."'>Internetdokument</a>";	
+	  	  if (!($row[$url]==NULL)) print " <a href='".$row[$expanded_url]."'>Internetdokument</a>";	
 		 }
 	    }
 	   }
