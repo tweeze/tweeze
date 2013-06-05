@@ -3,9 +3,12 @@
 Inhaltsverzeichnis: 
  Dbreset //setzt die Datenbank zurück auch die Auto-Inkrement-Werte
  Dokvolltext //gibt ein eingelesenes Dokument als Volltext aus, mit Quellenangabe
- Getpage //Bekommt URL übergeben und gibt deren Seiteninhalt zurück
+ GetContent  //gibt aus übergebenem HTML-Code den Inhalt in p-Tags zurück
+ GetFullPage  //bekommt URL übergeben und gibt deren vollen Seiteninhalt zurück
+ GetMetaDesc  //gibt aus übergebenem HTML-Code die Meta-Description zurück
+ GetMetaKeyw  //gibt aus übergebenem HTML-Code die Meta-Keywords zurück
+ GetTitle  //gibt aus übergebenem HTML-Code den Titel zurück
  logn //gibt den Logarithmis der $zahl zur $basis zurück
- SetTitle //Setzt den Bezeichner eines Dokuments gleich dem Titel der Quelle
  Tabtest //testet, ob es eine Tabelle mit dem angegebenen Namen in der Datenbank gibt
  Tabzeilen //gibt Anzahl der Zeilen einer Tabelle zurück
 */
@@ -62,7 +65,7 @@ Inhaltsverzeichnis:
   }
  }
  //gibt aus übergebenem HTML-Code den Inhalt in p-Tags zurück
- function Getcontent($html, $explode=true) {
+ function GetContent($html, $explode=true) {
  	$regex1 = "#<\s*p\s*[^>]*>(.*?)</\s*p\s*>#is";
  	if (preg_match_all($regex1, $html, $para)) {
  		$html = implode(" ", $para[1]);
@@ -84,8 +87,8 @@ Inhaltsverzeichnis:
  		return 0;
  	}
  }
- //Bekommt URL übergeben und gibt deren vollen Seiteninhalt zurück
- function Getfullpage($url1) {
+ //bekommt URL übergeben und gibt deren vollen Seiteninhalt zurück
+ function GetFullPage($url1) {
  	$remote = fopen($url1, "r") or $remote=false;  //or die();
  	if (!($remote)) {
  		return -1;
@@ -98,98 +101,32 @@ Inhaltsverzeichnis:
  			return $html;
  	}
  }
+ //gibt aus übergebenem HTML-Code die Meta-Description zurück
  function GetMetaDesc($html) {	   
  	  $regex1 = "#<\s*meta[^>]*name=[\"\']description[\"\'][^>]*content=[\"\'](.*?)[\"\'][^>]*/?>|<\s*meta[^>]*content=[\"\'](.*?)[\"\'][^>]*name=[\"\']description[\"\'][^>]*/?>#is";
  	  preg_match_all($regex1, $html, $para);
  	  $desc = mysql_real_escape_string(implode(" ", $para[1]));
  	  return $desc;   	  
  } 
+ //gibt aus übergebenem HTML-Code die Meta-Keywords zurück
  function GetMetaKeyw($html) {	   
  	  $regex1 = "#<\s*meta[^>]*name=[\"\']keywords[\"\'][^>]*content=[\"\'](.*?)[\"\'][^>]*/?>|<\s*meta[^>]*content=[\"\'](.*?)[\"\'][^>]*keywords=[\"\']description[\"\'][^>]*/?>#is";
  	  preg_match_all($regex1, $html, $para);
  	  $keyw = mysql_real_escape_string(implode(" ", $para[1]));
  	  return $keyw;   	  
  } 
- //Bekommt URL übergeben und gibt deren Seiteninhalt zurück
- function Getpage($url1, $explode=true) {
-   $remote = fopen($url1, "r") or $remote=false;  //or die();
-   if (!($remote)) {
-   	 return -1;
-   } else {
-   	 $html = "";
- 	 while (!feof($remote)) {
- 	   $html .= fread($remote, 8192);
- 	 }
- 	 fclose($remote);
- 	 $regex1 = "#<\s*p\s*[^>]*>(.*?)</\s*p\s*>#is";
- 	 if (preg_match_all($regex1, $html, $para)) {
- 	   $html = implode(" ", $para[1]);
- 	   $html = preg_replace("#<\s*br\s*/?>#i", " ", $html);
- 	   $html = preg_replace("#&nbsp;#i", " ", $html);
- 	   $html = preg_replace("#\n#i", " ", $html);
- 	   $html = preg_replace("#</?[^>]*/?>#i", "", $html);
- 	   $html = preg_replace("#\s{2,}#i", " ", $html);
- 	   $html = trim(html_entity_decode($html));
- 	   //print $html."\n\n";
- 	   //print_r($para[1]);
- 	   if ($explode) {
- 	     $inhalt = explode(" ",mysql_real_escape_string($html)); 	   	
- 	   } else {
- 	   	 $inhalt = mysql_real_escape_string($html);
- 	   }
- 	   return $inhalt;
- 	 }else {
- 	   return 0;	
- 	 }	
-   }
- } 
+ //gibt aus übergebenem HTML-Code den Titel zurück
  function GetTitle($html) {	   
  	  $regex1 = "#<\s*title\s*[^>]*>(.*?)</\s*title\s*>#is";
  	  preg_match_all($regex1, $html, $para);
  	  $title = mysql_real_escape_string(implode(" ", $para[1]));
- 	  return $title;   	
-  
+ 	  return $title;   	  
  } 
  //gibt den Logarithmis der $zahl zur $basis zurück
  function logn($zahl, $basis) {
   $erg=log10($zahl)/log10($basis);
   return $erg;
  }
- //Setzt den Bezeichner eines Dokuments gleich dem Titel der Quelle
- function SetTitle($dok) {
-  include ("connection.php");
-   $query = "SELECT $expanded_url FROM `$datenbank`.$twz_urls, `$datenbank`.$dokument WHERE $twz_urls.id=$dokument.$url AND $dokument.$id_dokument=$dok AND $dokument.$eingelesen=1;";	
-   $result = mysql_query($query,$connection);
-   if(!$result) {
-   	print "Fehler: " . mysql_error($connection). " SQL: ". $query;
-   } else {
-   	if ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {
-   	  $url1 = $row[$expanded_url];	
-      $remote = fopen($url1, "r") or $remote=false;  //or die();
-      if (!($remote)) {
-   	   return -1;
-      } else {
-   	   $html = "";
- 	   while (!feof($remote)) {
- 	    $html .= fread($remote, 8192);
- 	   }
- 	  fclose($remote);
- 	  $regex1 = "#<\s*title\s*[^>]*>(.*?)</\s*title\s*>#is";
- 	  preg_match_all($regex1, $html, $para);
- 	  $title = mysql_real_escape_string(implode(" ", $para[1]));
- 	  if (isset($title) AND $title!="") {
- 	   $query = "UPDATE `$datenbank`.$dokument SET $bezeichner='$title' WHERE $dokument.$id_dokument=$dok;";
- 	   $result = mysql_query($query,$connection);
-       if(!$result) {
-        print "Fehler: " . mysql_error($connection). " SQL: ". $query;
-       } else { 	   
- 	     //
-       }   	  	
- 	  } 	  
-   	 }
-    } 	
-   }
- } 
 //testet, ob es eine Tabelle mit dem angegebenen Namen in der Datenbank gibt
  function Tabtest($tab) {
   include ("connection.php");

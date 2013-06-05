@@ -1,0 +1,97 @@
+<html>
+ <head>
+  <script language="JavaScript">
+   function Map() {
+    if (document.MapForm.d1[0].checked==true) var d1 = 1; else var d1 = 0;
+    if (document.MapForm.d2[0].checked==true) var d2 = 1; else var d2 = 0;
+    if (document.MapForm.d3[0].checked==true) var d3 = 1; else var d3 = 0;
+    if (document.MapForm.d4[0].checked==true) var d4 = 1; else var d4 = 0;
+    if (document.MapForm.d5[0].checked==true) var d5 = 1; else var d5 = 0;
+    if (document.MapForm.d6[0].checked==true) var d6 = 1; else var d6 = 0;
+    if (document.MapForm.d7[0].checked==true) var d7 = 1; else var d7 = 0;
+    if (document.MapForm.d8[0].checked==true) var d8 = 1; else var d8 = 0;
+    if (document.MapForm.d9[0].checked==true) var d9 = 1; else var d9 = 0;
+    if (document.MapForm.d10[0].checked==true) var d10 = 1; else var d10 = 0;
+    var map_alt = document.MapForm.map_alt.value;
+    var map_doc = document.MapForm.map_doc.value;
+
+    var p1 = (d1)/1;
+    var p2 = (d1+d2)/2;
+    var p3 = (d1+d2+d3)/3;
+    var p4 = (d1+d2+d3+d4)/4;
+    var p5 = (d1+d2+d3+d4+d5)/5;
+    var p6 = (d1+d2+d3+d4+d5+d6)/6;
+    var p7 = (d1+d2+d3+d4+d5+d6+d7)/7;
+    var p8 = (d1+d2+d3+d4+d5+d6+d7+d8)/8;
+    var p9 = (d1+d2+d3+d4+d5+d6+d7+d8+d9)/9;
+    var p10 = (d1+d2+d3+d4+d5+d6+d7+d8+d9+d10)/10;
+    
+    var c = 0;
+    var avpr = 0;
+    if (d1) {
+     avpr += p1;
+     c++;
+    }
+    if (d2) {
+     avpr += p2;
+     c++;
+    }
+    if (d3) {
+     avpr += p3;
+     c++;
+    }
+    if (d4) {
+     avpr += p4;
+     c++;
+    }
+    if (d5) {
+     avpr += p5;
+     c++;
+    }
+    if (d6) {
+     avpr += p6;
+     c++;
+    }
+    if (d7) {
+     avpr += p7;
+     c++;
+    }
+    if (d8) {
+     avpr += p8;
+     c++;
+    }
+    if (d9) {
+     avpr += p9;
+     c++;
+    }
+    if (d10) {
+     avpr += p10;
+     c++;
+    }
+
+    avpr = avpr/c;
+
+    var map = ((map_alt*map_doc)+avpr)/(++map_doc);
+
+
+    ausgabe = " Precision 1: " + p1 + "<br/>Precision 2: " + p2 + "<br/>Precision 3: " + p3 + "<br/>Precision 4: " + p4 + "<br/>Precision 5: " + p5 + "<br/>Precision 6: " + p6 + "<br/>Precision 7: " + p7 + "<br/>Precision 8: " + p8 + "<br/>Precision 9: " + p9 + "<br/>Precision 10: "+ p10 + "<br/><br/>Average Precision: " + avpr + "<br/>Neuer MAP: " + map;
+    document.getElementById("ausgabe").innerHTML = ausgabe;
+   }
+  </script>
+ </head>
+ <form onSubmit="#" method="get" name="MapForm">
+Rang relevant nicht relevant<br/>
+1 <input type="radio" name="d1" value="1" onchange="Map()"><input type="radio" name="d1" value="0" onchange="Map()" checked="checked"><br/>
+2 <input type="radio" name="d2" value="1" onchange="Map()"><input type="radio" name="d2" value="0" onchange="Map()" checked="checked"><br/>
+3 <input type="radio" name="d3" value="1" onchange="Map()"><input type="radio" name="d3" value="0" onchange="Map()" checked="checked"><br/>
+4 <input type="radio" name="d4" value="1" onchange="Map()"><input type="radio" name="d4" value="0" onchange="Map()" checked="checked"><br/>
+5 <input type="radio" name="d5" value="1" onchange="Map()"><input type="radio" name="d5" value="0" onchange="Map()" checked="checked"><br/>
+6 <input type="radio" name="d6" value="1" onchange="Map()"><input type="radio" name="d6" value="0" onchange="Map()" checked="checked"><br/>
+7 <input type="radio" name="d7" value="1" onchange="Map()"><input type="radio" name="d7" value="0" onchange="Map()" checked="checked"><br/>
+8 <input type="radio" name="d8" value="1" onchange="Map()"><input type="radio" name="d8" value="0" onchange="Map()" checked="checked"><br/>
+9 <input type="radio" name="d9" value="1" onchange="Map()"><input type="radio" name="d9" value="0" onchange="Map()" checked="checked"><br/>
+10 <input type="radio" name="d10" value="1" onchange="Map()"><input type="radio" name="d10" value="0" onchange="Map()" checked="checked"><br/><br/>
+Alter MAP: <input type="text" name="map_alt" value="0" size="10" onchange="Map()"> Anzahl Querys im alten MAP berücksichtigt: <input type="text" name="map_doc" value="0" size="10" onchange="Map()">
+ </form>
+  <div id="ausgabe"></div>
+</html>

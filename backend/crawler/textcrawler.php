@@ -44,8 +44,8 @@
   					print "Alle Dokumente aus der Datenbank wurden eingelesen.";
   					break;
   				} else {
-  					$inhalt2 = Getfullpage($url1);
-  					$inhalt = Getcontent($inhalt2, false);
+  					$inhalt2 = GetFullPage($url1);
+  					$inhalt = GetContent($inhalt2, false);
   					if (strlen($inhalt)>1) {
   						$query2 = "UPDATE `$datenbank`.$dokument SET $eingelesen=1, $full_text='$inhalt', $zeitstempel=now() WHERE $url=$url2;";
   						$result2 = mysql_query($query2,$connection);
