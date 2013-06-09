@@ -1,7 +1,7 @@
 <?php
   include ("../php/connection.php");
   include ("../php/Bibliothek.php");
-  
+  //->Stoppwortliste einbinden
   if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
   else {
     if ((isset($argv[1])) AND $argv[1]!="" ){
@@ -15,40 +15,33 @@
   	if(!$result) {
   		print "Fehler: " . mysql_error($connection);
   	} else {
-  	   $timestamp = time();
-  	   for ($i=0; $i<$zyklus && $row = mysql_fetch_array($result,MYSQL_ASSOC) && $i<1; $i++) { //<-debug
+  	   $timestamp = time();  	   
+  	   for ($i=0; $i<$zyklus && ($row=mysql_fetch_array($result,MYSQL_ASSOC)); $i++) {
   		 $inhalt = $row[$full_text];
-  		 print " Row: "; //<-debug
-  		 print_r($row);	//<-debug
-  		 print $row[0]; //<-debug
-  		 print " Inhalt: ".$inhalt; //<- debug
-  		 $regex1 = "#(\w)*#i";
+  		 $regex1 = "#[\wäÄöÖüÜß]+#i";
   	     print " ".$row[$id_dokument];
   		 $wortdok = preg_match_all($regex1, $inhalt, $para);
   		 print " Wörter: ".$wortdok;
-  		 for($j=0; $j<count($para[0] && $j<1);$j++) { //<-debug
-  		 	print_r($para[0][$j]); //<-debug
-  		 	$query2 = "SELECT * FROM `$datenbank`.$twz_word WHERE $word='$para[1][$j]';";
-  		 	print_r($para[0][$j]);
-  		 	print $query2; //<-debug
-  		 	print $para[$j]; //<->debug
+  		 for($j=0; $j<count($para[0]);$j++) { 
+  		 	$parastr = $para[0][$j];
+  		 	$query2 = "SELECT * FROM `$datenbank`.$twz_word WHERE $word='$parastr';";
             $result2 = mysql_query($query2,$connection);
             if(!$result2) {
   		      print "Fehler: " . mysql_error($connection);
   	        } else {
-  	        	if (!($row2 = mysql_fetch_array($result,MYSQL_ASSOC))) {
+  	        	if (!($row2 = mysql_fetch_array($result2,MYSQL_ASSOC))) {
   	        		//$N = Gesamtanzahl Dokumente in DB
-  	        		$query2 = "SELECT COUNT($id_dokument) FROM `$datenbank`.$dokument;";
-  	        		$result2 = mysql_query($query2,$connection);
-  	        		if(!$result2) {
+  	        		$query3 = "SELECT COUNT($id_dokument) FROM `$datenbank`.$dokument;";
+  	        		$result3 = mysql_query($query3,$connection);
+  	        		if(!$result3) {
   	        			print "Fehler: " . mysql_error($connection);
   	        		} else {
-  	        			$N = mysql_result($result2,0);
+  	        			$N = mysql_result($result3,0);
   	        		}	
   	        		//neues Wort eintragen + neue Id zurückgeben lassen	
-  	        		$query2 = "INSERT INTO `$datenbank`.$twz_word ($word) VALUES ('$para[0][$j]');";
-  	        		$result2 = mysql_query($query2,$connection);
-  	        		if(!$result2) {
+  	        		$query3 = "INSERT INTO `$datenbank`.$twz_word ($word) VALUES ('$parastr');";
+  	        		$result3 = mysql_query($query3,$connection);
+  	        		if(!$result3) {
   	        			print "Fehler: " . mysql_error($connection);
   	        		} else {
   	        			$idnew = mysql_insert_id();
@@ -56,21 +49,21 @@
   	        		//Dokumente, in denen das Wort vorkommt. Stellen ermitteln und eintragen   	
   	        		//-> ev. mit Kriterium keyword, title, description oder fulltext?
   	        		$countallnow = 0;
-  	        		$query2 = "SELECT * from `$datenbank`.$dokument WHERE $full_text LIKE '%$para[0][$j]%';";
+  	        		$query3 = "SELECT * from `$datenbank`.$dokument WHERE $full_text LIKE '%$parastr%';";
   	        		$n = 0;
-  	        		$result2 = mysql_query($query2,$connection);
-  	        		if(!$result2) {
+  	        		$result3 = mysql_query($query3,$connection);
+  	        		if(!$result3) {
   	        			print "Fehler: " . mysql_error($connection);
   	        		} else {
-  	        			while ($row2 = mysql_fetch_array($result,MYSQL_ASSOC)) {
-  	        				$inhalt2 = $row[$fulltext];
+  	        			while ($row3 = mysql_fetch_array($result3,MYSQL_ASSOC)) {
+  	        				$inhalt2 = $row3[$full_text];
   	        				$c = preg_match_all($regex1, $inhalt2, $para2);
   	        				if ($c>0) $n++;
   	        				for($k=0; $k<count($para2[0]);$k++) {
   	        					if($para2[0][$k]==$para[0][$j]) {
-  	        						$query3 = "INSERT INTO `$datenbank`.$text ($wort_id, $dok_id, $position) VALUES ($idnew,$row[$id_dokument],$k);";
-  	        						$result3 = mysql_query($query3,$connection);
-  	        						if(!$result3) {
+  	        						$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $position) VALUES ('$idnew','$row3[$id_dokument]','$k');";
+  	        						$result4 = mysql_query($query4,$connection);
+  	        						if(!$result4) {
   	        							print "Fehler: " . mysql_error($connection);
   	        						} else {
   	        			               $countallnow++;
@@ -80,9 +73,9 @@
   	        			}
   	        		}		
   	        		$idfnow = (logn($N,2))/($n+1);
-  	        		$query2 = "UPDATE `$datenbank`.$word SET $countall=$countallnow, $countdok=$n, $idf=$idfnow WHERE $id_word=$idnew";
-  	        		$result2 = mysql_query($query2,$connection);
-  	        		if(!$result2) {
+  	        		$query3 = "UPDATE `$datenbank`.$twz_word SET $countall=$countallnow, $countdok=$n, $idf=$idfnow WHERE $id_word=$idnew";
+  	        		$result3 = mysql_query($query3,$connection);
+  	        		if(!$result3) {
   	        			print "Fehler: " . mysql_error($connection);
   	        		} else {
   	        			//Erfolg
@@ -91,9 +84,9 @@
   	        }
   		 }
   		 $timestamp1 = time();
-  		 print " ".($timestamp1-$timestamp)." Sekunden";
+  		 print " ".($timestamp1-$timestamp)." Sekunden ";
   		 $timestamp = $timestamp1;
-  	   }
+  	   } // */
   	 	
   	}
   	 
