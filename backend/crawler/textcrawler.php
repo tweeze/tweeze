@@ -1,4 +1,4 @@
-<?php
+<?php //Aufruf mit $zyklus -> wie viele Dokumente das Skript einlesen soll
   include ("../php/connection.php");
   include ("../php/Bibliothek.php");
 

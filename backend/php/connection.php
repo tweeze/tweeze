@@ -19,5 +19,17 @@
  //Tabelle Urls
  $twz_urls = "twz_urls_final";
  $expanded_url = "url";
- //id ist hard-coded
+ //id ist hard-coded 
+ //Tabelle Words
+ $twz_word = 'twz_words';
+ $id_word = 'id_word';
+ $word = 'word';
+ $countdok = 'countdoc';
+ $countall = 'countall';
+ $idf = 'idf';
+ //Tabelle Text
+ $twz_text = 'twz_wordmap';
+ $wort_id = 'word_id';
+ $dok_id = 'doc_id';
+ $position = 'position';
 ?>

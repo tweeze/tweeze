@@ -1,4 +1,4 @@
-<?php 
+<?php  //Aufruf mit $zyklus $steps -> wie oft das Skript die Sprache anfragen soll und wie viele Dokumente in einer Anfrage verarbeitet werden sollen. Es werden also bei $zyklus*$steps Dokumenten die Sprache eingetragen.
   include ("../php/connection.php");
   include ("../php/Bibliothek.php");
 
@@ -25,7 +25,7 @@
   	  		  $dids[$j] = $row[$id_dokument];
   	  		  $fulltext1 = explode(" ",$fulltext); 
   	  		  $fulltext = "";
-  	  		  for ($k=0; $k<10; $k++) {
+  	  		  for ($k=0; $k<20; $k++) {
                 if ($k>0) $fulltext .= " ";
   	  			$fulltext .= $fulltext1[$k];
   	  		  }
