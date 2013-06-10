@@ -4,9 +4,9 @@ from bottle import route, run, install, template, get, post, request
 import bottle_mysql
 import re
 
-#TODO find correct solution for mysql
-from bottle_sqlite import SQLitePlugin
-install (SQLitePlugin (dbfile="suma.db"))
+app = bottle.Bottle()
+plugin = bottle_mysql.Plugin(dbuser='root', dbpass='1234', dbname='suma1')
+app.install(plugin)
 
 @route ( "/",method='GET')
 def startseite():
@@ -74,4 +74,4 @@ def search(db):
         # Die Dokumente absteigend nach den Werten sortieren
         # Die Dokumente ans Ergebnis-Template senden (ausgeben)
     
-    return template("src/search", daten=daten)
+    return template("src/ergebnisse.tpl", daten=daten)
