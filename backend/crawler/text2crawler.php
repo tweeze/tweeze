@@ -40,7 +40,7 @@
   	        	} else {
   	        		if (!($row2 = mysql_fetch_array($result2,MYSQL_ASSOC))) {
   	        			//$N = Gesamtanzahl Dokumente in DB
-  	        			$query3 = "SELECT COUNT($id_dokument) FROM `$datenbank`.$dokument;";
+  	        			$query3 = "SELECT COUNT($id_dokument) FROM `$datenbank`.$dokument WHERE $language='de';";
   	        			$result3 = mysql_query($query3,$connection);
   	        			if(!$result3) {
   	        				print "Fehler: " . mysql_error($connection);
@@ -58,7 +58,7 @@
   	        			//Dokumente, in denen das Wort vorkommt. Stellen ermitteln und eintragen   	
   	        			//-> ev. mit Kriterium keyword, title, description oder fulltext?
   	        			$countallnow = 0;
-  	        			$query3 = "SELECT * from `$datenbank`.$dokument WHERE $full_text LIKE '%$parastr%';";
+  	        			$query3 = "SELECT * from `$datenbank`.$dokument WHERE $full_text LIKE '%$parastr%' AND $language='de';";
   	        			$n = 0;
   	        			$result3 = mysql_query($query3,$connection);
   	        			if(!$result3) {
@@ -69,7 +69,7 @@
   	        					$c = preg_match_all($regex1, $inhalt2, $para2);
   	        					if ($c>0) $n++;
   	        					for($k=0; $k<count($para2[0]);$k++) {
-  	        						if($para2[0][$k]==$para[0][$j]) {
+  	        						if(strtolower($para2[0][$k])==strtolower($para[0][$j])) {
   	        							$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $position) VALUES ('$idnew','$row3[$id_dokument]','$k');";
   	        							$result4 = mysql_query($query4,$connection);
   	        							if(!$result4) {
