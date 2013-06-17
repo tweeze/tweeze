@@ -1,6 +1,7 @@
 <?php
   include ("../php/connection.php");
   include ("../php/Bibliothek.php");
+  $stemmer = new PorterStemmer_de;
   
   if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
   else {
@@ -18,16 +19,16 @@
   	   $timestamp = time();  	   
   	   for ($i=0; $i<$zyklus && ($row=mysql_fetch_array($result,MYSQL_ASSOC)); $i++) {
   		 $inhalt = $row[$full_text];
-  		 $regex1 = "#[\wäÄöÖüÜßÃ¼¶¤Ÿ]+#i";
+  		 $regex1 = "#[\wäÄöÖüÜß]+#i";
   	     print " ".$row[$id_dokument];
   		 $wortdok = preg_match_all($regex1, $inhalt, $para);
   		 print " Wörter: ".$wortdok;
   		 for($j=0; $j<count($para[0]);$j++) { 
   		 	$parastr = $para[0][$j];
   		 	$check = 1;
-  		 	$paracomp = strtolower($parastr);
+  		 	$parastr = $stemmer->stem($parastr);
   		 	for($k=0; $k<count($stopwords["de"]);$k++) {
-  		 		if($stopwords["de"][$k]==$paracomp) {
+  		 		if($stopwords["de"][$k]==$parastr) {
   		 			$check = 0;
   		 			break;
   		 		}
@@ -67,9 +68,14 @@
   	        				while ($row3 = mysql_fetch_array($result3,MYSQL_ASSOC)) {
   	        					$inhalt2 = $row3[$full_text];
   	        					$c = preg_match_all($regex1, $inhalt2, $para2);
-  	        					if ($c>0) $n++;
+  	        					$first = 0;
   	        					for($k=0; $k<count($para2[0]);$k++) {
-  	        						if(strtolower($para2[0][$k])==strtolower($para[0][$j])) {
+  	        						$parastr2 = $stemmer->stem($parastr2);
+  	        						if($parastr==$parastr2) {
+  	        							if (!$first) {
+  	        								$n++;
+  	        								$first=1;  	        								
+  	        							}
   	        							$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $position) VALUES ('$idnew','$row3[$id_dokument]','$k');";
   	        							$result4 = mysql_query($query4,$connection);
   	        							if(!$result4) {

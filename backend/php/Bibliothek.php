@@ -80,7 +80,7 @@ Inhaltsverzeichnis:
  		if ($explode) {
  			$inhalt = explode(" ",mysql_real_escape_string($html));
  		} else {
- 			$inhalt = mysql_real_escape_string($html);
+ 			$inhalt = mysql_real_escape_string(utf8_encode(strtolower($html)));
  		}
  		return $inhalt;
  	}else {
@@ -105,21 +105,21 @@ Inhaltsverzeichnis:
  function GetMetaDesc($html) {	   
  	  $regex1 = "#<\s*meta[^>]*name=[\"\']description[\"\'][^>]*content=[\"\'](.*?)[\"\'][^>]*/?>|<\s*meta[^>]*content=[\"\'](.*?)[\"\'][^>]*name=[\"\']description[\"\'][^>]*/?>#is";
  	  preg_match_all($regex1, $html, $para);
- 	  $desc = mysql_real_escape_string(implode(" ", $para[1]));
+ 	  $desc = mysql_real_escape_string(utf8_encode(strtolower(implode(" ", $para[1]))));
  	  return $desc;   	  
  } 
  //gibt aus übergebenem HTML-Code die Meta-Keywords zurück
  function GetMetaKeyw($html) {	   
  	  $regex1 = "#<\s*meta[^>]*name=[\"\']keywords[\"\'][^>]*content=[\"\'](.*?)[\"\'][^>]*/?>|<\s*meta[^>]*content=[\"\'](.*?)[\"\'][^>]*keywords=[\"\']description[\"\'][^>]*/?>#is";
  	  preg_match_all($regex1, $html, $para);
- 	  $keyw = mysql_real_escape_string(implode(" ", $para[1]));
+ 	  $keyw = mysql_real_escape_string(utf8_encode(strtolower(implode(" ", $para[1]))));
  	  return $keyw;   	  
  } 
  //gibt aus übergebenem HTML-Code den Titel zurück
  function GetTitle($html) {	   
  	  $regex1 = "#<\s*title\s*[^>]*>(.*?)</\s*title\s*>#is";
  	  preg_match_all($regex1, $html, $para);
- 	  $title = mysql_real_escape_string(implode(" ", $para[1]));
+ 	  $title = mysql_real_escape_string(utf8_encode(strtolower(implode(" ", $para[1]))));
  	  return $title;   	  
  } 
  //gibt den Logarithmis der $zahl zur $basis zurück
@@ -237,6 +237,7 @@ Inhaltsverzeichnis:
  $stopwords["de"][] = "durch";
  $stopwords["de"][] = "durfte";
  $stopwords["de"][] = "durften";
+ $stopwords["de"][] = "eben"; //hinzugefügt
  $stopwords["de"][] = "ebenfalls";
  $stopwords["de"][] = "ebenso";
  $stopwords["de"][] = "ein";
@@ -244,6 +245,7 @@ Inhaltsverzeichnis:
  $stopwords["de"][] = "einem";
  $stopwords["de"][] = "einen";
  $stopwords["de"][] = "einer";
+ $stopwords["de"][] = "einerseits"; //hinzugefügt
  $stopwords["de"][] = "eines";
  $stopwords["de"][] = "einige";
  $stopwords["de"][] = "einiges";
@@ -266,6 +268,7 @@ Inhaltsverzeichnis:
  $stopwords["de"][] = "fuer";
  $stopwords["de"][] = "gab"; //hinzugefügt
  $stopwords["de"][] = "ganz";
+ $stopwords["de"][] = "ganzen"; //hinzugefügt
  $stopwords["de"][] = "gar"; //hinzugefügt
  $stopwords["de"][] = "gebe"; //hinzugefügt
  $stopwords["de"][] = "geben";
@@ -297,6 +300,7 @@ Inhaltsverzeichnis:
  $stopwords["de"][] = "ihn";
  $stopwords["de"][] = "ihnen";
  $stopwords["de"][] = "ihr";
+ $stopwords["de"][] = "ihrer"; //hinzugefügt
  $stopwords["de"][] = "ihre";
  $stopwords["de"][] = "ihrem";
  $stopwords["de"][] = "ihren";
@@ -440,6 +444,7 @@ Inhaltsverzeichnis:
  $stopwords["de"][] = "unsere";
  $stopwords["de"][] = "unserem";
  $stopwords["de"][] = "unseren";
+ $stopwords["de"][] = "unserer"; //hinzugefügt
  $stopwords["de"][] = "viel";
  $stopwords["de"][] = "viele";
  $stopwords["de"][] = "vollstaendig";

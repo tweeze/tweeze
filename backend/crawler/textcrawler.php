@@ -45,6 +45,9 @@
   					break;
   				} else {
   					$inhalt2 = GetFullPage($url1);
+  					$was = array("&auml;", "&ouml;", "&uuml;", "&Auml;", "&Ouml;", "&Uuml;", "&szlig;", "Ã¤", "Ã¶", "Ã¼", "Ã„", "Ã–", "Ãoe", "ÃŸ", "ã¤", "ã¶", "ã¼", "ã„", "ã–", "ãoe", "ãŸ");
+  					$wie = array(chr(228), chr(246), chr(252), chr(196), chr(214), chr(220), chr(223), chr(228), chr(246), chr(252), chr(196), chr(214), chr(220), chr(223), chr(228), chr(246), chr(252), chr(196), chr(214), chr(220), chr(223));
+  					$inhalt2 = str_replace($was,$wie,inhalt2);
   					$inhalt = GetContent($inhalt2, false);
   					if (strlen($inhalt)>1) {
   						$query2 = "UPDATE `$datenbank`.$dokument SET $eingelesen=1, $full_text='$inhalt', $zeitstempel=now() WHERE $url=$url2;";
