@@ -64,8 +64,8 @@
 				return $this->postlude($this->word);
 
 			preg_match ("/^(?U)(.*$this->v$this->c.*$this->v$this->c)(?X)(.*)\$/", $this->word, $match);
-			$this->p2 = strlen($match[1]);
-			$this->r2 = $match[2];
+			if (isset($match[1])) $this->p2 = strlen($match[1]);
+			if (isset($match[2]))$this->r2 = $match[2];
 
 
 			$this->step_1();

@@ -1,6 +1,7 @@
 <?php
   include ("../php/connection.php");
   include ("../php/Bibliothek.php");
+  include ("PorterStemmer_de.class.php");
   $stemmer = new PorterStemmer_de;
   
   if (!$db) echo "Beim Zugriff auf die Datenbank ist ein Fehler aufgetreten. Bitte versuchen Sie es sp&auml;ter nochmal.<br/><br/>";
@@ -19,7 +20,7 @@
   	   $timestamp = time();  	   
   	   for ($i=0; $i<$zyklus && ($row=mysql_fetch_array($result,MYSQL_ASSOC)); $i++) {
   		 $inhalt = $row[$full_text];
-  		 $regex1 = "#[\wäÄöÖüÜß]+#i";
+  		 $regex1 = "#[\w]+#i";
   	     print " ".$row[$id_dokument];
   		 $wortdok = preg_match_all($regex1, $inhalt, $para);
   		 print " Wörter: ".$wortdok;
@@ -70,6 +71,7 @@
   	        					$c = preg_match_all($regex1, $inhalt2, $para2);
   	        					$first = 0;
   	        					for($k=0; $k<count($para2[0]);$k++) {
+  	        						$parastr2 = $para2[0][$k];
   	        						$parastr2 = $stemmer->stem($parastr2);
   	        						if($parastr==$parastr2) {
   	        							if (!$first) {

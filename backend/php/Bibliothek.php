@@ -80,7 +80,7 @@ Inhaltsverzeichnis:
  		if ($explode) {
  			$inhalt = explode(" ",mysql_real_escape_string($html));
  		} else {
- 			$inhalt = mysql_real_escape_string(utf8_encode(strtolower($html)));
+ 			$inhalt = mysql_real_escape_string($html);
  		}
  		return $inhalt;
  	}else {
