@@ -45,9 +45,9 @@
   					break;
   				} else {
   					$inhalt2 = strtolower(GetFullPage($url1));
-  					$was = array("&auml;", "&ouml;", "&uuml;", "&szlig;", "ä", "ö", "ü", "ß", "Ã¤", "Ã¶", "Ã¼", "Ã„", "Ã–", "Ãoe", "ÃŸ", "ã¤", "ã¶", "ã¼", "ã„", "ã–", "ãoe", "ãŸ", "ãœ", "ãÿ", "Ãÿ", "&#228;", "&#246;", "&#252;", "&#196;", "&#214;", "&#220;", "&#223;");
+  					$was = array("&auml;", "&ouml;", "&uuml;", "&szlig;", "ä", "ö", "ü", "ß", "Ã¤", "Ã¶", "Ã¼", "Ã„", "Ã–", "Ãoe", "ÃŸ", "ã¤", "ã¶", "ã¼", "ã„", "ã–", "ãoe", "ãŸ", "ãœ", "ãÿ", "Ãÿ", "&#228;", "&#246;", "&#252;", "&#196;", "&#214;", "&#220;", "&#223;", "Ãœ");
   					//$was = array("&auml;", "&ouml;", "&uuml;", "&Auml;", "&Ouml;", "&Uuml;", "&szlig;", "Ã¤", "Ã¶", "Ã¼", "Ã„", "Ã–", "Ãoe", "ÃŸ", "ã¤", "ã¶", "ã¼", "ã„", "ã–", "ãoe", "ãŸ");
-  					$wie = array("ae", "oe", "ue", "ss", "ae", "oe", "ue", "ss", "ae", "oe", "ue", "ae", "oe", "ue", "ss", "ae", "oe", "ue", "ae", "oe", "ue", "ss", "ue", "ss", "ss", "ae", "oe", "ue", "ae", "oe", "ue", "ss");
+  					$wie = array("ae", "oe", "ue", "ss", "ae", "oe", "ue", "ss", "ae", "oe", "ue", "ae", "oe", "ue", "ss", "ae", "oe", "ue", "ae", "oe", "ue", "ss", "ue", "ss", "ss", "ae", "oe", "ue", "ae", "oe", "ue", "ss", "ue");
   					//$wie = array(chr(228), chr(246), chr(252), chr(196), chr(214), chr(220), chr(223), chr(228), chr(246), chr(252), chr(196), chr(214), chr(220), chr(223), chr(228), chr(246), chr(252), chr(196), chr(214), chr(220), chr(223));
   					$inhalt2 = str_replace($was,$wie,$inhalt2);
   					$inhalt = GetContent($inhalt2, false);
