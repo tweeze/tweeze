@@ -32,7 +32,9 @@ word varchar(255) default null,
 count_doc int(11) default null,
 count_all bigint(20) unsigned default null,
 idf float default null,
-primary key (id)
+index id_idx(id),
+index word_idx(word),
+primary key (id, word)
 ) engine=InnoDB default charset utf8;
 
 # 2. Drop/Create table 'suma1.twz_wordmap':
@@ -41,7 +43,10 @@ drop table if exists suma1.twz_wordmap;
 create table if not exists suma1.twz_wordmap (
 words_id bigint(20) unsigned default null,
 documents_id bigint(20) unsigned default null,
+word_count smallint(11) unsigned not null,
 title boolean default null,
+index words_id_idx(words_id),
+index documents_id_idx(documents_id),
 foreign key (words_id) references suma1.twz_words(id) on update cascade on delete cascade,
 foreign key (documents_id) references suma1.twz_documents(id) on update cascade on delete cascade
 ) engine=InnoDB default charset utf8;
