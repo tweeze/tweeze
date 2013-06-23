@@ -60,16 +60,20 @@
   	        			//Dokumente, in denen das Wort vorkommt. Stellen ermitteln und eintragen   	
   	        			//-> ev. mit Kriterium keyword, title, description oder fulltext?
   	        			$countallnow = 0;
-  	        			$query3 = "SELECT * from `$datenbank`.$dokument WHERE $full_text LIKE '%$parastr%' AND $language='de';";
-  	        			$n = 0;
+  	        			$query3 = "SELECT * from `$datenbank`.$dokument WHERE ($full_text LIKE '%$parastr%' OR $bezeichner LIKE '%$parastr%') AND $language='de';";
+  	        			$n = 0; //Anzahl der Dokumente, in denen dieses Wort auftritt
   	        			$result3 = mysql_query($query3,$connection);
   	        			if(!$result3) {
   	        				print "Fehler: " . mysql_error($connection);
   	        			} else {
   	        				while ($row3 = mysql_fetch_array($result3,MYSQL_ASSOC)) {
   	        					$inhalt2 = $row3[$full_text];
+  	        					$inhalt3 = $row3[$bezeichner];
   	        					$c = preg_match_all($regex1, $inhalt2, $para2);
+  	        					$c += preg_match_all($regex1, $inhalt3, $para3);
   	        					$first = 0;
+  	        					$countthis = 0;
+  	        					$iftitle = 0;
   	        					for($k=0; $k<count($para2[0]);$k++) {
   	        						$parastr2 = $para2[0][$k];
   	        						$parastr2 = $stemmer->stem($parastr2);
@@ -78,15 +82,50 @@
   	        								$n++;
   	        								$first=1;  	        								
   	        							}
-  	        							$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $position) VALUES ('$idnew','$row3[$id_dokument]','$k');";
-  	        							$result4 = mysql_query($query4,$connection);
-  	        							if(!$result4) {
-  	        								print "Fehler: " . mysql_error($connection);
-  	        							} else {
+  	        							$countthis++;
+  	        						//	$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $position) VALUES ('$idnew','$row3[$id_dokument]','$k');";
+  	        						//	$result4 = mysql_query($query4,$connection);
+  	        						//	if(!$result4) {
+  	        						//		print "Fehler: " . mysql_error($connection);
+  	        						//	} else {
   	        				               $countallnow++;
-  	        							}
+  	        						//	}
   	        						}
   	        					}
+  	        					for($k=0; $k<count($para3[0]);$k++) {
+  	        						$parastr3 = $para3[0][$k];
+  	        						$parastr3 = $stemmer->stem($parastr3);
+  	        						if($parastr==$parastr3) {
+  	        							if (!$first) {
+  	        								$n++;
+  	        								$first=1;  	        								
+  	        							}
+  	        							if (!$iftitle) {
+  	        								$iftitle=1;  	        								
+  	        							}
+  	        							$countthis++;
+  	        						//	$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $position) VALUES ('$idnew','$row3[$id_dokument]','$k');";
+  	        						//	$result4 = mysql_query($query4,$connection);
+  	        						//	if(!$result4) {
+  	        						//		print "Fehler: " . mysql_error($connection);
+  	        						//	} else {
+  	        				               $countallnow++;
+  	        						//	}
+  	        						}
+  	        					}
+  	        				  if ($countthis > 0) {
+  	        					if ($iftitle) {
+  	        						$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $title, $countindoc) VALUES ('$idnew','$row3[$id_dokument]','1', '$countthis');";
+  	        					} else {
+  	        						$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $title, $countindoc) VALUES ('$idnew','$row3[$id_dokument]','0', '$countthis');";
+  	        					}
+  	        					$result4 = mysql_query($query4,$connection);
+  	        					if(!$result4) {
+  	        						print "Fehler: " . mysql_error($connection);
+  	        					} else {
+  	        						//
+  	        					}
+  	        				  }
   	        				}
   	        			}		
   	        			$idfnow = (logn($N,2))/($n+1);

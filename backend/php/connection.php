@@ -32,4 +32,6 @@
  $wort_id = 'word_id';
  $dok_id = 'doc_id';
  $position = 'position';
+ $title = 'title';
+ $countindoc = 'countindoc';
 ?>
