@@ -60,13 +60,15 @@
   	        			//Dokumente, in denen das Wort vorkommt. Stellen ermitteln und eintragen   	
   	        			//-> ev. mit Kriterium keyword, title, description oder fulltext?
   	        			$countallnow = 0;
+  	        			$next = 0;
+  	        			$query4 = "";	        					
   	        			$query3 = "SELECT * from `$datenbank`.$dokument WHERE ($full_text LIKE '%$parastr%' OR $bezeichner LIKE '%$parastr%') AND $language='de';";
   	        			$n = 0; //Anzahl der Dokumente, in denen dieses Wort auftritt
   	        			$result3 = mysql_query($query3,$connection);
   	        			if(!$result3) {
   	        				print "Fehler: " . mysql_error($connection);
   	        			} else {
-  	        				while ($row3 = mysql_fetch_array($result3,MYSQL_ASSOC)) {
+  	        				while ($row3 = mysql_fetch_array($result3,MYSQL_ASSOC)) {  
   	        					$inhalt2 = $row3[$full_text];
   	        					$inhalt3 = $row3[$bezeichner];
   	        					$c = preg_match_all($regex1, $inhalt2, $para2);
@@ -114,18 +116,21 @@
   	        						}
   	        					}
   	        				  if ($countthis > 0) {
+  	        				  	if ($query4=="")  $query4 .= "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $title, $countindoc) VALUES";
+  	        				  	if ($next) $query4 .= ","; else $next = 1;
   	        					if ($iftitle) {
-  	        						$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $title, $countindoc) VALUES ('$idnew','$row3[$id_dokument]','1', '$countthis');";
+  	        						$query4 .= " ('$idnew','$row3[$id_dokument]','1', '$countthis')";
   	        					} else {
-  	        						$query4 = "INSERT INTO `$datenbank`.$twz_text ($wort_id, $dok_id, $title, $countindoc) VALUES ('$idnew','$row3[$id_dokument]','0', '$countthis');";
-  	        					}
-  	        					$result4 = mysql_query($query4,$connection);
-  	        					if(!$result4) {
-  	        						print "Fehler: " . mysql_error($connection);
-  	        					} else {
-  	        						//
+  	        						$query4 .= " ('$idnew','$row3[$id_dokument]','0', '$countthis')";
   	        					}
   	        				  }
+  	        				}
+  	        				$query4 .= ";";
+  	        				$result4 = mysql_query($query4,$connection);
+  	        				if(!$result4) {
+  	        					print "Fehler: " . mysql_error($connection);
+  	        				} else {
+  	        						//
   	        				}
   	        			}		
   	        			$idfnow = (logn($N,2))/($n+1);
