@@ -29,22 +29,22 @@
   		 $wortdoktit = preg_match_all($regex1, $inhalt2, $para2);
   		 print " Wörter: ".$wortdok;
   		 for($j=0; $j<count($para[0]);$j++) {
+  			 $para[0][$j] = $stemmer->stem($para[0][$j]);
   			 for($k=0; $k<count($stopwords["de"]);$k++) {
   		 		if($stopwords["de"][$k]==$para[0][$j]) {
-  		 			$para[0][$j]=="";
+  		 			$para[0][$j]="";
   		 			break;
   		 		}
   			 }
-  			if ($para[0][$j]!="") $para[0][$j] = $stemmer->stem($para[0][$j]);
   		 }
   		 for($j=0; $j<count($para2[0]);$j++) {
+  			 $para2[0][$j] = $stemmer->stem($para2[0][$j]);
   			 for($k=0; $k<count($stopwords["de"]);$k++) {
   		 		if($stopwords["de"][$k]==$para2[0][$j]) {
-  		 			$para2[0][$j]=="";
+  		 			$para2[0][$j]="";
   		 			break;
   		 		}
   			 }
-  			if ($para2[0][$j]!="") $para2[0][$j] = $stemmer->stem($para2[0][$j]);
   		 }
   		 $wortliste = null;
   		 $titliste = null;
