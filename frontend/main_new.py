@@ -24,6 +24,7 @@ def searchbase(db):
     return template("src/search_base", daten=daten)
 
 
+
 @route ( "/search",method='GET')
 @route ( "/search",method='POST')
 def search(db):
@@ -31,6 +32,51 @@ def search(db):
     
     keywords=[]
     keywords=searchtext.split(" ")
+    
+    stemmIds=[]
+    stemmIDFs=[]
+    docDictionary={}      # doc_id -> IDF*TF
+    docUrlDictionary={}      # doc_id -> IDF*TF
+    docDictionarySorted={}
+    for keyword in keywords:
+        # Stamm ermitteln durch http://snowball.tartarus.org/algorithms/german/stemmer.html
+        # stemm = stemm(keyword)
+         stemm = keyword
+         
+        # IDF und w_word id aus datenbank holen 
+         c=db.query("SELECT word_id,idf,word FROM twz_documents WHERE word LIKE '"+stemm+"';");
+         row=c.fetchone()
+         word_id=row[0]
+         idf=row[1]
+         
+         # Dokument, TF und URL aus Datenbank holen
+         c2=db.query("SELECT wm.doc_id,wm.word_count,uf.url FROM twz_wordmap wm LEFT JOIN twz_documents d ON d.id=wm.doc_id LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id WHERE wm.word_id="+word_id+";")
+         docRows=c2.fetchall()
+         
+         #Dokumente in Dictionary speichern und
+         for row in docRows:
+             #tf=logn(row[1]+1,2)/logn(row[2],2);
+          
+             tf=row[1]
+             if docDictionary.has_key(row[0]):
+                 docDictionary[row[0]]=docDictionary[row[0]]+(tf*idf)
+             else:
+                 docDictionary[row[0]]=tf*idf
+                 docUrlDictionary[row[0]]=row[2]
+    # Dokumente nach IDF*TF Wert sortieren
+    docDictionarySorted = sorted(docDictionary.iteritems(), key=lambda (k,v): (v,k))
+        
+    return template("src/ergebnisse.tpl", urlDict=docUrlDictionary,docDictSorted=docDictionarySorted)
+        
+        
+@route ( "/search_old",method='GET')
+@route ( "/search_old",method='POST')
+def search_old(db):
+    searchtext = request.forms.get('searchtext')   
+    
+    keywords=[]
+    keywords=searchtext.split(" ")
+    
     
     # Anzahl aller Dokumente in der Datenbank ermitteln (N)
     documentCountQuery="SELECT count(*) FROM `suma1`.twz_documents;"
