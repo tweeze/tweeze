@@ -1,11 +1,13 @@
-# SQL
-# 
-# Database: MySQL -> suma1
-# File: suma1.twz_hub_urlmap_urls_urls_final_documents.sql
+-- ----------------------------------------------------------------------------
+-- SQL suma1.db_schema.sql
+-- Project: tweeze
+-- Description: Database schema for twitter search engine
+-- ----------------------------------------------------------------------------
 
-# DB-SETTINGS:
-
-# A. Adjust settings to match underlying hardware:
+-- ----------------------------------------------------------------------------
+-- DB-SETTINGS: Adjust settings to match underlying hardware:
+-- ----------------------------------------------------------------------------
+/*
 set global have_query_cache=1;
 set global query_cache_size=41984;
 set global query_cache_type=1;
@@ -13,36 +15,39 @@ set global log_slow_queries=1;
 set global long_query_time=5;
 set global max_heap_table_size=67108864;
 set global tmp_table_size=67108864;
+*/
 
-# PREREQUISITES:  
+-- ----------------------------------------------------------------------------
+-- PREREQUISITES:  
+-- ----------------------------------------------------------------------------
 
-# A. Create database suma1:
-create database if not exists suma1 default character set uft8;
+-- A. Create database suma1:
+create database if not exists suma1 default character set uft8 
+collate utf8_unicode_ci;
 
-# B. Grant privileges to user 'suma1':
+-- B. Grant privileges to user 'suma1':
 grant all on suma1.* to 'suma1'@'localhost' identified by 'suma1' 
 with grant option;
 
-# C. Set current database to 'suma1':
+-- C. Set current database to 'suma1':
 use suma1;
 
-# D. Temporarly disable constraint checks:
+-- D. Temporarly disable constraint checks:
 set foreign_key_checks=0;
+
 
 # SQL STATEMENTS:
 
-# 1. Drop/Create table 'suma1.twz_hub':
-
+-- 1. Drop/Create table 'suma1.twz_hub':
 drop table if exists suma1.twz_hub;
 create table if not exists suma1.twz_hub (
 id bigint(20) unsigned not null auto_increment,
-tweet_id bigint(20) unsigned,
+tweet_id bigint(20) unsigned not null,
 index tweet_id_idx (tweet_id),
-index id_idx (id),
 primary key (id),
-foreign key (tweet_id) references suma1.wut_tweets(id) 
+foreign key (tweet_id) references suma1.wut_tweets (id) 
 on update cascade on delete cascade
-) engine=InnoDB default charset utf8;
+) engine=innodb default charset utf8 collate utf8_unicode_ci comment='suma1.twz_hub';
 
 # 2. Drop/Create table 'suma1.twz_urls':
 
@@ -66,7 +71,7 @@ index expanded_url_idx (expanded_url(255)),
 primary key (id),
 foreign key (idx) references suma1.twz_urlmap (urls_idx) 
 on update cascade on delete cascade
-) engine=InnoDB default charset utf8;
+) engine=InnoDB default charset utf8 collate utf8_unicode_ci;
 
 # 3. Drop/Create table 'suma1.twz_urlmap':
 
@@ -90,7 +95,7 @@ index id_idx (id),
 primary key (id),
 foreign key (hub_id) references suma1.twz_hub(id) 
 on update cascade on delete cascade
-) engine=InnoDB default charset utf8;
+) engine=InnoDB default charset utf8 collate utf8_unicode_ci;
 
 # 4. Drop/Create table 'suma1.twz_urls_final':
 
@@ -105,7 +110,7 @@ index url_idx (url(255)),
 primary key (id),
 foreign key (idx) references suma1.twz_urlmap (urls_final_idx) 
 on update cascade on delete cascade
-) engine=InnoDB default charset utf8;
+) engine=InnoDB default charset utf8 collate utf8_unicode_ci;
 
 # 5. Populate field 'suma1.twz_hub.tweet_id' 
 # -> 'suma1.wut_tweets.id' (99617 records):
