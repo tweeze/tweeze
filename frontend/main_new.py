@@ -164,4 +164,8 @@ def search_old(db):
     
     return template("src/ergebnisse.tpl", daten=daten)
 
+@route("calc")
+def calc(db):
+    db.execute("UPDATE twz_words w,twz_wordmap wm SET wm.rank=w.idf*wm.word_count WHERE wm.words_id=w.id;")
+
 run()
