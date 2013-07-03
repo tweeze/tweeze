@@ -8,7 +8,7 @@
   </br>
 	<div id="Banner"> 
 	<img src="../Tweedlelogo.png" alt="Tweedle-Logo">
-    <form method="post" action="/search">
+    <form method="GET" action="/search_fast">
       <input id="eingabefeld" type="text" name="searchtext"/>
       <input type="submit", value="Hau raus!"/><br/>
     </form>

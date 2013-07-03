@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 # −*− coding:utf−8 −*−
+import bottle
 from bottle import route, run, install, template, get, post, request
+import _mysql
 import bottle_mysql
 import re
+from stemming import Stemming
 
-app = bottle.Bottle()
-plugin = bottle_mysql.Plugin(dbuser='root', dbpass='1234', dbname='suma1')
-app.install(plugin)
+plugin = bottle_mysql.Plugin(dbuser='root', dbpass='1234', dbname='suma2',dbhost='127.0.0.1')
+install(plugin)
 
 @route ( "/",method='GET')
 def startseite():
+   # _mysql.connect(host="127.0.0.1",user="root",port=3306,passwd="1234",db="suma2")
     return template('src/index.tpl')
 
 @route ( "/searchBase",method='GET')
@@ -25,10 +28,50 @@ def searchbase(db):
 
 
 
+
+@route( "/search_fast", method='GET')
+def searc_fast(db):
+    searchtext = request.params.get('searchtext')
+    if searchtext == None :
+        return template('src/index.tpl')
+    #searchtext = request.forms.get('searchtext')   
+    startpos=request.params.get('from')
+    if startpos==None:
+        startpos=0
+    startpos=int(startpos)
+    
+    keywords=[]
+    keywords=searchtext.split(" ")
+    stemmIds=[]
+    listSorted={}
+    idString="("
+    stemmer=Stemming()
+    for keyword in keywords:
+        # Stamm ermitteln durch http://snowball.tartarus.org/algorithms/german/stemmer.html
+         stemm = stemmer.stem(keyword)
+         
+        # IDF und w_word id aus datenbank holen 
+         c=db.execute("SELECT id FROM twz_words WHERE word LIKE '"+stemm+"';");
+         row=db.fetchone()
+         if len(stemmIds)>0:
+             idString=idString+","
+         stemmIds.append(row['id'])
+         idString=idString+str(row['id'])
+
+    idString=idString+")"
+    c=db.execute("SELECT uf.url,SUM(wm.rank) as rank2 FROM twz_wordmap wm LEFT JOIN (twz_documents d LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id) ON d.id=wm.documents_id WHERE wm.words_id IN "+idString+" GROUP BY documents_id ORDER BY rank2 DESC LIMIT "+str(startpos)+",50;");
+    rows=db.fetchall()
+         
+    return template("templates/ergebniss.tpl", data=rows,pos=startpos,search=searchtext)
+    
+    
 @route ( "/search",method='GET')
 @route ( "/search",method='POST')
 def search(db):
-    searchtext = request.forms.get('searchtext')   
+    searchtext = request.params.get('searchtext');
+    if searchtext == "" :
+        return template('src/index.tpl')
+    #searchtext = request.forms.get('searchtext')   
     
     keywords=[]
     keywords=searchtext.split(" ")
@@ -37,36 +80,35 @@ def search(db):
     stemmIDFs=[]
     docDictionary={}      # doc_id -> IDF*TF
     docUrlDictionary={}      # doc_id -> IDF*TF
-    docDictionarySorted={}
+    listSorted={}
     for keyword in keywords:
         # Stamm ermitteln durch http://snowball.tartarus.org/algorithms/german/stemmer.html
         # stemm = stemm(keyword)
          stemm = keyword
          
         # IDF und w_word id aus datenbank holen 
-         c=db.query("SELECT word_id,idf,word FROM twz_documents WHERE word LIKE '"+stemm+"';");
-         row=c.fetchone()
-         word_id=row[0]
-         idf=row[1]
+         c=db.execute("SELECT id,idf,word FROM twz_words WHERE word LIKE '"+stemm+"';");
+         row=db.fetchone()
+         word_id=row['id']
+         idf=row['idf']
          
          # Dokument, TF und URL aus Datenbank holen
-         c2=db.query("SELECT wm.doc_id,wm.word_count,uf.url FROM twz_wordmap wm LEFT JOIN twz_documents d ON d.id=wm.doc_id LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id WHERE wm.word_id="+word_id+";")
-         docRows=c2.fetchall()
+         c2=db.execute("SELECT wm.documents_id,wm.word_count,uf.url FROM twz_wordmap wm LEFT JOIN twz_documents d ON d.id=wm.documents_id LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id WHERE wm.words_id="+str(word_id)+";")
+         docRows=db.fetchall()
          
          #Dokumente in Dictionary speichern und
          for row in docRows:
              #tf=logn(row[1]+1,2)/logn(row[2],2);
           
-             tf=row[1]
-             if docDictionary.has_key(row[0]):
-                 docDictionary[row[0]]=docDictionary[row[0]]+(tf*idf)
+             tf=row['word_count']
+             if docDictionary.has_key(row['documents_id']):
+                 docDictionary[row['documents_id']]=docDictionary[row['documents_id']]+(tf*idf)
              else:
-                 docDictionary[row[0]]=tf*idf
-                 docUrlDictionary[row[0]]=row[2]
+                 docDictionary[row['documents_id']]=tf*idf
+                 docUrlDictionary[row['documents_id']]=row['url']
     # Dokumente nach IDF*TF Wert sortieren
-    docDictionarySorted = sorted(docDictionary.iteritems(), key=lambda (k,v): (v,k))
-        
-    return template("src/ergebnisse.tpl", urlDict=docUrlDictionary,docDictSorted=docDictionarySorted)
+    listSorted = [(k, docDictionary[k],docUrlDictionary[k]) for k in sorted(docDictionary, key=docDictionary.get, reverse=True)]
+    return template("templates/ergebniss.tpl", data=listSorted)
         
         
 @route ( "/search_old",method='GET')
@@ -121,3 +163,5 @@ def search_old(db):
         # Die Dokumente ans Ergebnis-Template senden (ausgeben)
     
     return template("src/ergebnisse.tpl", daten=daten)
+
+run()
