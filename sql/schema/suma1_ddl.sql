@@ -123,6 +123,8 @@ content mediumtext default null,
 meta_description text default null,
 meta_keyword text default null,
 language_description varchar(255) default null,
+count_words int(11) default null,
+index count_words_idx(count_words),
 index urls_final_id_idx (urls_final_id),
 primary key (id),
 foreign key (urls_final_id) references suma1.twz_urls_final(id) 
@@ -137,7 +139,7 @@ id bigint(20) unsigned not null auto_increment,
 word varchar(255) default null,
 count_doc int(11) default null,
 count_all bigint(20) unsigned default null,
-idf float default null,
+idf float not null default 0,
 index word_idx(word),
 primary key (id, word)
 ) engine=innodb default charset utf8 collate utf8_unicode_ci
@@ -150,8 +152,10 @@ words_id bigint(20) unsigned default null,
 documents_id bigint(20) unsigned default null,
 word_count smallint(11) unsigned not null,
 title boolean default null,
+wdf float not null default 0,
 index words_id_idx(words_id),
 index documents_id_idx(documents_id),
+index wdf_idx(wdf),
 foreign key (words_id) references suma1.twz_words(id) 
 on update cascade on delete cascade,
 foreign key (documents_id) references suma1.twz_documents(id) 
