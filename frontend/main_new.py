@@ -1,32 +1,19 @@
 #!/usr/bin/env python
 # −*− coding:utf−8 −*−
 import bottle
-from bottle import route, run, install, template, get, post, request
+from bottle import route, run, install, template, get, post, request, static_file
 import _mysql
 import bottle_mysql
 import re
 from stemming import Stemming
 
-plugin = bottle_mysql.Plugin(dbuser='root', dbpass='1234', dbname='suma2',dbhost='127.0.0.1')
+plugin = bottle_mysql.Plugin(dbuser='root', dbpass='1234', dbname='suma1',dbhost='127.0.0.1')
 install(plugin)
 
 @route ( "/",method='GET')
 def startseite():
    # _mysql.connect(host="127.0.0.1",user="root",port=3306,passwd="1234",db="suma2")
-    return template('src/index.tpl')
-
-@route ( "/searchBase",method='GET')
-@route ( "/searchBase",method='POST')
-def searchbase(db):
-    idfilm = request.forms.get('idfilm')
-    query= "SELECT * FROM Film WHERE 1=1;"
-    c=db.execute(query)
-    daten=c
-    row=c.fetchone() 
-    idfilm=row[0]
-    return template("src/search_base", daten=daten)
-
-
+    return template('templates/index.tpl')
 
 
 @route( "/search_fast", method='GET')
@@ -35,6 +22,10 @@ def searc_fast(db):
     if searchtext == None :
         return template('src/index.tpl')
     #searchtext = request.forms.get('searchtext')   
+    
+    if not request.params.get('Suchart') == None:
+        if request.params.get('Suchart')=='regular':
+            return TrefferOr(db,searchtext)
     startpos=request.params.get('from')
     if startpos==None:
         startpos=0
@@ -62,110 +53,134 @@ def searc_fast(db):
     c=db.execute("SELECT uf.url,SUM(wm.rank) as rank2 FROM twz_wordmap wm LEFT JOIN (twz_documents d LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id) ON d.id=wm.documents_id WHERE wm.words_id IN "+idString+" GROUP BY documents_id ORDER BY rank2 DESC LIMIT "+str(startpos)+",50;");
     rows=db.fetchall()
          
-    return template("templates/ergebniss.tpl", data=rows,pos=startpos,search=searchtext)
+    return template("templates/ergebnis.tpl", data=rows,pos=startpos,search=searchtext)
     
     
-@route ( "/search",method='GET')
-@route ( "/search",method='POST')
-def search(db):
-    searchtext = request.params.get('searchtext');
-    if searchtext == "" :
-        return template('src/index.tpl')
-    #searchtext = request.forms.get('searchtext')   
-    
-    keywords=[]
-    keywords=searchtext.split(" ")
-    
-    stemmIds=[]
-    stemmIDFs=[]
-    docDictionary={}      # doc_id -> IDF*TF
-    docUrlDictionary={}      # doc_id -> IDF*TF
-    listSorted={}
-    for keyword in keywords:
-        # Stamm ermitteln durch http://snowball.tartarus.org/algorithms/german/stemmer.html
-        # stemm = stemm(keyword)
-         stemm = keyword
-         
-        # IDF und w_word id aus datenbank holen 
-         c=db.execute("SELECT id,idf,word FROM twz_words WHERE word LIKE '"+stemm+"';");
-         row=db.fetchone()
-         word_id=row['id']
-         idf=row['idf']
-         
-         # Dokument, TF und URL aus Datenbank holen
-         c2=db.execute("SELECT wm.documents_id,wm.word_count,uf.url FROM twz_wordmap wm LEFT JOIN twz_documents d ON d.id=wm.documents_id LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id WHERE wm.words_id="+str(word_id)+";")
-         docRows=db.fetchall()
-         
-         #Dokumente in Dictionary speichern und
-         for row in docRows:
-             #tf=logn(row[1]+1,2)/logn(row[2],2);
-          
-             tf=row['word_count']
-             if docDictionary.has_key(row['documents_id']):
-                 docDictionary[row['documents_id']]=docDictionary[row['documents_id']]+(tf*idf)
-             else:
-                 docDictionary[row['documents_id']]=tf*idf
-                 docUrlDictionary[row['documents_id']]=row['url']
-    # Dokumente nach IDF*TF Wert sortieren
-    listSorted = [(k, docDictionary[k],docUrlDictionary[k]) for k in sorted(docDictionary, key=docDictionary.get, reverse=True)]
-    return template("templates/ergebniss.tpl", data=listSorted)
-        
-        
-@route ( "/search_old",method='GET')
-@route ( "/search_old",method='POST')
-def search_old(db):
-    searchtext = request.forms.get('searchtext')   
-    
-    keywords=[]
-    keywords=searchtext.split(" ")
-    
-    
-    # Anzahl aller Dokumente in der Datenbank ermitteln (N)
-    documentCountQuery="SELECT count(*) FROM `suma1`.twz_documents;"
-    documentCount=0
-    c=db.query(documentCountQuery)
-    row=c.fetchone()
-    documentCount=row[0]
-    
-    keywordDocumentMatchCounts=[]
-    keywordIDF=[]
-    index=-1;
-    for keyword in keywords:
-        index=index+1
-        
-        #Ermitteln wie viele Dokumente die Keywords enthalten
-        documentCountQueryFilteredByKeyword="SELECT COUNT(*) FROM `suma1`.twz_documents` WHERE full_text LIKE '%"+keyword+"%';"
-        c=db.query(documentCountQueryFilteredByKeyword)
-        row=c.fetchone()
-        keywordDocumentMatchCounts.append(row[0])
-    
-        #Regulären Ausdruck zu Keyword kompilieren
-        keywordRegularExpression=re.compile(keyword,Re.I|Re.U)
-        
-        #Ermitteln wie oft das Keyword in der Datenbank auftaucht
-        documentQueryFilteredByKeyword="SELECT * FROM `suma1`.twz_documents` WHERE full_text LIKE '%"+keyword+"%';"
-        c=db.query(documentQueryFilteredByKeyword)
-        rows=c.fetchall()
-        for row in rows:
-            documentContent=row['full_text']
-            matches=keywordRegularExpression.findall(documentContent)
-            # Die id des Dokuments und die Anzahl der Treffer im Dokument zwischenspeichern
-            # Die Anzahl der Wörter des Dokuments ermitteln
-            # Die WDF (TF) nach Harman berecchnen und zwischenspeichern
-            # logn($t[$key][$idw]+1,2)/logn($wortges[$key],2);
-        # -IDF für das keyword berechnen
-        keywordIDF[index]=math.log(1+(documentCount/keywordDocumentMatchCounts[index]),2)
 
 
-        # Alle Dokuemnte die eines der Keywords enthalten aus der DB holen
-        # Alle vorhandenen IDF * TF Werte für jedes Dokument aufaddieren
-        # Die Dokumente absteigend nach den Werten sortieren
-        # Die Dokumente ans Ergebnis-Template senden (ausgeben)
-    
-    return template("src/ergebnisse.tpl", daten=daten)
 
-@route("calc")
+####OR Suche
+@route("/TrefferOR", method='post')
+@route("/TrefferOR/", method='post')
+def TrefferOr(db,suchstr=""):
+    db.text_factory=str
+    if suchstr=="":
+        suchstringunprocessed=request.forms.get('suchwort1')
+    else:
+        suchstringunprocessed=suchstr
+    suchstringprocessed1=re.sub("[Öö]","oe", suchstringunprocessed)
+    suchstringprocessed2=re.sub("[Ää]","ae", suchstringprocessed1)
+    suchstringprocessed3=re.sub("[Üü]","ue", suchstringprocessed2)
+    suchterme=re.split("\W+",suchstringprocessed3)
+    anzahl_suchworte=(len(suchterme))
+
+#kein Suchwort
+    if suchstr=="":
+        pass
+    else:
+
+        #######
+        a=2
+        b=3
+        c=3
+        d=20
+        e=1
+        f=18
+
+        #suchterme = ['SPD','CDU','Piraten']
+        query_part = "'%s'"%(suchterme[0])
+        for element in suchterme[1:]:
+            query_part += " OR text = '%s'"%(element)
+            #base_query muss noch angepasst werden
+
+        base_query = "SELECT id, url, avg(wert) as rank2 from (select id, url,(((coalesce((followers_count/statuses_count),0)) * "+str(a)+")+((coalesce((retweet_count/followers_count),0)) * "+str(b)+") + ((coalesce((favorite_count/followers_count),0)) * "+str(c)+")+ ((coalesce((inhashtag_counter/hashtags_all),0)) * "+str(d)+")+ (verified* "+str(e)+")+((intweettext_counter/"+str(anzahl_suchworte)+") * "+str(f)+")+(tweetlink_counter/5)) AS wert from (SELECT tweets.id, (coalesce(hashtags_all,0)) as hashtags_all, retweet_count, favorite_count, followers_count, inhashtag_counter, intweettext_counter, statuses_count, verified, links.url, tweetlink_counter FROM tweets JOIN links ON (links.tweet_id=tweets.id) JOIN (SELECT teil2.tweet_id, teil1.inhashtag_counter, teil2.intweettext_counter FROM ((SELECT tweet_id, count( * ) AS inhashtag_counter FROM hashtags WHERE text = %s GROUP BY hashtags.tweet_id) AS teil1 RIGHT JOIN (SELECT tweet_id, count( * ) as intweettext_counter FROM tweettext WHERE tweetword = %s GROUP BY tweettext.tweet_id) AS teil2 ON (teil2.tweet_id=teil1.tweet_id))) AS counting ON (tweets.id=counting.tweet_id) LEFT JOIN hashtags_total ON(tweets.id=hashtags_total.id) LEFT JOIN links_counter ON (links_counter.url=links.url) GROUP BY tweets.id) AS part1) AS part2 GROUP BY url ORDER BY AVG(wert) DESC"%(query_part,query_part)
+
+        print base_query
+        c=db.execute(base_query)
+        ergebnis=[]
+        ergebnis=db.fetchall()
+
+        return template("templates/ergebnis.tpl", data=ergebnis,pos=0,search=suchstringunprocessed)
+         #return template ("Treffer", ergebnis=ergebnis)
+
+
+        ########das hier brauchen wir glaub ich nicht
+
+    #Daten in DB zwischenspeichern
+        #b.execute('INSERT INTO results (tweetID, urlID, url, value) VALUES (?,?,?,?)', (tweetid, urlid, url, wert,))
+
+#Daten aus DB holen zum Anzeigen
+        #c=db.execute('SELECT url, vSUM(value), COUNT(value) FROM tweetresults GROUP BY url')
+        #endergebnis=c # geht so nicht weil ganz ganz viele ergebnisse
+    #return template ("Treffer", filme=filme, nums=nums, benutzername=benutzername)
+
+@route("/TrefferAND", method='post')
+@route("/TrefferAND/", method='post')
+def TrefferAnd(db):
+    db.text_factory=str
+    suchstringunprocessed=request.forms.get('suchwort1')
+    suchstringprocessed1=re.sub("[Öö]","oe", suchstringunprocessed)
+    suchstringprocessed2=re.sub("[Ää]","ae", suchstringprocessed1)
+    suchstringprocessed3=re.sub("[Üü]","ue", suchstringprocessed2)
+    suchterme=re.split("\W+",suchstringprocessed3)
+    anzahl_suchworte=(len(suchterme))
+
+#kein Suchwort
+    if argument0=="":
+        pass
+    else:
+
+        #######
+        a=2
+        b=3
+        c=3
+        d=20
+        e=1
+        f=18
+        x=1
+        y=50
+
+        #suchterme = ['SPD','CDU','Piraten']
+        query_part = "'%s'"%(suchterme[0])
+        for element in suchterme[1:]:
+            #query_part += " OR text = '%s'"%(element)
+            query_part1 +=" join(SELECT tweet_id, count( * ) AS inhashtag_counter FROM hashtags WHERE text = '%s' GROUP BY hashtags.tweet_id)as ? ON (one.tweet_id=?.tweet_id)"%(element,x,x)
+            #base_query muss noch angepasst werden
+            query_part2 +=" join (SELECT tweet_id, count( * ) AS intweettext_counter FROM tweettext WHERE tweetword = '%s' GROUP BY tweettext.tweet_id)as ? ON (eins.tweet_id=?.tweet_id)"%(element,y,y)
+            x=x+1
+            y=y+1
+
+        base_query = "SELECT id, url, avg(wert) from (select id, url,(((coalesce((followers_count/statuses_count),0)) * a)+((coalesce((retweet_count/followers_count),0)) * b) + ((coalesce((favorite_count/followers_count),0)) * c)+ ((coalesce((inhashtag_counter/hashtags_all),0)) * d)+ (verified* e)+((intweettext_counter/anzahl_suchworte) * f)+(tweetlink_counter/5)) AS wert from (SELECT tweets.id, (coalesce(hashtags_all,0)) as hashtags_all,retweet_count, favorite_count, followers_count, inhashtag_counter, intweettext_counter, statuses_count, verified, links.url, (coalesce(tweetlink_counter,0)) as tweetlink_counter FROM tweets JOIN links ON (links.tweet_id=tweets.id) JOIN (SELECT teil2.tweet_id, (coalesce(teil1.inhashtag_counter,0)) as inhashtag_counter, teil2.intweettext_counter FROM ((select one.tweet_id,((coalesce(inhashtag_counter1,0))+(coalesce(inhashtag_counter,0))) as inhashtag_counter from ((SELECT tweet_id, count( * ) AS inhashtag_counter1 FROM hashtags WHERE text = %s GROUP BY hashtags.tweet_id)as one %s )) AS teil1 RIGHT JOIN (select eins.tweet_id,(intweettext_counter1+intweettext_counter) as intweettext_counter from ((SELECT tweet_id, count( * ) AS intweettext_counter1 FROM tweettext WHERE tweetword = %s GROUP BY tweettext.tweet_id)as eins %s )) AS teil2 ON (teil2.tweet_id=teil1.tweet_id))) AS counting ON (tweets.id=counting.tweet_id) LEFT JOIN hashtags_total ON(tweets.id=hashtags_total.id) LEFT JOIN links_counter ON (links_counter.url=links.url) GROUP BY tweets.id) AS part1) AS part2 GROUP BY url ORDER BY AVG(wert) DESC"%(element,query_part1,element,query_part2)
+
+        print base_query
+        c=db.execute(base_query)
+        ergebnis=[]
+        ergebnis=c.fetchall()
+
+        return template ("Treffer", ergebnis=ergebnis)
+
+
+        ########
+
+    #Daten in DB zwischenspeichern
+        #db.execute('INSERT INTO results (tweetID, urlID, url, value) VALUES (?,?,?,?)', (tweetid, urlid, url, wert,))
+
+#Daten aus DB holen zum Anzeigen
+       # c=db.execute('SELECT url, SUM(value), COUNT(value) FROM tweetresults GROUP BY url')
+        #endergebnis=c # geht so nicht weil ganz ganz viele ergebnisse
+    #return template ("Treffer", filme=filme, nums=nums, benutzername=benutzername)
+
+@route("/calc",method="GET")
 def calc(db):
-    db.execute("UPDATE twz_words w,twz_wordmap wm SET wm.rank=w.idf*wm.word_count WHERE wm.words_id=w.id;")
+    db.execute("UPDATE twz_words w,twz_wordmap wm SET wm.rank=w.idf*wm.wdf WHERE wm.words_id=w.id;")
+
+@route('/css/<filename>')
+def css_static(filename):
+    return static_file(filename, root='./css/')
+
+@route('/images/<filename>')
+def css_static(filename):
+    return static_file(filename, root='./images')
+
 
 run()
