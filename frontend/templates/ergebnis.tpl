@@ -1,3 +1,5 @@
+%#!/usr/bin/env python
+%# −*− coding:utf−8 −*−
 <html>
 <head><title>test</title></head>
 <body>
@@ -8,8 +10,12 @@
  </tr>
 %for row in data:
   <tr>
-   <td><a href="{{row['url']}}" >{{row['url']}}</a></td>
-   <td>{{row['rank2']}}</td>
+   <td style="vertical-align: top;padding-bottom: 20px;border-bottom: 1px solid #ccc;">
+   <a href="{{row['url']}}"  style="color:#333;text-decoration:none;">
+	<p style="width:600px">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea tak</p>
+	</a>
+	<a href="{{row['url']}}" >{{row['url']}}</a></td>
+   <td style="vertical-align: top;padding-bottom: 20px;border-bottom: 1px solid #ccc;">{{row['rank2']}}</td>
  </tr>
 %end
   <tr>
