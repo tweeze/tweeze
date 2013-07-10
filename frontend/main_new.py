@@ -51,6 +51,7 @@ def searc_fast(db):
 
     idString=idString+")"
     c=db.execute("SELECT uf.url,SUM(wm.rank) as rank2 FROM twz_wordmap wm LEFT JOIN (twz_documents d LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id) ON d.id=wm.documents_id WHERE wm.words_id IN "+idString+" GROUP BY documents_id ORDER BY rank2 DESC LIMIT "+str(startpos)+",50;");
+    #c=db.execute("SELECT uf.url,SUM(wm.rank) as rank2,t.text FROM twz_wordmap wm LEFT JOIN ((((twz_documents d LEFT JOIN twz_urls_final uf ON d.urls_final_id = uf.id) LEFT JOIN twz_urlmap m ON m.urls_final_idx=uf.idx)LEFT JOIN twz_hub h ON h.id=m.hub_id)JOIN wut_tweets t ON t.id=h.tweet_id) ON d.id=wm.documents_id WHERE wm.words_id IN "+idString+" GROUP BY documents_id ORDER BY rank2 DESC LIMIT "+str(startpos)+",50;");
     rows=db.fetchall()
          
     return template("templates/ergebnis.tpl", data=rows,pos=startpos,search=searchtext)
@@ -89,11 +90,13 @@ def TrefferOr(db,suchstr=""):
 
         #suchterme = ['SPD','CDU','Piraten']
         query_part = "'%s'"%(suchterme[0])
+        query_part2 = "'%s'"%(suchterme[0])
         for element in suchterme[1:]:
             query_part += " OR text = '%s'"%(element)
+            query_part2 += " OR tweetword = '%s'"%(element)
             #base_query muss noch angepasst werden
 
-        base_query = "SELECT id, url, avg(wert) as rank2 from (select id, url,(((coalesce((followers_count/statuses_count),0)) * "+str(a)+")+((coalesce((retweet_count/followers_count),0)) * "+str(b)+") + ((coalesce((favorite_count/followers_count),0)) * "+str(c)+")+ ((coalesce((inhashtag_counter/hashtags_all),0)) * "+str(d)+")+ (verified* "+str(e)+")+((intweettext_counter/"+str(anzahl_suchworte)+") * "+str(f)+")+(tweetlink_counter/5)) AS wert from (SELECT tweets.id, (coalesce(hashtags_all,0)) as hashtags_all, retweet_count, favorite_count, followers_count, inhashtag_counter, intweettext_counter, statuses_count, verified, links.url, tweetlink_counter FROM tweets JOIN links ON (links.tweet_id=tweets.id) JOIN (SELECT teil2.tweet_id, teil1.inhashtag_counter, teil2.intweettext_counter FROM ((SELECT tweet_id, count( * ) AS inhashtag_counter FROM hashtags WHERE text = %s GROUP BY hashtags.tweet_id) AS teil1 RIGHT JOIN (SELECT tweet_id, count( * ) as intweettext_counter FROM tweettext WHERE tweetword = %s GROUP BY tweettext.tweet_id) AS teil2 ON (teil2.tweet_id=teil1.tweet_id))) AS counting ON (tweets.id=counting.tweet_id) LEFT JOIN hashtags_total ON(tweets.id=hashtags_total.id) LEFT JOIN links_counter ON (links_counter.url=links.url) GROUP BY tweets.id) AS part1) AS part2 GROUP BY url ORDER BY AVG(wert) DESC"%(query_part,query_part)
+        base_query = "SELECT id, url, avg(wert) as rank2 from (select id, url,(((coalesce((followers_count/statuses_count),0)) * "+str(a)+")+((coalesce((retweet_count/followers_count),0)) * "+str(b)+") + ((coalesce((favorite_count/followers_count),0)) * "+str(c)+")+ ((coalesce((inhashtag_counter/hashtags_all),0)) * "+str(d)+")+ (verified* "+str(e)+")+((intweettext_counter/"+str(anzahl_suchworte)+") * "+str(f)+")+(tweetlink_counter/5)) AS wert from (SELECT tweets.id, (coalesce(hashtags_all,0)) as hashtags_all, retweet_count, favorite_count, followers_count, inhashtag_counter, intweettext_counter, statuses_count, verified, links.url, tweetlink_counter FROM tweets JOIN links ON (links.tweet_id=tweets.id) JOIN (SELECT teil2.tweet_id, teil1.inhashtag_counter, teil2.intweettext_counter FROM ((SELECT tweet_id, count( * ) AS inhashtag_counter FROM hashtags WHERE text = %s GROUP BY hashtags.tweet_id) AS teil1 RIGHT JOIN (SELECT tweet_id, count( * ) as intweettext_counter FROM tweettext WHERE tweetword = %s GROUP BY tweettext.tweet_id) AS teil2 ON (teil2.tweet_id=teil1.tweet_id))) AS counting ON (tweets.id=counting.tweet_id) LEFT JOIN hashtags_total ON(tweets.id=hashtags_total.id) LEFT JOIN links_counter ON (links_counter.url=links.url) GROUP BY tweets.id) AS part1) AS part2 GROUP BY url ORDER BY AVG(wert) DESC"%(query_part,query_part2)
 
         print base_query
         c=db.execute(base_query)
