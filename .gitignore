@@ -2,3 +2,5 @@
 /.project
 /account.txt
 /.settings
+/offline
+/.gitignore
