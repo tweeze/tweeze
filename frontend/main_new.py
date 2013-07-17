@@ -12,8 +12,7 @@ install(plugin)
 
 @route ( "/",method='GET')
 def startseite():
-   # _mysql.connect(host="127.0.0.1",user="root",port=3306,passwd="1234",db="suma2")
-    return template('templates/index.tpl')
+    return template('templates/index.tpl',fehlertext="Fehler")
 
 
 @route( "/search_fast", method='GET')
