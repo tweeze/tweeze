@@ -70,10 +70,11 @@ def TrefferOr(db,suchstr=""):
 		return template("fehler",fehlermeldung=fehlermeldung)
 	else:
 		suchstringunprocessed=suchstr
-	suchstringprocessed1=re.sub("[Öö]","oe", suchstringunprocessed)
-	suchstringprocessed2=re.sub("[Ää]","ae", suchstringprocessed1)
-	suchstringprocessed3=re.sub("[Üü]","ue", suchstringprocessed2)
-	suchterme=re.split("\W+",suchstringprocessed3)
+	suchstringprocessed1=re.sub("(Ö|ö|&ouml;|Ã¶|Ã–|ã¶|ã–|&#246;|&#214;)","oe", suchstringunprocessed)
+	suchstringprocessed2=re.sub("(Ä|ä|&auml;|Ã¤|Ã„|ã¤|ã„|&#228;|&#196;)","ae", suchstringprocessed1)
+	suchstringprocessed3=re.sub("(Ü|ü|&uuml;|Ã¼|Ãoe|ã¼|ãoe|ãœ|&#252;|&#220;|Ãœ)","ue", suchstringprocessed2)
+	suchstringprocessed4=re.sub("(ß|&szlig;|ÃŸ|ãŸ|ãÿ|Ãÿ|&#223;)","ss", suchstringprocessed3)
+	suchterme=re.split("\W+",suchstringprocessed4)
 	anzahl_suchworte=(len(suchterme))
 	suchworte=[]
 	stemmer=Stemming()
@@ -164,10 +165,11 @@ def TrefferAnd(db,suchstr=""):
 		return template("fehler",fehlermeldung=fehlermeldung)
 	else:
 		suchstringunprocessed=suchstr
-	suchstringprocessed1=re.sub("[Öö]","oe", suchstringunprocessed)
-	suchstringprocessed2=re.sub("[Ää]","ae", suchstringprocessed1)
-	suchstringprocessed3=re.sub("[Üü]","ue", suchstringprocessed2)
-	suchterme=re.split("\W+",suchstringprocessed3)
+	suchstringprocessed1=re.sub("(Ö|ö|&ouml;|Ã¶|Ã–|ã¶|ã–|&#246;|&#214;)","oe", suchstringunprocessed)
+	suchstringprocessed2=re.sub("(Ä|ä|&auml;|Ã¤|Ã„|ã¤|ã„|&#228;|&#196;)","ae", suchstringprocessed1)
+	suchstringprocessed3=re.sub("(Ü|ü|&uuml;|Ã¼|Ãoe|ã¼|ãoe|ãœ|&#252;|&#220;|Ãœ)","ue", suchstringprocessed2)
+	suchstringprocessed4=re.sub("(ß|&szlig;|ÃŸ|ãŸ|ãÿ|Ãÿ|&#223;)","ss", suchstringprocessed3)
+	suchterme=re.split("\W+",suchstringprocessed4)
 	anzahl_suchworte=(len(suchterme))
 	suchworte=[]
 	
